@@ -44,3 +44,7 @@ Copy the comicpress_manager.php file to your wp-content/plugins/ directory and a
 == License ==
 
 ComicPress Manager is released under the GNU GPL version 2.0 or later.
+
+== Credits ==
+
+Big thanks to Tyler Martin for his assistance, bug finding, and with coming up with ComicPress in the first place.

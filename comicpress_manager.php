@@ -4,7 +4,7 @@ Plugin Name: ComicPress Management
 Plugin URI: http://claritycomic.com/comicpress-manager/
 Description: Manage the comics within a <a href="http://www.mindfaucet.com/comicpress/">ComicPress</a> theme installation.
 Version: 0.5
-Author: John Bintz & Tyler Martin
+Author: John Bintz
 Author URI: http://www.coswellproductions.org/wordpress/
 
 Copyright 2008 John Bintz  (email : jcoswell@coswellproductions.org)
