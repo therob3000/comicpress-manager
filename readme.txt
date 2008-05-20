@@ -40,7 +40,7 @@ ComicPress Manager is built for WordPress 2.5.1 and ComicPress 2.1 and 2.5. It a
 
 == Installation ==
 
-Copy the comicpress_manager.php file to your wp-content/plugins/ directory and activate it.
+Copy the comicpress_manager.php file to your wp-content/plugins/ directory and activate it.  Note that ComicPress Manager requires PHP 5.1 or above, and you may receive errors upon activation if you don't have it installed.
 
 == License ==
 
