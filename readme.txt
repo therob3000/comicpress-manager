@@ -3,7 +3,7 @@ Contributors: johncoswell
 Tags: comicpress, webcomics, management
 Requires at least: 2.5.1
 Tested up to: 2.5.1
-Stable tag: 0.5.1
+Stable tag: 0.5.2
 Donate link: http://claritycomic.com/comicpress-manager/#donate
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.
@@ -12,7 +12,7 @@ ComicPress Manager ties in with the ComicPress theme to make managing your WordP
 
 The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://www.mindfaucet.com/comicpress/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress. It exists because I'm both lazy and busy. :)
 
-As of version 0.5, it allows you to:
+As of version 0.5.2, it allows you to:
 
 * Upload individual comic files directly into your comics folder and generate a post for each comic as it's uploaded with the correct go-live date and time
   * Using this method ensures that the post has the correct date and time as it's being created, reducing mistakes in posting.
@@ -41,6 +41,12 @@ ComicPress Manager is built for WordPress 2.5.1 and ComicPress 2.1 and 2.5. Comi
 == Installation ==
 
 Copy the comicpress_manager.php file to your wp-content/plugins/ directory and activate it.  ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.
+
+== Frequently Asked Questions ==
+
+= I'm unable to edit my comicpress-config.php file from the plugin interface =
+
+Check the permissions on the theme directory and on the comicpress-config.php file itself.  Both of these need to be writable by the user that the Webserver runs as.  For more information on this, contact your Webhost.
 
 == License ==
 

@@ -223,12 +223,20 @@ function read_comicpress_config_functions_php($filepath) {
   $comicpress_config = array_merge($comicpress_config, $variable_values);
 }
 
+function can_write_comicpress_config($filepath) {
+  $perm_check_filename = $filepath . '-' . md5(rand());
+  if (@touch($perm_check_filename) === true) {
+    @unlink($perm_check_filename);
+    return true;
+  }
+  return false;
+}
+
 function write_comicpress_config_functions_php($filepath) {
   global $comicpress_config;
 
   $file_lines = file($filepath, FILE_IGNORE_NEW_LINES);
 
-  //foreach ($file_lines as &$line) {
   for ($i = 0; $i < count($file_lines); $i++) {
     foreach (array_keys($comicpress_config) as $variable) {
       if (preg_match("#\\$${variable}\ *\=\ *([^\;]*)\;#", $file_lines[$i], $matches) > 0) {
@@ -237,8 +245,17 @@ function write_comicpress_config_functions_php($filepath) {
     }
   }
 
-  if (@rename($filepath, $filepath . '.' . time())) {
-    return (@file_put_contents($filepath, implode("\n", $file_lines)) !== false);
+  if (can_write_comicpress_config($filepath)) {
+    if (@rename($filepath, $filepath . '.' . time())) {
+      if (@file_put_contents($filepath, implode("\n", $file_lines)) !== false) {
+        @chmod($filepath, 0664);
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   } else {
     return false;
   }
@@ -429,6 +446,8 @@ function manager_index() {
   global $comicpress_config;
 
   $config_method = read_current_theme_comicpress_config();
+  $config_filepath = get_functions_php_filepath();
+  $can_write_config = can_write_comicpress_config($config_filepath);
 
   $path = get_comic_folder_path();
   $plugin_path = substr(__FILE__, strlen($_SERVER['DOCUMENT_ROOT']));
@@ -628,8 +647,8 @@ function manager_index() {
             }
           }
 
-          if (!is_null($filepath = get_functions_php_filepath())) {
-            if (write_comicpress_config_functions_php($filepath)) {
+          if (!is_null($config_filepath)) {
+            if (write_comicpress_config_functions_php($config_filepath)) {
               $config_method = read_current_theme_comicpress_config();
               $path = get_comic_folder_path();
               $plugin_path = substr(__FILE__, strlen($_SERVER['DOCUMENT_ROOT']));
@@ -639,7 +658,7 @@ function manager_index() {
               $messages[] = "Configuration updated and original config backed up.";
             } else {
               $relative_path = substr(realpath($filepath), strlen(realpath($_SERVER['DOCUMENT_ROOT'])));
-              $warnings[] = "<strong>Configuration not updated</strong>, check the permissions of ${relative_path} and the theme folder.";
+              $warnings[] = "<strong>Configuration not updated</strong>, check the permissions of ${relative_path} and the theme folder.  They should be writable by the Webserver process.";
             }
           }
         }
@@ -889,7 +908,13 @@ div#cpm-container div#cpm-left-column { margin-top: 0 }
       <?php
 
       if ($config_method == "comicpress-config.php") {
-        echo manager_edit_config();
+        if ($can_write_config) {
+          echo manager_edit_config();
+        } else { ?>
+          <p>
+            <strong>You cannot update your comicpress-config.php file through the ComicPress Manager interface.</strong> Check to make sure the permissions on <?= $current_theme_info['Template Dir'] ?> and the comicpress-config.php are set so that the Webserver can write to them.
+          </p>
+        <?php }
       }
 
       return;
@@ -910,8 +935,12 @@ div#cpm-container div#cpm-left-column { margin-top: 0 }
         <h2 style="padding-right: 0">ComicPress Details</h2>
         <ul style="padding-left: 30px">
           <li><strong>Configuration method:</strong>
-            <?php if ($config_method == "comicpress-config.php") { ?>
-              <a href="#" onclick="$('config-editor').show(); return false"><?php echo $config_method ?></a> (click to edit)
+            <?php if ($config_method == "comicpress-config.php") {
+              if ($can_write_config) {
+                ?><a href="#" onclick="$('config-editor').show(); return false"><?php echo $config_method ?></a> (click to edit)
+              <?php } else { ?>
+                <?php echo $config_method ?> (unable to edit, check permissions)
+              <?php } ?>
             <?php } else { ?>
               <?php echo $config_method ?>
             <?php } ?>
@@ -939,10 +968,12 @@ div#cpm-container div#cpm-left-column { margin-top: 0 }
         </ul>
       </div>
 
-      <div id="config-editor" style="display: none">
-        <h2 style="padding-right:0;">Configuration Editor</h2>
-        <?php echo manager_edit_config() ?>
-      </div>
+      <?php if ($can_write_config) { ?>
+        <div id="config-editor" style="display: none">
+          <h2 style="padding-right:0;">Configuration Editor</h2>
+          <?php echo manager_edit_config() ?>
+        </div>
+      <?php } ?>
 
       <!-- Help -->
       <div id="comicpress-help">
