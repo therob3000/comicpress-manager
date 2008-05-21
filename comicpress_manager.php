@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: ComicPress Management
+Plugin Name: ComicPress Manager
 Plugin URI: http://claritycomic.com/comicpress-manager/
 Description: Manage the comics within a <a href="http://www.mindfaucet.com/comicpress/">ComicPress</a> theme installation.
-Version: 0.5
+Version: 0.5.1
 Author: John Bintz
 Author URI: http://www.coswellproductions.org/wordpress/
 
@@ -25,30 +25,28 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 */
 
-class ComicPressConfig {
-  public static $properties = array(
-    'comic_folder' => '',
-    'comiccat'     => '',
-    'blogcat'      => '',
-    'rss_comic_folder' => '',
-    'archive_comic_folder' => '',
-    'archive_comic_width' => '',
-    'blog_postcount' => '',
-    'default_post_time' => "12:00 am",
-    'default_post_content' => "{category} for {date} - {title}"
-  );
-}
+$comicpress_config = array(
+  'comic_folder' => '',
+  'comiccat'     => '',
+  'blogcat'      => '',
+  'rss_comic_folder' => '',
+  'archive_comic_folder' => '',
+  'archive_comic_width' => '',
+  'blog_postcount' => '',
+  'default_post_time' => "12:00 am",
+  'default_post_content' => "{category} for {date} - {title}"
+);
 
 wp_enqueue_script('prototype');
 add_action("admin_menu", "cpm_add_pages");
 add_action("edit_form_advanced", "cpm_show_comic");
 
 function cpm_add_pages() {
-  add_menu_page("ComicPress Management", "ComicPress", 10, __FILE__, "manager_index");
+  add_menu_page("ComicPress Manager", "ComicPress", 10, __FILE__, "manager_index");
 }
 
 function cpm_show_comic() {
-  global $post;
+  global $post, $comicpress_config;
 
   read_current_theme_comicpress_config();
 
@@ -58,11 +56,11 @@ function cpm_show_comic() {
 
     $comic_uri = substr(realpath($comic), strlen(realpath($_SERVER['DOCUMENT_ROOT'])));
     
-    if (isset(ComicPressConfig::$properties['comiccat'])) {
-      if (is_array(ComicPressConfig::$properties['comiccat'])) {
-        $ok = count(array_intersect(ComicPressConfig::$properties['comiccat'], $post_categories)) > 0;
+    if (isset($comicpress_config['comiccat'])) {
+      if (is_array($comicpress_config['comiccat'])) {
+        $ok = count(array_intersect($comicpress_config['comiccat'], $post_categories)) > 0;
       } else {
-        $ok = (in_array(ComicPressConfig::$properties['comiccat'], $post_categories));
+        $ok = (in_array($comicpress_config['comiccat'], $post_categories));
       }
     }
     
@@ -106,7 +104,9 @@ function cpm_show_comic() {
  * Get the absolute filepath to the comic folder.
  */
 function get_comic_folder_path() {
-  return ABSPATH . ComicPressConfig::$properties['comic_folder'];
+  global $comicpress_config;
+  
+  return ABSPATH . $comicpress_config['comic_folder'];
 }
 
 /**
@@ -139,14 +139,16 @@ function breakdown_comic_filename($filename) {
  * Generate &lt;option&gt; elements for all comic categories.
  */
 function generate_comic_categories_options($comic_category_info) {
+  global $comicpress_config;
+
   ob_start();
   foreach (get_all_category_ids() as $cat_id) {
     $ok = false;
 
-    if (is_array(ComicPressConfig::$properties['comiccat'])) {
-      $ok = in_array($cat_id, ComicPressConfig::$properties['comiccat']);
+    if (is_array($comicpress_config['comiccat'])) {
+      $ok = in_array($cat_id, $comicpress_config['comiccat']);
     } else {
-      $ok = ($cat_id == ComicPressConfig::$properties['comiccat']);
+      $ok = ($cat_id == $comicpress_config['comiccat']);
     }
 
     if ($ok) {
@@ -155,7 +157,7 @@ function generate_comic_categories_options($comic_category_info) {
       <option
         value="<?php echo $category->cat_ID ?>"
         <?php if (!is_null($comic_category_info)) {
-          echo (ComicPressConfig::$properties['comiccat'] == $cat_id) ? " selected" : "";
+          echo ($comicpress_config['comiccat'] == $cat_id) ? " selected" : "";
         } ?>
         ><?php echo $category->cat_name; ?></option>
     <?php }
@@ -206,30 +208,34 @@ function read_current_theme_comicpress_config() {
  * Note: this isn't super-robust, but should cover basic use cases.
  */
 function read_comicpress_config_functions_php($filepath) {
+  global $comicpress_config;
+  
   $file = file_get_contents($filepath);
 
   $variable_values = array();
 
-  foreach (array_keys(ComicPressConfig::$properties) as $variable) {
+  foreach (array_keys($comicpress_config) as $variable) {
     if (preg_match("#\\$${variable}\ *\=\ *([^\;]*)\;#", $file, $matches) > 0) {
       $variable_values[$variable] = preg_replace('#"#', '', $matches[1]);
     }
   }
 
-  ComicPressConfig::$properties = array_merge(ComicPressConfig::$properties, $variable_values);
+  $comicpress_config = array_merge($comicpress_config, $variable_values);
 }
 
 function write_comicpress_config_functions_php($filepath) {
+  global $comicpress_config;
+
   $file_lines = file($filepath, FILE_IGNORE_NEW_LINES);
 
-  foreach ($file_lines as &$line) {
-    foreach (array_keys(ComicPressConfig::$properties) as $variable) {
-      if (preg_match("#\\$${variable}\ *\=\ *([^\;]*)\;#", $line, $matches) > 0) {
-        $line = '$' . $variable . ' = "' . ComicPressConfig::$properties[$variable] . '";';
+  //foreach ($file_lines as &$line) {
+  for ($i = 0; $i < count($file_lines); $i++) {
+    foreach (array_keys($comicpress_config) as $variable) {
+      if (preg_match("#\\$${variable}\ *\=\ *([^\;]*)\;#", $file_lines[$i], $matches) > 0) {
+        $file_lines[$i] = '$' . $variable . ' = "' . $comicpress_config[$variable] . '";';
       }
     }
   }
-  unset($line);
 
   if (@rename($filepath, $filepath . '.' . time())) {
     return (@file_put_contents($filepath, implode("\n", $file_lines)) !== false);
@@ -242,15 +248,19 @@ function write_comicpress_config_functions_php($filepath) {
  * Read the ComicPress config from config.json.
  */
 function read_comicpress_config_json($filepath) {
+  global $comicpress_config;
+
   $config = json_decode(file_get_contents($filepath), true);
 
-  ComicPressConfig::$properties = array_merge(ComicPressConfig::$properties, $config);
+  $comicpress_config = array_merge($comicpress_config, $config);
 }
 
 /**
  * Check the current ComicPress Config.
  */
 function check_comicpress_config($variables) {
+  global $comicpress_config;
+
   extract($variables);
 
   $errors = array();
@@ -265,35 +275,35 @@ function check_comicpress_config($variables) {
 
   // sanity checks for the comic upload folder
   if (!file_exists($path)) {
-    $errors[] = "The comic folder <strong>" . ComicPressConfig::$properties['comic_folder'] . "</strong> does not exist.";
+    $errors[] = "The comic folder <strong>" . $comicpress_config['comic_folder'] . "</strong> does not exist.";
   } else {
     do {
       $tmp_filename = "test-" . md5(rand(1, 1000000));
     } while (file_exists($path . '/' . $tmp_filename));
     
     if (!@touch($path . '/' . $tmp_filename)) {
-      $errors[] = "The comic folder <strong>" . ComicPressConfig::$properties['comic_folder'] . "</strong> is not writable by the Webserver process.";
+      $errors[] = "The comic folder <strong>" . $comicpress_config['comic_folder'] . "</strong> is not writable by the Webserver process.";
     } else {
       @unlink($path . '/' . $tmp_filename);
     }
   }
 
   // ensure the defined comic category exists
-  if (is_null(ComicPressConfig::$properties['comiccat'])) {
+  if (is_null($comicpress_config['comiccat'])) {
     // all non-blog categories are comic categories
     $comic_category_info = array(
       'name' => "All other categories",
     );
-    ComicPressConfig::$properties['comiccat'] = array_diff(get_all_category_ids(), array(ComicPressConfig::$properties['blogcat']));
+    $comicpress_config['comiccat'] = array_diff(get_all_category_ids(), array($comicpress_config['blogcat']));
 
-    if (count(ComicPressConfig::$properties['comiccat']) == 1) {
-      ComicPressConfig::$properties['comiccat'] = ComicPressConfig::$properties['comiccat'][0];
-      $comic_category_info = get_object_vars(get_category(ComicPressConfig::$properties['comiccat']));
+    if (count($comicpress_config['comiccat']) == 1) {
+      $comicpress_config['comiccat'] = $comicpress_config['comiccat'][0];
+      $comic_category_info = get_object_vars(get_category($comicpress_config['comiccat']));
     }
   } else {
     // one comic category is specified
-    if (is_null($comic_category_info = get_category(ComicPressConfig::$properties['comiccat']))) {
-      $warnings[] = "The requested category ID for your comic, <strong>" . ComicPressConfig::$properties['comiccat'] . "</strong>, doesn't exist!";
+    if (is_null($comic_category_info = get_category($comicpress_config['comiccat']))) {
+      $warnings[] = "The requested category ID for your comic, <strong>" . $comicpress_config['comiccat'] . "</strong>, doesn't exist!";
     } else {
       $comic_category_info = get_object_vars($comic_category_info);
     }
@@ -301,8 +311,8 @@ function check_comicpress_config($variables) {
 
   // ensure the defined blog category exists
   // TODO: multiple blog categories
-  if (is_null($blog_category_info = get_category(ComicPressConfig::$properties['blogcat']))) {
-    $errors[] = "The requested category ID for your blog, <strong>" . ComicPressConfig::$properties['blogcat'] . "</strong>, doesn't exist!";
+  if (is_null($blog_category_info = get_category($comicpress_config['blogcat']))) {
+    $errors[] = "The requested category ID for your blog, <strong>" . $comicpress_config['blogcat'] . "</strong>, doesn't exist!";
   } else {
     $blog_category_info = get_object_vars($blog_category_info);
   }
@@ -397,9 +407,11 @@ function handle_file_upload($key, $path, $messages, $errors) {
 /**
  * Show the Post Body Template.
  */
-function cpm_show_post_body_template($width = 435) { ?>
+function cpm_show_post_body_template($width = 435) {
+  global $comicpress_config; ?>
+
   Post body template:<br />
-  <textarea name="post-text" rows="4" style="width: <?= $width ?>px"><?php echo ComicPressConfig::$properties['default_post_content'] ?></textarea>
+  <textarea name="post-text" rows="4" style="width: <?= $width ?>px"><?php echo $comicpress_config['default_post_content'] ?></textarea>
   <br />
   (<em>Available wildcards:</em>)
   <ul>
@@ -414,6 +426,8 @@ function cpm_show_post_body_template($width = 435) { ?>
  * The main manager screen.
  */
 function manager_index() {
+  global $comicpress_config;
+
   $config_method = read_current_theme_comicpress_config();
 
   $path = get_comic_folder_path();
@@ -422,10 +436,10 @@ function manager_index() {
   extract(check_comicpress_config(compact('path')));
 
   $get_posts_string = "numberposts=9999&post_status=&category=";
-  if (is_array(ComicPressConfig::$properties['comiccat'])) {
-    $get_posts_string .= implode(",", ComicPressConfig::$properties['comiccat']);
+  if (is_array($comicpress_config['comiccat'])) {
+    $get_posts_string .= implode(",", $comicpress_config['comiccat']);
   } else {
-    $get_posts_string .= ComicPressConfig::$properties['comiccat'];
+    $get_posts_string .= $comicpress_config['comiccat'];
   }
   
   //
@@ -608,9 +622,9 @@ function manager_index() {
         break;
       case "update-config":
         if ($config_method == "comicpress-config.php") {
-          foreach (array_keys(ComicPressConfig::$properties) as $property) {
+          foreach (array_keys($comicpress_config) as $property) {
             if (isset($_POST[$property])) {
-              ComicPressConfig::$properties[$property] = $_POST[$property];
+              $comicpress_config[$property] = $_POST[$property];
             }
           }
 
@@ -791,11 +805,11 @@ div#image-preview {
 }
 
 form#config-editor {
-  overflow: auto
+  overflow: hidden
 }
 
 form#config-editor span.config-title {
-  width: 150px;
+  width: 130px;
   float: left;
   display: inline;
   clear: left;
@@ -902,21 +916,26 @@ div#cpm-container div#cpm-left-column { margin-top: 0 }
               <?php echo $config_method ?>
             <?php } ?>
           </li>
-          <li><strong>Comics folder:</strong> ABSPATH/<?php echo ComicPressConfig::$properties['comic_folder'] ?><br />
+          <li><strong>Comics folder:</strong> ABSPATH/<?php echo $comicpress_config['comic_folder'] ?><br />
               (<?php echo count($comic_files) ?> comic<?php echo (count($comic_files) != 1) ? "s" : "" ?> in folder)</li>
-          <li><strong>Comic categor<?php echo (is_array(ComicPressConfig::$properties['comiccat']) && count(ComicPressConfig::$properties['comiccat']) != 1) ? "ies" : "y" ?>:</strong>
-            <?php if (is_array(ComicPressConfig::$properties['comiccat'])) { ?>
+          <li><strong>Comic categor<?php echo (is_array($comicpress_config['comiccat']) && count($comicpress_config['comiccat']) != 1) ? "ies" : "y" ?>:</strong>
+            <?php if (is_array($comicpress_config['comiccat'])) { ?>
               <ul>
-                <?php foreach (ComicPressConfig::$properties['comiccat'] as $cat_id) { ?>
+                <?php foreach ($comicpress_config['comiccat'] as $cat_id) { ?>
                   <li><a href="<?php echo get_category_link($cat_id) ?>"><?php echo get_cat_name($cat_id) ?></a> (ID <?php echo $cat_id ?>)</li>
                 <?php } ?>
               </ul>
             <?php } else { ?>
-              <a href="<?php echo get_category_link(ComicPressConfig::$properties['comiccat']) ?>"><?php echo $comic_category_info['name'] ?></a> (ID <?php echo ComicPressConfig::$properties['comiccat'] ?>)
+              <a href="<?php echo get_category_link($comicpress_config['comiccat']) ?>"><?php echo $comic_category_info['name'] ?></a> (ID <?php echo $comicpress_config['comiccat'] ?>)
             <?php } ?>
           </li>
-          <li><strong>Blog category:</strong> <a href="<?php echo get_category_link(ComicPressConfig::$properties['blogcat']) ?>" ?>
-              <?php echo $blog_category_info['name'] ?></a> (ID <?php echo ComicPressConfig::$properties['blogcat'] ?>)</li>
+          <li><strong>Blog category:</strong> <a href="<?php echo get_category_link($comicpress_config['blogcat']) ?>" ?>
+              <?php echo $blog_category_info['name'] ?></a> (ID <?php echo $comicpress_config['blogcat'] ?>)</li>
+          <li><strong>PHP Version:</strong> <?= phpversion() ?>
+              <?php if (substr(phpversion(), 0, 3) < 5.2) { ?>
+                (<a href="http://gophp5.org/hosts">upgrade strongly recommended</a>)
+              <?php } ?>
+          </li>
         </ul>
       </div>
 
@@ -978,7 +997,7 @@ div#cpm-container div#cpm-left-column { margin-top: 0 }
           Generate new post for uploaded file: <input id="new-post-checkbox" type="checkbox" name="new_post" value="yes" checked />
           <div id="new-post-holder">
             Category: <select name="category"><?php echo generate_comic_categories_options($comic_category_info) ?></select><br />
-            Time to post: <input type="text" name="time" value="<?php echo ComicPressConfig::$properties['default_post_time'] ?>" size="10" /><br />
+            Time to post: <input type="text" name="time" value="<?php echo $comicpress_config['default_post_time'] ?>" size="10" /><br />
             Publish post: <input type="checkbox" name="publish" value="yes" checked />
             Don't check for duplicate posts: <input type="checkbox" name="no_duplicate_check" value="yes" />
           </div>
@@ -1001,7 +1020,7 @@ div#cpm-container div#cpm-left-column { margin-top: 0 }
           Generate new posts for uploaded file: <input id="multiple-new-post-checkbox" type="checkbox" name="new_post" value="yes" checked />
           <div id="multiple-new-post-holder">
             Category: <select name="category"><?php echo generate_comic_categories_options($comic_category_info) ?></select><br />
-            Time to post: <input type="text" name="time" value="<?php echo ComicPressConfig::$properties['default_post_time'] ?>" size="10" /><br />
+            Time to post: <input type="text" name="time" value="<?php echo $comicpress_config['default_post_time'] ?>" size="10" /><br />
             Publish post: <input type="checkbox" name="publish" value="yes" checked />
             Don't check for duplicate posts: <input type="checkbox" name="no_duplicate_check" value="yes" /><br />
             
@@ -1022,7 +1041,7 @@ div#cpm-container div#cpm-left-column { margin-top: 0 }
             <input type="hidden" name="action" value="upload-zip-file" />
             File: <input type="file" name="uploaded_file" /><br />
             Category: <select name="category"><?php echo generate_comic_categories_options($comic_category_info) ?></select><br />
-            Time for each post: <input type="text" name="time" value="<?php echo ComicPressConfig::$properties['default_post_time'] ?>" size="10" /><br />
+            Time for each post: <input type="text" name="time" value="<?php echo $comicpress_config['default_post_time'] ?>" size="10" /><br />
             Publish posts: <input type="checkbox" name="publish" value="yes" checked />
             Don't check for duplicate posts: <input type="checkbox" name="no_duplicate_check" value="yes" /><br />
 
@@ -1044,7 +1063,7 @@ div#cpm-container div#cpm-left-column { margin-top: 0 }
           <form action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post" style="margin-top: 10px">
             <input type="hidden" name="action" value="create-missing-posts" />
             Category: <select id="missing-posts-category" name="category"><?php echo generate_comic_categories_options($comic_category_info) ?></select><br />
-            Time for each post: <input type="text" name="time" value="<?php echo ComicPressConfig::$properties['default_post_time'] ?>" size="10" /><br />
+            Time for each post: <input type="text" name="time" value="<?php echo $comicpress_config['default_post_time'] ?>" size="10" /><br />
             Publish posts: <input type="checkbox" name="publish" value="yes" checked /><br />
             
             <?php cpm_show_post_body_template() ?>
@@ -1089,6 +1108,7 @@ div#cpm-container div#cpm-left-column { margin-top: 0 }
 }
 
 function manager_edit_config() {
+  global $comicpress_config;
   ob_start(); ?>
 
   <form action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post" id="config-editor">
@@ -1112,14 +1132,14 @@ function manager_edit_config() {
                            <?php foreach (get_all_category_ids() as $cat_id) {
                              $category = get_category($cat_id); ?>
                              <option value="<?php echo $category->cat_ID ?>"
-                                     <?php echo (ComicPressConfig::$properties[$field] == $cat_id) ? " selected" : "" ?>><?php echo $category->cat_name; ?></option>
+                                     <?php echo ($comicpress_config[$field] == $cat_id) ? " selected" : "" ?>><?php echo $category->cat_name; ?></option>
                            <?php } ?>
                          </select></span>
           <?php break;
         case "directory":
         case "integer": ?>
           <span class="config-title"><?= $title ?>:</span>
-          <span class="config-field"><input type="text" name="<?= $field ?>" size="10" value="<?php echo ComicPressConfig::$properties[$field] ?>" /></span>
+          <span class="config-field"><input type="text" name="<?= $field ?>" size="10" value="<?php echo $comicpress_config[$field] ?>" /></span>
           <?php break;
       }
     } ?>

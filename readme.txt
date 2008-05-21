@@ -3,7 +3,7 @@ Contributors: johncoswell
 Tags: comicpress, webcomics, management
 Requires at least: 2.5.1
 Tested up to: 2.5.1
-Stable tag: 0.5
+Stable tag: 0.5.1
 Donate link: http://claritycomic.com/comicpress-manager/#donate
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.
@@ -36,11 +36,11 @@ As of version 0.5, it allows you to:
 * Modify your comicpress-config.php
   * If you're using a comicpress-config.php file, and the permissions are set correctly, you can modify the settings directly from ComicPress manager.
 
-ComicPress Manager is built for WordPress 2.5.1 and ComicPress 2.1 and 2.5. It also requires PHP 5.1 or higher (if your Webhost doesn't support PHP 5, switch!).
+ComicPress Manager is built for WordPress 2.5.1 and ComicPress 2.1 and 2.5. ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.
 
 == Installation ==
 
-Copy the comicpress_manager.php file to your wp-content/plugins/ directory and activate it.  Note that ComicPress Manager requires PHP 5.1 or above, and you may receive errors upon activation if you don't have it installed.
+Copy the comicpress_manager.php file to your wp-content/plugins/ directory and activate it.  ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.
 
 == License ==
 
@@ -48,4 +48,4 @@ ComicPress Manager is released under the GNU GPL version 2.0 or later.
 
 == Credits ==
 
-Big thanks to Tyler Martin for his assistance, bug finding, and with coming up with ComicPress in the first place.
+Big thanks to Tyler Martin for his assistance, bug finding, and with coming up with ComicPress in the first place.  Also thanks to the folks at the Lunchbox Funnies forum for finding bugs in the initial release.
