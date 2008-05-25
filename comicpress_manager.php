@@ -3,7 +3,7 @@
 Plugin Name: ComicPress Manager
 Plugin URI: http://claritycomic.com/comicpress-manager/
 Description: Manage the comics within a <a href="http://www.mindfaucet.com/comicpress/">ComicPress</a> theme installation.
-Version: 0.6.0
+Version: 0.6.1
 Author: John Bintz
 Author URI: http://www.coswellproductions.org/wordpress/
 
@@ -45,6 +45,7 @@ class ComicPressConfig {
     // change these to something you like better...
     'default_post_time' => "12:00 am",
     'default_post_content' => "{category} for {date} - {title}",
+    'default_override_title' => '',
     'default_post_tags' => "",
     'archive_generate_thumbnails' => true,
     'rss_generate_thumbnails'     => true,
@@ -151,7 +152,7 @@ function cpm_post_editor($width = 435) {
 
   <div id="override-title-holder">
     <span class="form-title">Title to use:</span>
-    <span class="form-field"><input type="text" name="override-title-to-use" /></span>
+    <span class="form-field"><input type="text" name="override-title-to-use" value="<?php echo $cpm_config->properties['default_override_title'] ?>" /></span>
   </div>
 
   <span class="form-title">Tags:</span>
@@ -214,7 +215,7 @@ function cpm_manager_index() {
         </div>
       </div>
 
-      <!-- Upload a single comic -->
+      <!-- Upload comics -->
       <div id="cpm-right-column">
         <div class="activity-box">
           <h2 style="padding-right:0;">Upload Image
