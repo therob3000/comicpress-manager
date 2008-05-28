@@ -3,7 +3,7 @@
 Plugin Name: ComicPress Manager
 Plugin URI: http://claritycomic.com/comicpress-manager/
 Description: Manage the comics within a <a href="http://www.mindfaucet.com/comicpress/">ComicPress</a> theme installation.
-Version: 0.6.1
+Version: 0.6.2
 Author: John Bintz
 Author URI: http://www.coswellproductions.org/wordpress/
 
@@ -85,6 +85,8 @@ class ComicPressConfig {
 
 $cpm_config = new ComicPressConfig();
 
+wp_enqueue_script('editor');
+wp_enqueue_script('wp_tiny_mce');
 wp_enqueue_script('prototype');
 add_action("admin_menu", "cpm_add_pages");
 add_action("edit_form_advanced", "cpm_show_comic");
@@ -106,7 +108,9 @@ function cpm_add_pages() {
 }
 
 function cpm_post_editor($width = 435) {
-  global $cpm_config; ?>
+  global $cpm_config;
+
+  ?>
   <span class="form-title">Category:</span>
   <span class="form-field"><?php echo generate_comic_categories_options('category') ?></span>
 
@@ -233,7 +237,7 @@ function cpm_manager_index() {
 
             Generate new posts for each uploaded file: <input id="multiple-new-post-checkbox" type="checkbox" name="new_post" value="yes" checked />
             <div id="multiple-new-post-holder"><?php cpm_post_editor(420) ?></div>
-            <br /><input type="submit" value="Upload Image <?php if (extension_loaded('zip')) { echo "&amp; Zip"; } ?> Files" style="width: 445px" />
+            <br /><input type="submit" value="Upload Image <?php if (extension_loaded('zip')) { echo "&amp; Zip"; } ?> Files" style="width: 520px" />
           </form>
         </div>
       </div>
@@ -292,7 +296,7 @@ function cpm_manager_delete() {
                 </select><br />
               <div id="image-preview" style="text-align: center"></div>
               <p><strong>NOTE:</strong> If more than one possible post is found, neither the posts nor the comic file will be deleted.  ComicPress Manager cannot safely resolve such a conflict.</p>
-              <input type="submit" value="Delete comic and post" style="width: 445px" />
+              <input type="submit" value="Delete comic and post" style="width: 520px" />
             </form>
           <?php } else { ?>
             <p>You haven't uploaded any comics yet.</p>
@@ -367,7 +371,7 @@ function cpm_manager_thumbnails() {
                         <option value="<?php echo substr($file, strlen($_SERVER['DOCUMENT_ROOT'])) ?>"><?php echo pathinfo($file, PATHINFO_BASENAME) ?></option>
                       <?php } ?>
                     </select>
-                  <input type="submit" value="Generate Thumbnails for Selected Comics" style="width: 445px" />
+                  <input type="submit" value="Generate Thumbnails for Selected Comics" style="width: 520px" />
                 </form>
               <?php } else { ?>
                 <p>You haven't uploaded any comics yet.</p>
@@ -434,7 +438,7 @@ function cpm_manager_import() {
 
               <?php cpm_post_editor() ?>
 
-              <input type="submit" value="Create posts" style="width: 445px" />
+              <input type="submit" value="Create posts" style="width: 520px" />
             </form>
           </div>
         </div>
@@ -864,8 +868,8 @@ function generate_post_hash($filename_date, $filename_converted_title) {
     $category_name = get_cat_name($_POST['category']);
 
     $post_content = "";
-    if (isset($_POST['post-text'])) {
-      $post_content = $_POST['post-text'];
+    if (isset($_POST['content'])) {
+      $post_content = $_POST['content'];
       $post_content = preg_replace('/\{date\}/', date('F j, Y', $timestamp), $post_content);
       $post_content = preg_replace('/\{title\}/', $filename_converted_title, $post_content);
       $post_content = preg_replace('/\{category\}/', $category_name, $post_content);
@@ -1091,8 +1095,12 @@ function handle_file_upload($key, $path) {
 function cpm_show_post_body_template($width = 435) {
   global $cpm_config; ?>
 
-  Post body template:<br />
-  <textarea name="post-text" rows="4" style="width: <?= $width ?>px"><?php echo $cpm_config->properties['default_post_content'] ?></textarea>
+  <strong>Post body template:</strong>
+  <div id="title"></div>
+  <div id="<?php echo user_can_richedit() ? 'postdivrich' : 'postdiv' ?>" class="postarea">
+    <?php the_editor($cpm_config->properties['default_post_content']) ?>
+  </div>
+
   <br />
   (<em>Available wildcards:</em>)
   <ul>
@@ -1249,7 +1257,7 @@ div#cpm-container div#config-editor {
 
 div#cpm-container div#cpm-right-column {
  padding-left: 330px;
- width: 470px;
+ width: 540px;
 }
 
 div#cpm-container div.activity-box {
@@ -1272,7 +1280,7 @@ div#cpm-container div#new-post-holder,
 div#cpm-container div#multiple-new-post-holder {
   border: solid #444 1px;
   padding: 5px;
-  width: 435px;
+  width: 510px;
   margin-top: 5px;
 }
 
@@ -1283,8 +1291,19 @@ div#image-preview {
   border: solid black 2px
 }
 
-form#config-editor {
+div#editor-toolbar {
+  text-align: right;
   overflow: hidden
+}
+
+div#editor-toolbar a {
+  padding: 5px;
+  display: block;
+  float: right;
+}
+
+div#editor-toolbar a.active {
+  background-color: #CEE1EF
 }
 
 form#config-editor span.config-title {
@@ -1713,7 +1732,7 @@ function cpm_manager_edit_config() {
  */
 function cpm_show_footer() { ?>
   <div id="cpm-footer">
-    <a href="http://claritycomic.com/comicpress-manager/" target="_new">ComicPress Manager</a> is built for the <a href="http://www.mindfaucet.com/comicpress/" target="_new">ComicPress</a> theme | Copyright 2008 <a href="mailto:jcoswell@coswellproductions.org?Subject=ComicPress Manager Comments">John Bintz</a> | Released under the GNU GPL | Version 0.6
+    <a href="http://claritycomic.com/comicpress-manager/" target="_new">ComicPress Manager</a> is built for the <a href="http://www.mindfaucet.com/comicpress/" target="_new">ComicPress</a> theme | Copyright 2008 <a href="mailto:jcoswell@coswellproductions.org?Subject=ComicPress Manager Comments">John Bintz</a> | Released under the GNU GPL | Version 0.6.2
   </div>
 <?php }
 
