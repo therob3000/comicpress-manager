@@ -103,6 +103,7 @@ function cpm_add_pages() {
   add_submenu_page(__FILE__, "ComicPress Manager", "Upload", $access_level, __FILE__, 'cpm_manager_index');
   add_submenu_page(__FILE__, "ComicPress Manager", "Import", $access_level, 'import', 'cpm_manager_import');
   add_submenu_page(__FILE__, "ComicPress Manager", "Generate Thumbnails", $access_level, 'thumbnails', 'cpm_manager_thumbnails');
+  add_submenu_page(__FILE__, "ComicPress Manager", "Change Dates", $access_level, 'dates', 'cpm_manager_dates');
   add_submenu_page(__FILE__, "ComicPress Manager", "Delete", $access_level, 'delete', 'cpm_manager_delete');
   add_submenu_page(__FILE__, "ComicPress Manager", "Config", $access_level, 'config', 'cpm_manager_config');
 }
@@ -207,14 +208,24 @@ function cpm_manager_index() {
           <p>
             <strong>Upload image files</strong> lets you upload multiple comics at a time, and add a default
             post body for each comic.
+            <?php if (extension_loaded('zip')) { ?>
+              You can <strong>upload a Zip file and create new posts</strong> from the files contained within the Zip file.
+            <?php } else { ?>
+              <strong>You can't upload a Zip file</strong> because you do not have the PHP <strong>zip</strong> extension installed.
+            <?php } ?>
           </p>
 
           <p>
-            <?php if (extension_loaded('zip')) { ?>
-              <strong>Upload a Zip file and create new posts</strong> combines the file transfer and post creation steps into one action, allowing you to quickly add new comics to your site.
-            <?php } else { ?>
-              The <strong>Upload a Zip file and create new posts</strong> options is not available to you because you do not have the PHP <strong>zip</strong> extension installed.
-            <?php } ?>
+            Has ComicPress Manager saved you time and sanity?  <strong>Donate a few bucks to show your appreciation!</strong>
+            <span style="display: block; text-align: center">
+              <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+              <input type="hidden" name="cmd" value="_s-xclick">
+              <input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but11.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+              <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+              <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+              ">
+              </form>
+            </span>
           </p>
         </div>
       </div>
@@ -236,8 +247,16 @@ function cpm_manager_index() {
             </div>
 
             Generate new posts for each uploaded file: <input id="multiple-new-post-checkbox" type="checkbox" name="new_post" value="yes" checked />
-            <div id="multiple-new-post-holder"><?php cpm_post_editor(420) ?></div>
-            <br /><input type="submit" value="Upload Image <?php if (extension_loaded('zip')) { echo "&amp; Zip"; } ?> Files" style="width: 520px" />
+            <div id="multiple-new-post-holder">
+              <?php cpm_post_editor(420) ?>
+
+              <div>
+                (<em>for single file uploads only, can accept any date format parseable by <a href="http://us.php.net/strtotime" target="php">strtotime()</a></em>)
+              </div>
+              <span class="form-title">Use this date if missing from filename:</span>
+              <span class="form-field"><input type="text" name="override-date" /></span>
+            </div>
+            <br /><input type="submit" onclick="this.disabled=true" value="Upload Image <?php if (extension_loaded('zip')) { echo "&amp; Zip"; } ?> Files" style="width: 520px" />
           </form>
         </div>
       </div>
@@ -265,7 +284,6 @@ function cpm_manager_delete() {
   
 <div class="wrap">  
   <div id="cpm-container">
-
     <?php if (cpm_handle_warnings()) { ?>
       <!-- Header -->
       <?php cpm_show_manager_header() ?>
@@ -296,13 +314,14 @@ function cpm_manager_delete() {
                 </select><br />
               <div id="image-preview" style="text-align: center"></div>
               <p><strong>NOTE:</strong> If more than one possible post is found, neither the posts nor the comic file will be deleted.  ComicPress Manager cannot safely resolve such a conflict.</p>
-              <input type="submit" value="Delete comic and post" style="width: 520px" />
+              <input type="submit" onclick="this.disabled=true" value="Delete comic and post" style="width: 520px" />
             </form>
           <?php } else { ?>
             <p>You haven't uploaded any comics yet.</p>
           <?php } ?>
         </div>
       </div>
+      <div id="editorcontainer" style="display: none"></div>
       <?php cpm_show_footer() ?>
   <?php } ?>
   </div>
@@ -371,7 +390,7 @@ function cpm_manager_thumbnails() {
                         <option value="<?php echo substr($file, strlen($_SERVER['DOCUMENT_ROOT'])) ?>"><?php echo pathinfo($file, PATHINFO_BASENAME) ?></option>
                       <?php } ?>
                     </select>
-                  <input type="submit" value="Generate Thumbnails for Selected Comics" style="width: 520px" />
+                  <input type="submit" onclick="this.disabled=true" value="Generate Thumbnails for Selected Comics" style="width: 520px" />
                 </form>
               <?php } else { ?>
                 <p>You haven't uploaded any comics yet.</p>
@@ -383,6 +402,176 @@ function cpm_manager_thumbnails() {
           ?>
         </div>
       </div>
+      <div id="editorcontainer" style="display: none"></div>
+      <?php cpm_show_footer() ?>
+  <?php } ?>
+  </div>
+</div>
+<?php
+}
+
+/**
+ * The change dates dialog.
+ */
+function cpm_manager_dates() {
+  global $cpm_config;
+
+  cpm_read_information();
+  check_comicpress_config();
+  cpm_handle_actions();
+
+  cpm_write_global_styles_scripts();
+
+  $start_date = date("Y-m-d");
+  $end_date = substr(pathinfo(end($cpm_config->comic_files), PATHINFO_BASENAME), 0, 10);
+
+  if (isset($_POST['start-date'])) {
+    $target_start_date = strtotime($_POST['start-date']);
+    if (($target_start_date != -1) && ($target_start_date !== false)) {
+      $start_date = date("Y-m-d", $target_start_date);
+    } else {
+      $cpm_config->warnings[] = $_POST['start-date'] . " is an invalid date.  Resetting to ${start_date}";
+    }
+  
+    $target_end_date = strtotime($_POST['end-date']);
+    if (($target_end_date != -1) && ($target_end_date !== false)) {
+      $end_date = date("Y-m-d", $target_end_date);
+    } else {
+      $cpm_config->warnings[] = $_POST['end-date'] . " is an invalid date.  Resetting to ${end_date}";
+    }
+  }
+
+  $visible_comic_files = array();
+  $visible_comic_files_md5 = array();
+
+  foreach ($cpm_config->comic_files as $file) {
+    $filename = pathinfo($file, PATHINFO_BASENAME);
+    $result = breakdown_comic_filename($filename);
+
+    if (($result['date'] >= $start_date) && ($result['date'] <= $end_date)) {
+      $visible_comic_files[] = $file;
+      $visible_comic_files_md5[] = "\"" . md5($file) . "\"";
+    }
+  }
+  
+  ?>
+  
+<div class="wrap">  
+  <div id="cpm-container">
+
+    <?php if (cpm_handle_warnings()) { ?>
+      <!-- Header -->
+      <?php cpm_show_manager_header() ?>
+      
+      <div id="cpm-left-column">
+        <?php cpm_show_comicpress_details($cpm_config->blog_category_info, $cpm_config->comic_category_info) ?>
+        <div id="comicpress-help">
+          <h2 style="padding-right:0;">Help!</h2>
+          <p>
+            <strong>Change post &amp; comic dates</strong> lets you change the comic file names and post dates for any and every comic published.
+            You will only be able to move a comic file and its associated post if there is no comic or post that exists on the destination date, as ComicPress Manager cannot automatically resolve such conflicts.
+          </p>
+
+          <p>
+            <strong>This is a potentialy dangerous operation.</strong> Back up your database and comics/archive/RSS folders before performing large move operations.
+          </p>
+        </div>
+      </div>
+
+      <div id="cpm-right-column">
+        <!-- Change post dates -->
+        <div class="activity-box">
+          <h2 style="padding-right:0;">Change Post &amp; Comic Dates</h2>
+          <h3>&mdash; date changes will affect comics that are associated or not associated with posts</h3>
+
+          <?php if (count($cpm_config->comic_files) > 0) { ?>
+            <form action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
+              Show comics between
+              <input type="text" name="start-date" size="12" value="<?= $start_date ?>" />
+              and
+              <input type="text" name="end-date" size="12" value="<?= $end_date ?>" />
+              <input type="submit" value="Filter" />
+            </form>
+
+            <script type="text/javascript">
+var comic_files_keys = [ <?php echo implode(", ", $visible_comic_files_md5); ?> ];
+
+function reschedule_posts(start) {
+  var start_processing = false;
+  var interval = null;
+  var current_date = null;
+  var current_interval = 0;
+  for (var i = 0, l = comic_files_keys.length; i < l; ++i) {
+    if (start_processing) {
+      top.console.log(interval[current_interval]);
+      current_date += (interval[current_interval] * 86400 * 1000);
+      current_interval = (current_interval + 1) % interval.length;
+
+      var date_obj = new Date(current_date);
+
+      var month_string = ("00" + date_obj.getMonth().toString());
+          month_string = month_string.substr(month_string.length - 2, 2);
+
+      var day_string = ("00" + date_obj.getDate().toString());
+          day_string = day_string.substr(day_string.length - 2, 2);
+
+      date_string = date_obj.getFullYear() + "-" + month_string + "-" + day_string;
+
+      $('dates[' + comic_files_keys[i] + ']').value = date_string;
+      $('holder-' + comic_files_keys[i]).style.backgroundColor = "#ddd";
+    }
+    if (comic_files_keys[i] == start) {
+      start_processing = true;
+      interval = prompt("How many days between posts?  Separate multiple intervals with commas (Ex: MWF is 2,2,3):", "7");
+
+      if (interval !== null) {
+        var all_valid = true;
+        var parts = interval.split(",");
+        for (var j = 0, jl = parts.length; j < jl; ++j) {
+          if (!parts[j].toString().match(/^\d+$/)) { all_valid = false; break; }
+        }
+
+        if (all_valid) {
+          interval = parts;
+          date_parts = $F('dates[' + comic_files_keys[i] + ']').split("-");
+          current_date = Date.UTC(date_parts[0], date_parts[1], date_parts[2]) + 86400 * 1000;
+        } else {
+          alert(interval + " is a valid interval");
+          break;
+        }
+      } else {
+        break;
+      }
+    }
+  }
+}
+            </script>
+
+            <form action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
+              <input type="hidden" name="action" value="change-dates" />
+              <input type="hidden" name="start-date" value="<?= $start_date ?>" />
+              <input type="hidden" name="end-date" value="<?= $end_date ?>" />
+
+              <?php foreach ($visible_comic_files as $file) {
+                $filename = pathinfo($file, PATHINFO_BASENAME);
+                $result = breakdown_comic_filename($filename);
+
+                $key = md5($file); ?>
+                <div id="holder-<?= $key ?>" style="border-bottom: solid #666 1px; padding-bottom: 3px; margin-bottom: 3px">
+                  <span class="form-title"><?= $filename ?></span>
+                  <span class="form-field"><input size="12" onchange="$('holder-<?= $key ?>').style.backgroundColor=(this.value != '<?= $result['date'] ?>' ? '#ddd' : '')" type="text" name="dates[<?= $key ?>]" id="dates[<?= $key ?>]" value="<?= $result['date'] ?>" />
+                    [<a title="Reset date to <?= $result['date'] ?>" href="#" onclick="$('holder-<?= $key ?>').style.backgroundColor=''; $('dates[<?= $key ?>]').value = '<?= $result['date'] ?>'; return false">R</a> | <a title="Re-schedule posts from this date at a daily interval" href="#" onclick="reschedule_posts('<?= $key ?>'); return false">I</a>]
+                  </span>
+                </div>
+              <?php } ?>
+              <input type="submit" onclick="this.disabled=true" value="Change Dates" style="width: 520px" />
+            </form>
+          <?php } else { ?>
+            <p>You haven't uploaded any comics yet.</p>
+          <?php } ?>
+        </div>
+      </div>
+      <div id="editorcontainer" style="display: none"></div>
       <?php cpm_show_footer() ?>
   <?php } ?>
   </div>
@@ -438,7 +627,7 @@ function cpm_manager_import() {
 
               <?php cpm_post_editor() ?>
 
-              <input type="submit" value="Create posts" style="width: 520px" />
+              <input type="submit" onclick="this.disabled=true" value="Create posts" style="width: 520px" />
             </form>
           </div>
         </div>
@@ -485,6 +674,7 @@ function cpm_manager_config() {
           <?php } ?>
         </div>
       </div>
+      <div id="editorcontainer" style="display: none"></div>
       <?php cpm_show_footer() ?>
   <?php } ?>
   </div>
@@ -581,6 +771,7 @@ function find_comic_by_date($timestamp) {
 
 /**
  * Breakdown the name of a comic file into a date and proper title.
+ * TESTED
  */
 function breakdown_comic_filename($filename) {
   if (preg_match('/^([0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2})(.*)\.[^\.]+$/', $filename, $matches) > 0) {
@@ -638,6 +829,7 @@ function generate_comic_categories_options($form_name) {
 
 /**
  * Get the path to the currently used config.
+ * TESTED
  */
 function get_functions_php_filepath() {
   $current_theme_info = get_theme(get_current_theme());
@@ -645,7 +837,9 @@ function get_functions_php_filepath() {
   foreach (array("comicpress-config.php", "functions.php") as $possible_file) {
     foreach ($current_theme_info['Template Files'] as $filename) {
       if (preg_match('/' . preg_quote($possible_file, '/') . '$/', $filename) > 0) {
-        return ABSPATH . '/' . $filename;
+        if (file_exists(ABSPATH . '/' . $filename)) {
+          return ABSPATH . '/' . $filename;
+        }
       }
     }
   }
@@ -683,7 +877,9 @@ function read_current_theme_comicpress_config() {
  */
 function read_comicpress_config_functions_php($filepath) {
   global $cpm_config;
-  
+
+  if (!file_exists($filepath)) { $cpm_config->warnings[] = "file not found: ${filepath}"; return; }
+
   $file = file_get_contents($filepath);
 
   $variable_values = array();
@@ -726,11 +922,13 @@ function write_comicpress_config_functions_php($filepath) {
   }
 
   if (can_write_comicpress_config($filepath)) {
-    if (@rename($filepath, $filepath . '.' . time())) {
+    $target_filepath = $filepath . '.' . time();
+    if (@rename($filepath, $target_filepath)) {
       if (@file_put_contents($filepath, implode("\n", $file_lines)) !== false) {
         @chmod($filepath, 0664);
         return true;
       } else {
+        @rename($target_filepath, $filepath);
         return false;
       }
     } else {
@@ -781,21 +979,28 @@ function check_comicpress_config() {
           $tmp_filename = "test-" . md5(rand());
         } while (file_exists($path . '/' . $tmp_filename));
 
-        if (!@touch($path . '/' . $tmp_filename)) {
-          $message = "The ${name} <strong>" . $cpm_config->properties[$property] . "</strong> is not writable by the Webserver process.";
-          if ($is_fatal) {
-            $cpm_config->errors[] = $message;
-          } else {
-            $cpm_config->warnings[] = $message;
-          }
+        $ok_to_warn = true;
+        if ($thumb_type != "") {
+          $ok_to_warn = $cpm_config->properties[$thumb_type . "_generate_thumbnails"];
+        }
 
-          if ($thumb_type != "") {
-            $cpm_config->thumbs_directory_writable[$thumb_type] = false;
-          }
-        } else {
-          @unlink($path . '/' . $tmp_filename);
-          if ($thumb_type != "") {
-            $cpm_config->thumbs_directory_writable[$thumb_type] = true;
+        if ($ok_to_warn) {
+          if (!@touch($path . '/' . $tmp_filename)) {
+            $message = "The ${name} <strong>" . $cpm_config->properties[$property] . "</strong> is not writable by the Webserver process.";
+            if ($is_fatal) {
+              $cpm_config->errors[] = $message;
+            } else {
+              $cpm_config->warnings[] = $message;
+            }
+
+            if ($thumb_type != "") {
+              $cpm_config->thumbs_directory_writable[$thumb_type] = false;
+            }
+          } else {
+            @unlink($path . '/' . $tmp_filename);
+            if ($thumb_type != "") {
+              $cpm_config->thumbs_directory_writable[$thumb_type] = true;
+            }
           }
         }
       }
@@ -894,7 +1099,10 @@ function cpm_write_thumbnail($input, $target_filename, $do_rebuild = false) {
   foreach ($cpm_config->separate_thumbs_directory_defined as $type => $value) {
     if ($value) {
       if ($cpm_config->thumbs_directory_writable[$type]) {
-        $write_targets[] = ABSPATH . $cpm_config->properties[$type . "_comic_folder"] . '/' . $target_filename;
+        $target = ABSPATH . $cpm_config->properties[$type . "_comic_folder"] . '/' . $target_filename;
+        if (!in_array($target, $write_targets)) {
+          $write_targets[] = $target;
+        }
       }
     }
   }
@@ -961,7 +1169,7 @@ function cpm_write_thumbnail($input, $target_filename, $do_rebuild = false) {
 /**
  * Handle uploading a file.
  */
-function handle_file_upload($key, $path) {
+function handle_file_upload($key, $path, $only_one_upload = false) {
   global $cpm_config;
 
   if (is_uploaded_file($_FILES[$key]['tmp_name'])) {
@@ -1044,12 +1252,28 @@ function handle_file_upload($key, $path) {
           $cpm_config->messages[] = "The following files would have created duplicate posts: " . implode(", ", $duplicate_posts);
         }
       } else {
-        if (($result = breakdown_comic_filename($_FILES[$key]['name'])) !== false) {
+        $target_filename = $_FILES[$key]['name'];
+        $result = breakdown_comic_filename($target_filename);
+
+        if ($result == false) { // bad file, can we get a date attached?
+          if ($only_one_upload) {
+            $date = strtotime($_POST['override-date']);
+            if (($date !== false) && ($date !== -1)) {
+              $target_filename = date("Y-m-d", $date) . '-' . $target_filename;
+              $cpm_config->messages[] = "Uploaded file " . $_FILES[$key]['name'] . " renamed to " . $target_filename;
+              $result = breakdown_comic_filename($target_filename);
+            } else {
+              $cpm_config->warnings[] = "Provided override date " . $_POST['override-date'] . " is not parseable by strtotime()";
+            }
+          }
+        }
+
+        if ($result !== false) {
           extract($result, EXTR_PREFIX_ALL, "filename");
-          move_uploaded_file($_FILES[$key]['tmp_name'], $cpm_config->path . '/' . $_FILES[$key]['name']);
+          move_uploaded_file($_FILES[$key]['tmp_name'], $cpm_config->path . '/' . $target_filename);
 
           if (!isset($_POST['no-thumbnails'])) {
-            $wrote_thumbnail = cpm_write_thumbnail($cpm_config->path . '/' . $_FILES[$key]['name'], $_FILES[$key]['name']);
+            $wrote_thumbnail = cpm_write_thumbnail($cpm_config->path . '/' . $target_filename, $target_filename);
           }
 
           if (isset($_POST['new_post'])) {
@@ -1064,22 +1288,22 @@ function handle_file_upload($key, $path) {
               if ($ok_to_create_post) {
                 if (!is_null($post_id = wp_insert_post($post_hash))) {
                   $post_info = get_post($post_id, ARRAY_A);
-                  $cpm_config->messages[] = "Post created for " . $_FILES[$key]['name'] . ". " . generate_view_edit_post_links($post_info);
+                  $cpm_config->messages[] = "Post created for " . $target_filename . ". " . generate_view_edit_post_links($post_info);
                 }
               } else {
                 $post_info = get_post($post_id, ARRAY_A);
 
-                $cpm_config->messages[] = "File " . $_FILES[$key]['name'] . " uploaded, but a post for this comic already exists. " . generate_view_edit_post_links($post_info);
+                $cpm_config->messages[] = "File " . $target_filename . " uploaded, but a post for this comic already exists. " . generate_view_edit_post_links($post_info);
               }
             } else {
-              $cpm_config->warnings[] = "There was an error in the post time for filename <strong>" . $_FILES[$key]['name'] . " - " .  $_POST['time'] . "</strong>";
+              $cpm_config->warnings[] = "There was an error in the post time for filename <strong>" . $target_filename . " - " .  $_POST['time'] . "</strong>";
             }
           } else {
-            $cpm_config->messages[] = "Comic " . $_FILES[$key]['name'] . " uploaded.";
+            $cpm_config->messages[] = "Comic " . $target_filename . " uploaded.";
           }
           
           if ($wrote_thumbnail) {
-            $cpm_config->messages[] = "Wrote thumbnail for " . $_FILES[$key]['name'] . ".";
+            $cpm_config->messages[] = "Wrote thumbnail for " . $target_filename . ".";
           }
         } else {
           $cpm_config->warnings[] = "There was an error in the filename <strong>" . $_FILES[$key]['name'] . "</strong>";
@@ -1300,6 +1524,8 @@ div#editor-toolbar a {
   padding: 5px;
   display: block;
   float: right;
+  cursor: pointer;
+  cursor: hand;
 }
 
 div#editor-toolbar a.active {
@@ -1324,7 +1550,7 @@ form#config-editor input.update-config {
 }
 
 form span.form-title {
-  width: 210px;
+  width: 280px;
   display: block;
   position: absolute;
   height: 30px;
@@ -1334,7 +1560,7 @@ form span.form-title {
 form span.form-field {
   width: 200px;
   display: block;
-  margin-left: 220px;
+  margin-left: 290px;
   height: 30px;
 }
 
@@ -1461,9 +1687,16 @@ function cpm_handle_actions() {
     switch (strtolower($_POST['action'])) {
       // upload a single comic file
       case "multiple-upload-file":
+        $upload_count = 0;
         foreach ($_FILES as $name => $info) {
           if (strpos($name, "upload-") !== false) {
-            handle_file_upload($name, $cpm_config->path);
+            if (is_uploaded_file($_FILES[$name]['tmp_name'])) { $upload_count++; }
+          }
+        }
+
+        foreach ($_FILES as $name => $info) {
+          if (strpos($name, "upload-") !== false) {
+            handle_file_upload($name, $cpm_config->path, $upload_count == 1);
           }
         }
         break;
@@ -1471,7 +1704,6 @@ function cpm_handle_actions() {
       case "count-missing-posts":
         // TODO: handle different comic categories differently, this is still too geared
         // toward one blog/one comic...
-        // TODO: handle DST issues!
         $all_post_dates = array();
 
         foreach (get_posts($get_posts_string) as $comic_post) {
@@ -1602,10 +1834,171 @@ function cpm_handle_actions() {
         foreach ($_POST['comics'] as $comic) {
           $comic_file = pathinfo($comic, PATHINFO_BASENAME);
 
-          if (cpm_write_thumbnail($cpm_config->path . '/' . $comic_file, $comic_file)) {
+          if (cpm_write_thumbnail($cpm_config->path . '/' . $comic_file, $comic_file, true)) {
             $cpm_config->messages[] = "Wrote thumbnail for " . $comic_file . ".";
           }
         }
+        break;
+      case "change-dates":
+        $comic_posts_to_date_shift = array();
+        $comic_files_to_date_shift = array();
+        $comic_post_target_date_counts = array();
+
+        foreach ($cpm_config->comic_files as $comic_file) {
+          $comic_filename = pathinfo($comic_file, PATHINFO_BASENAME);
+          $filename_info = breakdown_comic_filename($comic_filename);
+          $key = md5($comic_file);
+
+          if (isset($_POST['dates'][$key])) {
+            if ($_POST['dates'][$key] != $filename_info['date']) {
+              $timestamp = strtotime($_POST['dates'][$key]);
+              if (($timestamp !== false) && ($timestamp !== -1)) {
+                // bad!
+                $new_comic_filename = date('Y-m-d', $timestamp) . substr($comic_filename, 10);
+
+                $target_date = date('Y-m-d', $timestamp);
+                $comic_posts_to_date_shift[$filename_info['date']] = $target_date;
+                if (!isset($comic_post_target_date_counts[$target_date])) {
+                  $comic_post_target_date_counts[$target_date] = 0;
+                }
+                $comic_post_target_date_counts[$target_date]++;
+
+                if (!isset($comic_files_to_date_shift[$target_date])) {
+                  $comic_files_to_date_shift[$target_date] = array($comic_filename, $new_comic_filename);
+                }
+              }
+            }
+          }
+        }
+
+        $comic_posts_to_change = array();
+
+        $all_posts = get_posts($get_posts_string);
+
+        if (count($comic_posts_to_date_shift) > 0) {
+          foreach ($all_posts as $comic_post) {
+            $post_date_day = substr($comic_post->post_date, 0, 10);
+            if (isset($comic_posts_to_date_shift[$post_date_day])) {
+              if ($comic_post_target_date_counts[$comic_posts_to_date_shift[$post_date_day]] == 1) {
+                $new_post_date = $comic_posts_to_date_shift[$post_date_day] . substr($comic_post->post_date, 10);
+                $comic_posts_to_change[$comic_post->ID] = array($comic_post, $new_post_date);
+              }
+            }
+          }
+        }
+
+        $final_post_day_counts = array();
+
+        foreach ($all_posts as $comic_post) {
+          if (isset($comic_posts_to_change[$comic_post->ID])) {
+            $date_to_use = $comic_posts_to_change[$comic_post->ID][1];
+          } else {
+            $date_to_use = $comic_post->post_date;
+          }
+
+          $day_to_use = substr($date_to_use, 0, 10);
+          if (!isset($final_post_day_counts[$day_to_use])) {
+            $final_post_day_counts[$day_to_use] = 0;
+          }
+          $final_post_day_counts[$day_to_use]++;
+        }
+
+        $posts_moved = array();
+
+        foreach ($comic_posts_to_change as $id => $info) {
+          list($comic_post, $new_post_date) = $info;
+          $new_post_day = substr($new_post_date, 0, 10);
+          if ($final_post_day_counts[$new_post_day] == 1) {
+            $old_post_date = $comic_post->post_date;
+            $comic_post->post_date = $new_post_date;
+            wp_update_post($comic_post);
+            $cpm_config->messages[] = "Post ${id} moved to ${new_post_day}.";
+            $posts_moved[$new_post_day] = array($comic_post, $old_post_date);
+          } else {
+            $cpm_config->warnings[] = "Moving post ${id} to ${new_post_day} would cause two comic posts to exist on the same day.  This is not allowed in the automated process.";
+          }
+        }
+
+        foreach ($comic_post_target_date_counts as $target_date => $count) {
+          if (!isset($final_post_day_counts[$target_date]) || ($final_post_day_counts[$target_date] == 1)) {
+            if ($count > 1) {
+              $cpm_config->warnings[] = "You are moving two comics to the same date: ${target_date}.  This is not allowed in the automated process.";
+            } else {
+              list($comic_filename, $new_comic_filename) = $comic_files_to_date_shift[$target_date];
+
+              $roll_back_change = false;
+
+              foreach (array(
+                array('comic folder', 'comic_folder', ""),
+                array('RSS feed folder', 'rss_comic_folder', "rss"),
+                array('archive folder', 'archive_comic_folder', "archive")) as $folder_info) {
+                  list ($name, $property, $type) = $folder_info;
+
+                  $do_move = true;
+                  if ($type != "") {
+                    if ($cpm_config->separate_thumbs_directory_defined[$type]) {
+                      if ($cpm_config->thumbs_directory_writable[$type]) {
+                        $do_move = ($cpm_config->properties[$type . "_generate_thumbnails"]);
+                      }
+                    }
+                  }
+
+                  if ($do_move) {
+                    $path = ABSPATH . '/' . $cpm_config->properties[$property];
+                    if (!file_exists($path)) {
+                      $cpm_config->errors[] = "The ${name} <strong>" . $cpm_config->properties[$property] . "</strong> does not exist.";
+                      $roll_back_change = true;
+                    } else {
+                      if (file_exists($path . '/' . $comic_filename)) {
+                        if (@rename($path . '/' . $comic_filename, $path . '/' . $new_comic_filename)) {
+                          $cpm_config->messages[] = "Rename ${name} file ${comic_filename} to ${new_comic_filename}.";
+                        } else {
+                          $cpm_config->warnings[] = "The renaming of ${comic_filename} to ${new_comic_filename} failed.  Check the permissions on " . $path;
+                          $roll_back_change = true;
+                        }
+                      }
+                    }
+                  }
+              }
+
+              if ($roll_back_change) {
+                foreach (array(
+                  array('comic folder', 'comic_folder',""),
+                  array('RSS feed folder', 'rss_comic_folder',"rss"),
+                  array('archive folder', 'archive_comic_folder',"archive")) as $folder_info) {
+                    list ($name, $property) = $folder_info;
+
+                    $do_move = true;
+                    if ($type != "") {
+                      if ($cpm_config->separate_thumbs_directory_defined[$type]) {
+                        if ($cpm_config->thumbs_directory_writable[$type]) {
+                          $do_move = ($cpm_config->properties[$type . "_generate_thumbnails"]);
+                        }
+                      }
+                    }
+
+                    if ($do_move) {
+                      $path = ABSPATH . '/' . $cpm_config->properties[$property];
+                      if (file_exists($path . '/' . $new_comic_filename)) {
+                        @rename($path . '/' . $new_comic_filename, $path . '/' . $comic_filename);
+                        $cpm_config->messages[] = "Rolling back ${new_comic_filename}.";
+                      }
+                    }
+                }
+
+                if (isset($posts_moved[$target_date])) {
+                  list($comic_post, $old_post_date) = $posts_moved[$target_date];
+                  $comic_post->post_date = $old_post_date;
+                  wp_update_post($comic_post);
+                  $cpm_config->messages[] = "Rename error, rolling back post " . $comic_post->ID . " to ${old_post_date}";
+                }
+              }
+            }
+          }
+        }
+
+        $cpm_config->comic_files = glob($cpm_config->path . "/*");
+
         break;
     }
   }
@@ -1732,7 +2125,7 @@ function cpm_manager_edit_config() {
  */
 function cpm_show_footer() { ?>
   <div id="cpm-footer">
-    <a href="http://claritycomic.com/comicpress-manager/" target="_new">ComicPress Manager</a> is built for the <a href="http://www.mindfaucet.com/comicpress/" target="_new">ComicPress</a> theme | Copyright 2008 <a href="mailto:jcoswell@coswellproductions.org?Subject=ComicPress Manager Comments">John Bintz</a> | Released under the GNU GPL | Version 0.6.2
+    <a href="http://claritycomic.com/comicpress-manager/" target="_new">ComicPress Manager</a> is built for the <a href="http://www.mindfaucet.com/comicpress/" target="_new">ComicPress</a> theme | Copyright 2008 <a href="mailto:jcoswell@coswellproductions.org?Subject=ComicPress Manager Comments">John Bintz</a> | Released under the GNU GPL | Version 0.7.0
   </div>
 <?php }
 

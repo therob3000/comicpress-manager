@@ -3,7 +3,7 @@ Contributors: johncoswell
 Tags: comicpress, webcomics, management, admin, posts, plugin
 Requires at least: 2.5.1
 Tested up to: 2.5.1
-Stable tag: 0.6.2
+Stable tag: 0.7.0
 Donate link: http://claritycomic.com/comicpress-manager/#donate
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.
@@ -12,11 +12,12 @@ ComicPress Manager ties in with the ComicPress theme to make managing your WordP
 
 The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://www.mindfaucet.com/comicpress/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress. It exists because I'm both lazy and busy. :)
 
-As of version 0.6.1, it allows you to:
+As of version 0.7.0, it allows you to:
 
 * Upload individual comic files or a Zip archive of comic files directly into your comics folder and generate posts for each comic as it's uploaded with the correct go-live date and time
   * To save a trip to the Edit Post page, you can use the Visual Editor right in ComicPress Manager to add styled text content to your post.
   * Using this method ensures that the post has the correct date and time as it's being created, reducing mistakes in posting.
+  * You can also upload a single file that does not specify a date in the filename, and enter in the post date on the upload page.
 * Generate thumbnails for all uploaded comics for your archive and rss folders
 * Re-generate thumbnails after you've changed thumbnail parameters
 * Get a quick status & sanity check on your installation
@@ -33,6 +34,8 @@ As of version 0.6.1, it allows you to:
   * If you're migrating from another Webcomic hosting solution, or if you prefer to directly transfer your comics into your comics folder, then you can generate posts for all comics that don't already have posts.
 * Delete a comic file and the associated comic post
   * If you need to remove a comic, take care of both the file and the post at the same time to save yourself some time. ComicPress Manager plays it safe during this operation, and will not delete a comic if more than one post appears in your comic category for that day (which shouldn't happen anyway with the current version of ComicPress).
+* Change the post dates and comic filenames for any comic you've uploaded
+  * You can use this advanced feature to shift a large number of comics forward or backwards in time.
 * Modify your comicpress-config.php
   * If you're using a comicpress-config.php file, and the permissions are set correctly, you can modify the settings directly from ComicPress manager.
 
@@ -99,4 +102,4 @@ ComicPress Manager is released under the GNU GPL version 2.0 or later.
 
 == Credits ==
 
-Big thanks to Tyler Martin for his assistance, bug finding, and with coming up with ComicPress in the first place.  Also thanks to Danny Burleson for beta testing, and the folks at the Lunchbox Funnies forum for finding bugs in the initial release.
+Big thanks to Tyler Martin for his assistance, bug finding, and with coming up with ComicPress in the first place.  Also thanks to Danny Burleson for beta testing, and the folks at the Lunchbox Funnies forum for finding bugs in the initial releases.
