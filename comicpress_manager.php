@@ -3,7 +3,7 @@
 Plugin Name: ComicPress Manager
 Plugin URI: http://claritycomic.com/comicpress-manager/
 Description: Manage the comics within a <a href="http://www.mindfaucet.com/comicpress/">ComicPress</a> theme installation.
-Version: 0.7.0
+Version: 0.7.1
 Author: John Bintz
 Author URI: http://www.coswellproductions.org/wordpress/
 
@@ -238,7 +238,7 @@ function cpm_manager_index() {
           Files</h2>
           <h3>&mdash; any existing files with the same name will be overwritten</h3>
 
-          <form action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post" enctype="multipart/form-data">
+          <form onsubmit="$('submit').disabled=true" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post" enctype="multipart/form-data">
             <input type="hidden" name="action" value="multiple-upload-file" />
             <div id="multiple-file-upload">
             </div>
@@ -256,7 +256,7 @@ function cpm_manager_index() {
               <span class="form-title">Use this date if missing from filename:</span>
               <span class="form-field"><input type="text" name="override-date" /></span>
             </div>
-            <br /><input type="submit" onclick="this.disabled=true" value="Upload Image <?php if (extension_loaded('zip')) { echo "&amp; Zip"; } ?> Files" style="width: 520px" />
+            <br /><input id="submit" type="submit" value="Upload Image <?php if (extension_loaded('zip')) { echo "&amp; Zip"; } ?> Files" style="width: 520px" />
           </form>
         </div>
       </div>
@@ -303,7 +303,7 @@ function cpm_manager_delete() {
           <h2 style="padding-right:0;">Delete A Comic File &amp; Post (if found)</h2>
 
           <?php if (count($cpm_config->comic_files) > 0) { ?>
-            <form action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post" onsubmit="return confirm('Are you sure?')">
+            <form onsubmit="$('submit').disabled=true" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post" onsubmit="return confirm('Are you sure?')">
               <input type="hidden" name="action" value="delete-comic-and-post" />
 
               Comic to delete:<br />
@@ -314,7 +314,7 @@ function cpm_manager_delete() {
                 </select><br />
               <div id="image-preview" style="text-align: center"></div>
               <p><strong>NOTE:</strong> If more than one possible post is found, neither the posts nor the comic file will be deleted.  ComicPress Manager cannot safely resolve such a conflict.</p>
-              <input type="submit" onclick="this.disabled=true" value="Delete comic and post" style="width: 520px" />
+              <input type="submit" id="submit" value="Delete comic and post" style="width: 520px" />
             </form>
           <?php } else { ?>
             <p>You haven't uploaded any comics yet.</p>
@@ -381,7 +381,7 @@ function cpm_manager_thumbnails() {
 
             if ($ok_to_generate_thumbs) {
               if (count($cpm_config->comic_files) > 0) { ?>
-                <form action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
+                <form onsubmit="$('submit').disabled=true" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
                   <input type="hidden" name="action" value="generate-thumbnails" />
 
                   Thumbnails to regenerate (<em>to select multiple comics, [Ctrl]-click on Windows &amp; Linux, [Command]-click on Mac OS X</em>):<br />
@@ -390,7 +390,7 @@ function cpm_manager_thumbnails() {
                         <option value="<?php echo substr($file, strlen($_SERVER['DOCUMENT_ROOT'])) ?>"><?php echo pathinfo($file, PATHINFO_BASENAME) ?></option>
                       <?php } ?>
                     </select>
-                  <input type="submit" onclick="this.disabled=true" value="Generate Thumbnails for Selected Comics" style="width: 520px" />
+                  <input type="submit" id="submit" value="Generate Thumbnails for Selected Comics" style="width: 520px" />
                 </form>
               <?php } else { ?>
                 <p>You haven't uploaded any comics yet.</p>
@@ -547,7 +547,7 @@ function reschedule_posts(start) {
 }
             </script>
 
-            <form action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
+            <form onsubmit="$('submit').disabled=true" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post">
               <input type="hidden" name="action" value="change-dates" />
               <input type="hidden" name="start-date" value="<?= $start_date ?>" />
               <input type="hidden" name="end-date" value="<?= $end_date ?>" />
@@ -564,7 +564,7 @@ function reschedule_posts(start) {
                   </span>
                 </div>
               <?php } ?>
-              <input type="submit" onclick="this.disabled=true" value="Change Dates" style="width: 520px" />
+              <input type="submit" id="submit" value="Change Dates" style="width: 520px" />
             </form>
           <?php } else { ?>
             <p>You haven't uploaded any comics yet.</p>
@@ -622,12 +622,12 @@ function cpm_manager_import() {
           <a href="#" onclick="return false" id="count-missing-posts-clicker">Count the number of missing posts</a> (may take a while): <span id="missing-posts-display"></span>
 
           <div id="create-missing-posts-holder">
-            <form action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post" style="margin-top: 10px">
+            <form onsubmit="$('submit').disabled=true" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="post" style="margin-top: 10px">
               <input type="hidden" name="action" value="create-missing-posts" />
 
               <?php cpm_post_editor() ?>
 
-              <input type="submit" onclick="this.disabled=true" value="Create posts" style="width: 520px" />
+              <input type="submit" id="submit" value="Create posts" style="width: 520px" />
             </form>
           </div>
         </div>
