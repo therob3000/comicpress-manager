@@ -3,7 +3,7 @@ Contributors: johncoswell
 Tags: comicpress, webcomics, management, admin, posts, plugin
 Requires at least: 2.5.1
 Tested up to: 2.5.1
-Stable tag: 0.7.1.0
+Stable tag: 0.7.2.1
 Donate link: http://claritycomic.com/comicpress-manager/#donate
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.
@@ -12,7 +12,7 @@ ComicPress Manager ties in with the ComicPress theme to make managing your WordP
 
 The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://www.mindfaucet.com/comicpress/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress. It exists because I'm both lazy and busy. :)
 
-As of version 0.7.1, it allows you to:
+As of version 0.7.2.1, it allows you to:
 
 * Upload individual comic files or a Zip archive of comic files directly into your comics folder and generate posts for each comic as it's uploaded with the correct go-live date and time
   * To save a trip to the Edit Post page, you can use the Visual Editor right in ComicPress Manager to add styled text content to your post.
@@ -95,6 +95,10 @@ If you are importing a large number of files, especially if you're generating th
 * Import your comic in chunks by uploading Zip files of comics or buy uploading only a few at a time to the comics directory
 * Add a [<code>set_time_limit</code>](http://us3.php.net/set_time_limit) command to the top of the plugin
 * Ask your Webost to increase the <code>max_execution_time</code> for your site
+
+= I'm having another problem =
+
+Post a detailed description of the problem on the [Lunchbox Funnies ComicPress Support Forum](http://www.lunchboxfunnies.com/forum/viewforum.php?f=7).  If asked, provide the info given when you click the Show Debug Info link on the left-hand side.
 
 == License ==
 
