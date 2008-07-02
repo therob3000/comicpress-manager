@@ -3,7 +3,7 @@ Contributors: johncoswell
 Tags: comicpress, webcomics, management, admin, posts, plugin
 Requires at least: 2.5.1
 Tested up to: 2.5.1
-Stable tag: 0.8
+Stable tag: 0.9
 Donate link: http://claritycomic.com/comicpress-manager/#donate
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.
@@ -12,12 +12,13 @@ ComicPress Manager ties in with the ComicPress theme to make managing your WordP
 
 The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://www.mindfaucet.com/comicpress/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress.
 
-As of version 0.8, it allows you to:
+As of version 0.9, it allows you to:
 
 * Upload individual comic files or a Zip archive of comic files directly into your comics folder and generate posts for each comic as it's uploaded with the correct go-live date and time
   * To save a trip to the Edit Post page, you can use the Visual Editor right in ComicPress Manager to add styled text content to your post.
   * Using this method ensures that the post has the correct date and time as it's being created, reducing mistakes in posting.
   * You can also upload a single file that does not specify a date in the filename, and enter in the post date on the upload page.
+  * You can also replace a single existing file with any other file, preserving the original file's name after upload
 * Upload thumbnails directly to the archive and RSS folders
 * Generate thumbnails for all uploaded comics for your archive and RSS folders
 * Re-generate thumbnails after you've changed thumbnail parameters
@@ -25,10 +26,12 @@ As of version 0.8, it allows you to:
   * ComicPress Manager will check to see if:
     * Your comics, archive, and RSS folders exist
     * Your comics, archive, and RSS folders are writable by the Webserver (if you're generating thumbnails)
+    * You have enough categories defined to use ComicPress
     * You have defined a valid blog category (and comic category for ComicPress 2.5)
     * You're using a ComicPress-derived theme
       * NOTE: This check is done by examining the name of the theme as defined in style.css. If you want this non-fatal check to succeed, leave the term "ComicPress" in the theme title.
     * You have comics in your comics folder (if there aren't any, it could be a sign of other problems)
+  * You can also disable these checks once you know your configuration is correct, to improve performance
 * Preview the comic that will go live with your comic post
   * Save a trip to your blog and see what comic will be going live with your post straight from the Write Post screen. You are also informed if thumbnails exist for this comic.
 * Create any missing posts for comics that have been uploaded to your comics folder
@@ -46,7 +49,9 @@ Before you begin working with ComicPress Manager, and especially while the softw
 
 == Installation ==
 
-Copy the comicpress_manager.php file to your wp-content/plugins/ directory and activate it.  ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.
+(These instructions have changed since 0.8, so be careful!  If you're upgrading, remove your original standalone comicpress-config.php file before proceeding.)
+
+Copy the comicpress_manager directory to your wp-content/plugins/ directory and activate the plugin.  ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.
 
 == Frequently Asked Questions ==
 
@@ -55,6 +60,15 @@ Copy the comicpress_manager.php file to your wp-content/plugins/ directory and a
 Check the permissions on the theme directory and on the comicpress-config.php file itself.  Both of these need to be writable by the user that the Webserver runs as.  For more information on this, contact your Webhost.
 
 Alternatively, if you can't automatically write to the comicpress-config.php file, the config that would have been written will be shown on-screen.  Copy and paste this into your comicpress-config.php file.
+
+= I edited my config, and now I'm getting errors =
+
+Check your theme folder for the following
+
+* A missing comicpress-config.php file
+* A file (or files) named comicpress-config.php.{long string of numbers}
+
+If this has happened, you won't be able to edit your config through ComicPress Manager.  Try experimenting with different permissions settings on your theme folder to improve the situation, or edit your configuration by hand.
 
 = I can't upload a large image file or a large Zip file =
 
@@ -95,9 +109,23 @@ Change the <code>'thumbnail_quality'</code> to a value between 0 (ugly & small f
 If you are importing a large number of files, especially if you're generating thumbnails, the amount of time it would take to process the comics can exceed the time allotted by your Webhost for a script to run.  In this case, you can do the following:
 
 * Don't generate thumbnails during import, and instead generate them later.
-* Import your comic in chunks by uploading Zip files of comics or buy uploading only a few at a time to the comics directory.
+* Import your comic in chunks by uploading Zip files of comics or by uploading only a few at a time to the comics directory.
 * Add a [<code>set_time_limit</code>](http://us3.php.net/set_time_limit) command to the top of the plugin.
 * Ask your Webhost to increase the <code>max_execution_time</code> for your site.
+
+= I know what I'm doing.  How do I disable the sanity checks to improve performance? =
+
+Find this line:
+
+<pre>define("CPM_SKIP_CHECKS", false);</pre>
+
+and set it to true;
+
+<pre>define("CPM_SKIP_CHECKS", true);</pre>
+
+= I want to translate your plugin into my language. =
+
+Feel free to contact me, or better yet, send a translation in.  The POT file is in the plugin directory.  I'm still new to this, so if I'm doing something wrong in the code, please tell me.  :)
 
 = I'm having another problem =
 
@@ -107,6 +135,10 @@ Post a detailed description of the problem on the [Lunchbox Funnies ComicPress S
 
 ComicPress Manager is released under the GNU GPL version 2.0 or later.
 
+The Dynarch DHTML Calendar Widget is released under the GNU LGPL.
+
 == Credits ==
 
-Big thanks to Tyler Martin for his assistance, bug finding, and with coming up with ComicPress in the first place.  Also thanks to Danny Burleson, tk0169, and Keith C. Smith for beta testing, and the folks at the Lunchbox Funnies forum for finding bugs in the initial releases.
+Big thanks to Tyler Martin for his assistance, bug finding, and with coming up with ComicPress in the first place.  Also thanks to Danny Burleson, tk0169, Tim Hengeveld, and Keith C. Smith for beta testing, and the folks at the Lunchbox Funnies forum for finding bugs in the initial releases.
+
+ComicPress Manager uses the [Dynarch DHTML Calendar Widget](http://www.dynarch.com/projects/calendar/) for date fields.
