@@ -49,7 +49,7 @@ Before you begin working with ComicPress Manager, and especially while the softw
 
 == Installation ==
 
-(These instructions have changed since 0.8, so be careful!  If you're upgrading, remove your original standalone comicpress-config.php file before proceeding.)
+(These instructions have changed since 0.8, so be careful!  If you're upgrading, remove your original standalone comicpress_manager.php file before proceeding.)
 
 Copy the comicpress_manager directory to your wp-content/plugins/ directory and activate the plugin.  ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.
 
