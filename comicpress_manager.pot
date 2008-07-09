@@ -1,0 +1,1010 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR John Bintz
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/comicpress_manager\n"
+"POT-Creation-Date: 2008-07-08 20:59-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: comicpress_manager.php:142
+msgid ""
+"Remember, you need at least two categories defined in order to use "
+"ComicPress."
+msgstr ""
+
+#: comicpress_manager.php:160
+msgid "ComicPress Manager"
+msgstr ""
+
+#: comicpress_manager.php:162
+msgid "ComicPress"
+msgstr ""
+
+#: comicpress_manager.php:163
+msgid "Upload"
+msgstr ""
+
+#: comicpress_manager.php:164
+msgid "Import"
+msgstr ""
+
+#: comicpress_manager.php:165 comicpress_manager.php:459
+msgid "Generate Thumbnails"
+msgstr ""
+
+#: comicpress_manager.php:166 comicpress_manager.php:666
+msgid "Change Dates"
+msgstr ""
+
+#: comicpress_manager.php:167
+msgid "Delete"
+msgstr ""
+
+#: comicpress_manager.php:168
+msgid "Config"
+msgstr ""
+
+#: comicpress_manager.php:181
+msgid "Category:"
+msgstr ""
+
+#: comicpress_manager.php:184
+msgid "Time to post:"
+msgstr ""
+
+#: comicpress_manager.php:187
+msgid "Publish post:"
+msgstr ""
+
+#: comicpress_manager.php:190
+msgid "Don't check for duplicate posts:"
+msgstr ""
+
+#: comicpress_manager.php:211
+msgid "Don't generate thumbnails:"
+msgstr ""
+
+#: comicpress_manager.php:215
+msgid "You won't be generating any thumbnails"
+msgstr ""
+
+#: comicpress_manager.php:221
+msgid "Specify a title for all posts:"
+msgstr ""
+
+#: comicpress_manager.php:225
+msgid "Title to use:"
+msgstr ""
+
+#: comicpress_manager.php:229
+msgid "Tags:"
+msgstr ""
+
+#: comicpress_manager.php:253
+msgid "Help!"
+msgstr ""
+
+#: comicpress_manager.php:285
+msgid "ComicPress Manager manages your comics and your time."
+msgstr ""
+
+#: comicpress_manager.php:287
+msgid ""
+"It makes uploading new comics, importing comics from a non-ComicPress setup, "
+"and batch uploading a lot of comics at once, very fast and configurable."
+msgstr ""
+
+#: comicpress_manager.php:292
+msgid "ComicPress Manager also manages yours and your Website's sanity."
+msgstr ""
+
+#: comicpress_manager.php:295
+#, php-format
+msgid ""
+"It can check for misconfigured ComicPress setups, for incorrectly-named "
+"files (remember, it's <em>%s-single-comic-title.ext</em>) and for when you "
+"might be duplicating a post. You will also be shown which comic will appear "
+"with which blog post in the Post editor."
+msgstr ""
+
+#: comicpress_manager.php:299
+#, php-format
+msgid ""
+"<strong>Single comic titles</strong> are generated from the incoming "
+"filename.  If you've named your file <strong>%s-my-new-years-day.jpg</"
+"strong> and create a new post for the file, the post title will be "
+"<strong>My New Years Day</strong>.  This default should handle the majority "
+"of cases.  If a comic file does not have a title, the date in <strong>MM/DD/"
+"YYYY</strong> format will be used."
+msgstr ""
+
+#: comicpress_manager.php:303
+msgid ""
+"<strong>Upload image files</strong> lets you upload multiple comics at a "
+"time, and add a default post body for each comic."
+msgstr ""
+
+#: comicpress_manager.php:305
+msgid ""
+"You can <strong>upload a Zip file and create new posts</strong> from the "
+"files contained within the Zip file."
+msgstr ""
+
+#: comicpress_manager.php:307
+msgid ""
+"<strong>You can't upload a Zip file</strong> because you do not have the PHP "
+"<strong>zip</strong> extension installed."
+msgstr ""
+
+#: comicpress_manager.php:312
+msgid ""
+"Has ComicPress Manager saved you time and sanity?  <strong>Donate a few "
+"bucks to show your appreciation!</strong>"
+msgstr ""
+
+#: comicpress_manager.php:329 comicpress_manager.php:388
+msgid "Upload Image &amp; Zip Files"
+msgstr ""
+
+#: comicpress_manager.php:331 comicpress_manager.php:390
+msgid "Upload Image Files"
+msgstr ""
+
+#: comicpress_manager.php:334
+msgid "any existing files with the same name will be overwritten"
+msgstr ""
+
+#: comicpress_manager.php:341
+msgid "Add file to upload"
+msgstr ""
+
+#: comicpress_manager.php:345
+msgid "Destination for uploaded files:"
+msgstr ""
+
+#: comicpress_manager.php:347
+msgid "Comics folder"
+msgstr ""
+
+#: comicpress_manager.php:348
+msgid "Archive folder"
+msgstr ""
+
+#: comicpress_manager.php:349 comicpress_manager.php:2200
+#: comicpress_manager.php:2236
+msgid "RSS feed folder"
+msgstr ""
+
+#: comicpress_manager.php:356
+msgid "(<em>for single file uploads only</em>) Overwrite an existing file:"
+msgstr ""
+
+#: comicpress_manager.php:372
+msgid "Generate new posts for each uploaded file:"
+msgstr ""
+
+#: comicpress_manager.php:379
+msgid ""
+"(<em>for single file uploads only, can accept any date format parseable by "
+"<a href=\"http://us.php.net/strtotime\" target=\"php\">strtotime()</a></em>)"
+msgstr ""
+
+#: comicpress_manager.php:381
+msgid "Use this date if missing from filename:"
+msgstr ""
+
+#: comicpress_manager.php:415
+msgid ""
+"<p><strong>Delete a comic file and the associated post, if found</strong> "
+"lets you delete a comic file and the post that goes with it.  Any thumbnails "
+"associated with the comic file will also be deleted.</p>"
+msgstr ""
+
+#: comicpress_manager.php:419
+msgid "Delete A Comic File &amp; Post (if found)"
+msgstr ""
+
+#: comicpress_manager.php:422
+msgid "Are you sure?"
+msgstr ""
+
+#: comicpress_manager.php:425
+msgid "Comic to delete:"
+msgstr ""
+
+#: comicpress_manager.php:433
+msgid ""
+"<strong>NOTE:</strong> If more than one possible post is found, neither the "
+"posts nor the comic file will be deleted.  ComicPress Manager cannot safely "
+"resolve such a conflict."
+msgstr ""
+
+#: comicpress_manager.php:435
+msgid "Delete comic and post"
+msgstr ""
+
+#: comicpress_manager.php:438 comicpress_manager.php:493
+#: comicpress_manager.php:669
+msgid "You haven't uploaded any comics yet."
+msgstr ""
+
+#: comicpress_manager.php:455
+msgid ""
+"<p><strong>Generate thumbnails</strong> lets you regenerate thumbnails for "
+"comic files.  This is useful if an import is not functioning because it is "
+"taking too long, or if you've changed your size or quality settings for "
+"thumbnails.</p>"
+msgstr ""
+
+#: comicpress_manager.php:481
+#, php-format
+msgid "You'll be generating thumbnails that are %s pixels wide."
+msgstr ""
+
+#: comicpress_manager.php:483
+msgid ""
+"Thumbnails to regenerate (<em>to select multiple comics, [Ctrl]-click on "
+"Windows &amp; Linux, [Command]-click on Mac OS X</em>):"
+msgstr ""
+
+#: comicpress_manager.php:490
+msgid "Generate Thumbnails for Selected Comics"
+msgstr ""
+
+#: comicpress_manager.php:497
+msgid ""
+"<strong>You either aren't able or are unwilling to generate any thumbnails "
+"for your comics.</strong> This may be caused by a configuration error."
+msgstr ""
+
+#: comicpress_manager.php:559
+msgid ""
+"<p><strong>Change post &amp; comic dates</strong> lets you change the comic "
+"file names and post dates for any and every comic published. You will only "
+"be able to move a comic file and its associated post if there is no comic or "
+"post that exists on the destination date, as ComicPress Manager cannot "
+"automatically resolve such conflicts.</p>"
+msgstr ""
+
+#: comicpress_manager.php:561
+msgid ""
+"<p><strong>This is a potentialy dangerous and resource-intensive operation.</"
+"strong> Back up your database and comics/archive/RSS folders before "
+"performing large move operations.  Additionally, if you experience script "
+"timeouts while moving large numbers of posts, you may have to move posts & "
+"comic files by hand rather than through ComicPress Manager.</p>"
+msgstr ""
+
+#: comicpress_manager.php:567
+msgid "Change Post &amp; Comic Dates"
+msgstr ""
+
+#: comicpress_manager.php:568
+msgid ""
+"date changes will affect comics that are associated or not associated with "
+"posts"
+msgstr ""
+
+#: comicpress_manager.php:572
+#, php-format
+msgid "Show comics between %1$s and %2$s"
+msgstr ""
+
+#: comicpress_manager.php:576
+msgid "Filter"
+msgstr ""
+
+#: comicpress_manager.php:608
+msgid ""
+"How many days between posts?  Separate multiple intervals with commas (Ex: "
+"MWF is 2,2,3):"
+msgstr ""
+
+#: comicpress_manager.php:622
+msgid "is a valid interval"
+msgstr ""
+
+#: comicpress_manager.php:650
+#, php-format
+msgid "Reset date to %s"
+msgstr ""
+
+#: comicpress_manager.php:650
+msgid "Re-schedule posts from this date at a daily interval"
+msgstr ""
+
+#: comicpress_manager.php:688
+msgid ""
+"<strong>Create missing posts for uploaded comics</strong> is for when you "
+"upload a lot of comics to your comic folder and want to generate generic "
+"posts for all of the new comics, or for when you're migrating from another "
+"system to ComicPress."
+msgstr ""
+
+#: comicpress_manager.php:693
+msgid "Thumbnail Generation page"
+msgstr ""
+
+#: comicpress_manager.php:696
+#, php-format
+msgid ""
+"<strong>Generating thumbnails on an import is a slow process.</strong>  Some "
+"Webhosts will limit the amount of time a script can run.  If your import "
+"process is failing with thumbnail generation enabled, disable thumbnail "
+"generation, perform your import, and then visit the %s to complete the "
+"thumbnail generation process."
+msgstr ""
+
+#: comicpress_manager.php:703
+msgid "Create Missing Posts For Uploaded Comics"
+msgstr ""
+
+#: comicpress_manager.php:704
+msgid "acts as a batch import process"
+msgstr ""
+
+#: comicpress_manager.php:706
+msgid "Count the number of missing posts"
+msgstr ""
+
+#: comicpress_manager.php:706
+msgid "may take a while"
+msgstr ""
+
+#: comicpress_manager.php:714
+msgid "Create posts"
+msgstr ""
+
+#: comicpress_manager.php:733
+msgid "Edit ComicPress Config"
+msgstr ""
+
+#: comicpress_manager.php:736
+msgid ""
+"<strong>You won't be able to automatically update your configuration.</"
+"strong>\n"
+"      After submitting, you will be shown the code to paste into comicpress-"
+"config.php.\n"
+"      If you want to enable automatic updating, check the permissions of "
+"your\n"
+"      theme folder and comicpress-config.php file."
+msgstr ""
+
+#: comicpress_manager.php:760
+#, php-format
+msgid "Managing &#8216;%s&#8217;"
+msgstr ""
+
+#: comicpress_manager.php:762
+msgid "Managing ComicPress"
+msgstr ""
+
+#: comicpress_manager.php:815 comicpress_manager.php:849
+msgid "Comic For This Post"
+msgstr ""
+
+#: comicpress_manager.php:822
+#, php-format
+msgid "The comic that will be shown with this post is %s."
+msgstr ""
+
+#: comicpress_manager.php:823
+msgid "Mouse over the icon to the right to see a larger version of the image."
+msgstr ""
+
+#: comicpress_manager.php:824
+msgid "Replace this image with another"
+msgstr ""
+
+#: comicpress_manager.php:828
+msgid "The following thumbnails for this comic were also found:"
+msgstr ""
+
+#: comicpress_manager.php:852
+#, php-format
+msgid ""
+"The comic %1$s was found for this date, but this post is not in the "
+"ComicPress comics category.  Switch the category to <strong>%2$s</strong> to "
+"allow this post to appear as a comic post."
+msgstr ""
+
+#: comicpress_manager.php:1112
+msgid "View post"
+msgstr ""
+
+#: comicpress_manager.php:1113
+msgid "Edit post"
+msgstr ""
+
+#: comicpress_manager.php:1268
+#, php-format
+msgid ""
+"<strong>The file you uploaded was too large.</strong>  The max allowed "
+"filesize for uploads to your server is %s."
+msgstr ""
+
+#: comicpress_manager.php:1271
+#, php-format
+msgid ""
+"<strong>There was an error in uploading.</strong>  The <a href='http://php."
+"net/manual/en/features.file-upload.errors.php'>PHP upload error code</a> was "
+"%s."
+msgstr ""
+
+#: comicpress_manager.php:1313
+#, php-format
+msgid "The Zip extension is not installed. %s was not processed."
+msgstr ""
+
+#: comicpress_manager.php:1326
+#, php-format
+msgid "Uploaded file <strong>%1$s</strong> renamed to <strong>%2$s</strong>."
+msgstr ""
+
+#: comicpress_manager.php:1331
+#, php-format
+msgid "Uploaded file %1$s renamed to %2$s."
+msgstr ""
+
+#: comicpress_manager.php:1335
+#, php-format
+msgid "Provided override date %s is not parseable by strtotime()."
+msgstr ""
+
+#: comicpress_manager.php:1411
+msgid "<strong>The following filenames or filetypes were invalid:</strong> "
+msgstr ""
+
+#: comicpress_manager.php:1415
+msgid "<strong>The following files were uploaded:</strong> "
+msgstr ""
+
+#: comicpress_manager.php:1419
+msgid "<strong>Thumbnails were written for the following files:</strong> "
+msgstr ""
+
+#: comicpress_manager.php:1423
+msgid ""
+"<strong>Thumbnails were not written for the following files.</strong>  Check "
+"the permissions on the rss &amp; archive folders: "
+msgstr ""
+
+#: comicpress_manager.php:1432
+msgid "<strong>New posts created.</strong>  View them from the links below:"
+msgstr ""
+
+#: comicpress_manager.php:1435
+msgid "<strong>No new posts created.</strong>"
+msgstr ""
+
+#: comicpress_manager.php:1446
+msgid ""
+"<strong>The following files would have created duplicate posts.</strong> "
+"View them from the links below: "
+msgstr ""
+
+#: comicpress_manager.php:1464
+msgid "Available wildcards:"
+msgstr ""
+
+#: comicpress_manager.php:1466
+msgid "The name of the category"
+msgstr ""
+
+#: comicpress_manager.php:1467
+#, php-format
+msgid "The date of the comic (ex: <em>%s</em>)"
+msgstr ""
+
+#: comicpress_manager.php:1468
+msgid "The title of the comic"
+msgstr ""
+
+#: comicpress_manager.php:1481
+msgid "File:"
+msgstr ""
+
+#: comicpress_manager.php:1482
+msgid "remove"
+msgstr ""
+
+#: comicpress_manager.php:1483
+msgid "You're not missing any posts!"
+msgstr ""
+
+#: comicpress_manager.php:1484
+msgid "counting"
+msgstr ""
+
+#: comicpress_manager.php:1571
+msgid ""
+"The current theme isn't the ComicPress theme.  If you've renamed the theme, "
+"ignore this warning."
+msgstr ""
+
+#: comicpress_manager.php:1576
+#, php-format
+msgid ""
+"The comics site root <strong>%s</strong> does not exist. Check your <a href="
+"\"options-general.php\">WordPress address and address settings</a>."
+msgstr ""
+
+#: comicpress_manager.php:1580
+#, php-format
+msgid ""
+"The comics site root <strong>%s</strong> does not contain a WordPress index."
+"php file. Check your <a href=\"options-general.php\">WordPress address and "
+"address settings</a>."
+msgstr ""
+
+#: comicpress_manager.php:1590
+#, php-format
+msgid ""
+"The <strong>%s</strong> folders and the comics folder are the same.  You "
+"won't be able to generate thumbnails until you change these folders."
+msgstr ""
+
+#: comicpress_manager.php:1599
+#, php-format
+msgid ""
+"The %1$s <strong>%2$s</strong> does not exist.  Did you create it within the "
+"<strong>%3$s</strong> folder?"
+msgstr ""
+
+#: comicpress_manager.php:1612
+#, php-format
+msgid "The %1$s <strong>%2$s</strong> is not writable by the Webserver."
+msgstr ""
+
+#: comicpress_manager.php:1635
+msgid ""
+"No image resize methods are installed (GD or ImageMagick).  You are unable "
+"to generate thumbnails automatically."
+msgstr ""
+
+#: comicpress_manager.php:1642
+msgid ""
+"You need to define at least two categories, a blog category and a comics "
+"category, to use ComicPress.  Visit <a href=\"categories.php\">Manage -> "
+"Categories</a> and create at least two categories, then return here to "
+"continue your configuration."
+msgstr ""
+
+#: comicpress_manager.php:1649
+msgid "All other categories"
+msgstr ""
+
+#: comicpress_manager.php:1660
+msgid ""
+"The comic category needs to be defined as a number, not an alphanumeric "
+"string."
+msgstr ""
+
+#: comicpress_manager.php:1664
+#, php-format
+msgid ""
+"The requested category ID for your comic, <strong>%s</strong>, doesn't exist!"
+msgstr ""
+
+#: comicpress_manager.php:1675
+msgid ""
+"The blog category needs to be defined as a number, not an alphanumeric "
+"string."
+msgstr ""
+
+#: comicpress_manager.php:1678
+#, php-format
+msgid ""
+"The requested category ID for your blog, <strong>%s</strong>, doesn't exist!"
+msgstr ""
+
+#: comicpress_manager.php:1685
+msgid ""
+"Your comic and blog categories are the same.  This will cause browsing "
+"problems for visitors to your site."
+msgstr ""
+
+#: comicpress_manager.php:1694
+msgid "Your comics folder is empty!"
+msgstr ""
+
+#: comicpress_manager.php:1723
+msgid "The operation you just performed returned the following:"
+msgstr ""
+
+#: comicpress_manager.php:1727
+msgid "The following warnings were generated:"
+msgstr ""
+
+#: comicpress_manager.php:1731
+msgid "The following problems were found in your configuration:"
+msgstr ""
+
+#: comicpress_manager.php:1762
+msgid ""
+"You must fix the problems above before you can proceed with managing your "
+"ComicPress installation."
+msgstr ""
+
+#: comicpress_manager.php:1765
+msgid "Details:"
+msgstr ""
+
+#: comicpress_manager.php:1767
+msgid "Current ComicPress theme folder:"
+msgstr ""
+
+#: comicpress_manager.php:1768
+msgid "Available categories:"
+msgstr ""
+
+#: comicpress_manager.php:1771
+msgid "Category Name"
+msgstr ""
+
+#: comicpress_manager.php:1772
+msgid "ID #"
+msgstr ""
+
+#: comicpress_manager.php:1815
+#, php-format
+msgid ""
+"<strong>You won't be able to update your comicpress-config.php or functions."
+"php file directly through the ComicPress Manager interface.</strong> Check "
+"to make sure the permissions on %s and comicpress-config.php are set so that "
+"the Webserver can write to them.  Once you submit, you'll be given a block "
+"of code to paste into the comicpress-config.php file."
+msgstr ""
+
+#: comicpress_manager.php:1820
+msgid ""
+"<strong>Some backup comicpress-config.php files were found in your theme "
+"directory.</strong>  You can choose to restore one of these backup files, or "
+"you can go ahead and create a new configuration below."
+msgstr ""
+
+#: comicpress_manager.php:1825
+msgid "Restore from backup dated:"
+msgstr ""
+
+#: comicpress_manager.php:1833
+msgid "Restore"
+msgstr ""
+
+#: comicpress_manager.php:1847
+msgid "Debug info"
+msgstr ""
+
+#: comicpress_manager.php:1847 comicpress_manager.php:2382
+msgid "this data is sanitized to protect your server's configuration"
+msgstr ""
+
+#: comicpress_manager.php:1882 comicpress_manager.php:1942
+#, php-format
+msgid ""
+"<strong>There was an error in the post time (%1$s)</strong>.  The time is "
+"not parseable by strtotime()."
+msgstr ""
+
+#: comicpress_manager.php:1899
+msgid "<strong>You didn't upload any files!</strong>"
+msgstr ""
+
+#: comicpress_manager.php:1993
+#, php-format
+msgid ""
+"There are multiple posts (%1$s) with the date %2$s in the comic categories. "
+"Please manually delete the posts."
+msgstr ""
+
+#: comicpress_manager.php:2006
+#, php-format
+msgid ""
+"<strong>%s deleted.</strong>  No matching posts found.  Any associated "
+"thumbnails were also deleted."
+msgstr ""
+
+#: comicpress_manager.php:2009
+#, php-format
+msgid ""
+"<strong>%1$s and post %2$s deleted.</strong>  Any associated thumbnails were "
+"also deleted."
+msgstr ""
+
+#: comicpress_manager.php:2038
+msgid ""
+"<strong>No comicpress-config.php file was found in your theme folder.</"
+"strong> Using default configuration file."
+msgstr ""
+
+#: comicpress_manager.php:2040
+msgid "<strong>Your configuration:</strong>"
+msgstr ""
+
+#: comicpress_manager.php:2052
+#, php-format
+msgid ""
+"<strong>Configuration updated and original config backed up to %s.</strong> "
+"Rename this file to comicpress-config.php if you are having problems."
+msgstr ""
+
+#: comicpress_manager.php:2056
+#, php-format
+msgid ""
+"<strong>Configuration not updated</strong>, check the permissions of %s and "
+"the theme folder.  They should be writable by the Webserver process. "
+"Alternatively, copy and paste the following code into your comicpress-config."
+"php file:"
+msgstr ""
+
+#: comicpress_manager.php:2074
+#, php-format
+msgid ""
+"<strong>Restored %s</strong>.  Check to make sure your site is functioning "
+"correctly."
+msgstr ""
+
+#: comicpress_manager.php:2076
+#, php-format
+msgid ""
+"<strong>Could not restore %s</strong>.  Check the permissions of your theme "
+"folder and try again."
+msgstr ""
+
+#: comicpress_manager.php:2091
+#, php-format
+msgid "<strong>Wrote thumbnail for %s.</strong>"
+msgstr ""
+
+#: comicpress_manager.php:2093
+#, php-format
+msgid ""
+"<strong>Could not write thumbnail for %s.</strong> Check the permissions on "
+"the thumbnail directories."
+msgstr ""
+
+#: comicpress_manager.php:2181
+#, php-format
+msgid "<strong>Post %1$s moved to %2$s.</strong>"
+msgstr ""
+
+#: comicpress_manager.php:2184
+#, php-format
+msgid ""
+"<strong>Moving post %1$s to %2$s would cause two comic posts to exist on the "
+"same day.</strong>  This is not allowed in the automated process."
+msgstr ""
+
+#: comicpress_manager.php:2192
+#, php-format
+msgid ""
+"<strong>You are moving two comics to the same date: %s.</strong>  This is "
+"not allowed in the automated process."
+msgstr ""
+
+#: comicpress_manager.php:2199 comicpress_manager.php:2235
+msgid "comic folder"
+msgstr ""
+
+#: comicpress_manager.php:2201 comicpress_manager.php:2237
+msgid "archive folder"
+msgstr ""
+
+#: comicpress_manager.php:2216
+#, php-format
+msgid "The %1$s <strong>%2$s</strong> does not exist."
+msgstr ""
+
+#: comicpress_manager.php:2222
+#, php-format
+msgid "<strong>Rename %1$s file %2$s to %3$s.</strong>"
+msgstr ""
+
+#: comicpress_manager.php:2224
+#, php-format
+msgid ""
+"<strong>The renaming of %1$s to %2$s failed.</strong>  Check the permissions "
+"on %3$s"
+msgstr ""
+
+#: comicpress_manager.php:2253
+#, php-format
+msgid "<strong>Rolling back %s.</strong>"
+msgstr ""
+
+#: comicpress_manager.php:2262
+#, php-format
+msgid "<strong>Rename error, rolling back post %1$s to %2$s.</strong>"
+msgstr ""
+
+#: comicpress_manager.php:2285
+msgid "ComicPress Details"
+msgstr ""
+
+#: comicpress_manager.php:2287
+msgid "Configuration method:"
+msgstr ""
+
+#: comicpress_manager.php:2291
+msgid "(click to edit)"
+msgstr ""
+
+#: comicpress_manager.php:2293
+msgid "(click to edit, cannot update automatically)"
+msgstr ""
+
+#: comicpress_manager.php:2299
+msgid "Comics folder:"
+msgstr ""
+
+#: comicpress_manager.php:2300
+#, php-format
+msgid "(%d comic in folder)"
+msgid_plural "(%d comics in folder)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: comicpress_manager.php:2303
+msgid "Archive folder:"
+msgstr ""
+
+#: comicpress_manager.php:2310
+msgid "generating"
+msgstr ""
+
+#: comicpress_manager.php:2314 comicpress_manager.php:2333
+msgid "No scaling software"
+msgstr ""
+
+#: comicpress_manager.php:2315 comicpress_manager.php:2334
+msgid "Generation disabled"
+msgstr ""
+
+#: comicpress_manager.php:2316 comicpress_manager.php:2335
+msgid "Same as comics folder"
+msgstr ""
+
+#: comicpress_manager.php:2317 comicpress_manager.php:2336
+msgid "Not writable"
+msgstr ""
+
+#: comicpress_manager.php:2322
+msgid "RSS feed folder:"
+msgstr ""
+
+#: comicpress_manager.php:2344
+msgid "Comic categories:"
+msgstr ""
+
+#: comicpress_manager.php:2346
+msgid "Comic category:"
+msgstr ""
+
+#: comicpress_manager.php:2353 comicpress_manager.php:2358
+#: comicpress_manager.php:2362
+#, php-format
+msgid "(ID %s)"
+msgstr ""
+
+#: comicpress_manager.php:2361
+msgid "Blog category:"
+msgstr ""
+
+#: comicpress_manager.php:2363
+msgid "PHP Version:"
+msgstr ""
+
+#: comicpress_manager.php:2365
+msgid "upgrade strongly recommended"
+msgstr ""
+
+#: comicpress_manager.php:2369
+msgid "Theme folder:"
+msgstr ""
+
+#: comicpress_manager.php:2373
+msgid "Additional, non-fatal warnings:"
+msgstr ""
+
+#: comicpress_manager.php:2382
+msgid "Show debug info"
+msgstr ""
+
+#: comicpress_manager.php:2444
+msgid "Comic category"
+msgstr ""
+
+#: comicpress_manager.php:2445
+msgid "Blog category"
+msgstr ""
+
+#: comicpress_manager.php:2446
+msgid "Comic Folder"
+msgstr ""
+
+#: comicpress_manager.php:2447
+msgid "RSS Comic Folder"
+msgstr ""
+
+#: comicpress_manager.php:2448
+msgid "Archive Comic Folder"
+msgstr ""
+
+#: comicpress_manager.php:2449
+msgid "Archive Comic Width (px)"
+msgstr ""
+
+#: comicpress_manager.php:2450
+msgid "# of <acronym title=\"Home Page\">HP</acronym> Blog Posts"
+msgstr ""
+
+#: comicpress_manager.php:2457
+msgid "All possible WordPress categories"
+msgstr ""
+
+#: comicpress_manager.php:2470
+#, php-format
+msgid "Yes, I want a separate %s"
+msgstr ""
+
+#: comicpress_manager.php:2476
+msgid "Click to move folder choice from right dropdown to text field"
+msgstr ""
+
+#: comicpress_manager.php:2478
+msgid "List of possible folders at the root of your site"
+msgstr ""
+
+#: comicpress_manager.php:2507
+msgid ""
+"<strong>If you've designated a comics folder that does not exist on the "
+"server, you <em>will trigger errors.</em></strong>\n"
+"      Create the folder first, then reload this page and use the dropdowns "
+"to select the target folder."
+msgstr ""
+
+#: comicpress_manager.php:2511
+msgid "Don't try to write my config out; just display it"
+msgstr ""
+
+#: comicpress_manager.php:2512
+msgid "Update Config"
+msgstr ""
+
+#: comicpress_manager.php:2523
+msgid ""
+"<a href=\"http://claritycomic.com/comicpress-manager/\" target=\"_new"
+"\">ComicPress Manager</a> is built for the <a href=\"http://www.mindfaucet."
+"com/comicpress/\" target=\"_new\">ComicPress</a> theme"
+msgstr ""
+
+#: comicpress_manager.php:2524
+msgid ""
+"Copyright 2008 <a href=\"mailto:john@claritycomic.com?Subject=ComicPress "
+"Manager Comments\">John Bintz</a>"
+msgstr ""
+
+#: comicpress_manager.php:2525
+msgid "Released under the GNU GPL"
+msgstr ""
+
+#: comicpress_manager.php:2526
+msgid "Version 0.9.5"
+msgstr ""
+
+#: comicpress_manager.php:2527
+msgid ""
+"Uses the <a target=\"_new\" href=\"http://www.dynarch.com/projects/calendar/"
+"\">Dynarch DHTML Calendar Widget</a>"
+msgstr ""
