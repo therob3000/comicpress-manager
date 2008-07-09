@@ -10,7 +10,7 @@ ComicPress Manager ties in with the ComicPress theme to make managing your WordP
 
 == Description ==
 
-(If you're upgrading from a version prior to 0.8, remove your original standalone comicpress_manager.php file, and to be safe, the original comicpress_manager folder, from wp-content/plugins/ before installing this newest version.)
+(If you're upgrading from a version prior to 0.8, remove your original standalone comicpress\_manager.php file, and to be safe, the original comicpress\_manager folder, from wp-content/plugins/ before installing this newest version.)
 
 The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://www.mindfaucet.com/comicpress/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress.
 
@@ -52,7 +52,7 @@ Before you begin working with ComicPress Manager, and especially while the softw
 
 == Installation ==
 
-(These instructions have changed since 0.8, so be careful!  If you're upgrading, remove your original standalone comicpress_manager.php file, and, to be safe the comicpress_manager folder, before proceeding.)
+(These instructions have changed since 0.8, so be careful!  If you're upgrading, remove your original standalone comicpress\_manager.php file, and, to be safe the comicpress\_manager folder, before proceeding.)
 
 Copy the comicpress_manager directory to your wp-content/plugins/ directory and activate the plugin.  ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.
 
