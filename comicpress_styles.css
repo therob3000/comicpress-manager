@@ -160,11 +160,35 @@ form span.form-field input {
   overflow: auto;
   height: 300px;
   font-family: 'courier new';
-  white-space: pre
+  white-space: pre;
+  display: block
 }
 
 div.upload-holder {
   text-align: center;
   padding: 3px 0;
   border-top: solid #ddd 1px;
+}
+
+div#cpm-messages, div#cpm-errors, div#cpm-warnings {
+  padding: 5px;
+  margin-bottom: 5px;
+  border-width: 1px;
+  border-style: solid
+}
+
+div#cpm-messages {
+  background-color: #ffe;
+  border-color: #ddc;
+}
+
+div#cpm-warnings {
+  background-color: #fee;
+  border-color: #dcc;
+}
+
+div#cpm-errors {
+  background-color: #330007;
+  border-color: #a00;
+  color: white
 }

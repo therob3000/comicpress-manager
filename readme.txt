@@ -3,16 +3,18 @@ Contributors: johncoswell
 Tags: comicpress, webcomics, management, admin, posts, plugin
 Requires at least: 2.5.1
 Tested up to: 2.5.1
-Stable tag: 0.9
+Stable tag: 0.9.5
 Donate link: http://claritycomic.com/comicpress-manager/#donate
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.
 
 == Description ==
 
+(If you're upgrading from a version prior to 0.8, remove your original standalone comicpress_manager.php file, and to be safe, the original comicpress_manager folder, from wp-content/plugins/ before installing this newest version.)
+
 The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://www.mindfaucet.com/comicpress/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress.
 
-As of version 0.9, it allows you to:
+As of version 0.9.5, it allows you to:
 
 * Upload individual comic files or a Zip archive of comic files directly into your comics folder and generate posts for each comic as it's uploaded with the correct go-live date and time
   * To save a trip to the Edit Post page, you can use the Visual Editor right in ComicPress Manager to add styled text content to your post.
@@ -42,6 +44,7 @@ As of version 0.9, it allows you to:
   * You can use this advanced feature to shift a large number of comics forward or backwards in time.
 * Modify your comicpress-config.php file from ComicPress Manager.
   * If you're using a comicpress-config.php file, and the permissions are set correctly, you can modify the settings directly from ComicPress manager. If your permissions are not correct, the config file that ComicPress Manager would have written will be shown so that you can copy and paste it into your comicpress-config.php file.
+  * If your config goes awry, you can also restore from a backup config.
 
 ComicPress Manager is built for WordPress 2.5.1 and ComicPress 2.1 and 2.5. ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.
 
@@ -49,7 +52,7 @@ Before you begin working with ComicPress Manager, and especially while the softw
 
 == Installation ==
 
-(These instructions have changed since 0.8, so be careful!  If you're upgrading, remove your original standalone comicpress_manager.php file before proceeding.)
+(These instructions have changed since 0.8, so be careful!  If you're upgrading, remove your original standalone comicpress_manager.php file, and, to be safe the comicpress_manager folder, before proceeding.)
 
 Copy the comicpress_manager directory to your wp-content/plugins/ directory and activate the plugin.  ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.
 
@@ -63,12 +66,16 @@ Alternatively, if you can't automatically write to the comicpress-config.php fil
 
 = I edited my config, and now I'm getting errors =
 
-Check your theme folder for the following
+The error you're most likely to see when working with config files in ComicPress Manager contains the following string:
+
+<pre>[function.main]: failed to open stream: No such file or directory</pre>
+
+This means that functions.php is attempting to include comicpress-config.php and comicpress-config.php does not exist.  Check your theme folder for the following:
 
 * A missing comicpress-config.php file
 * A file (or files) named comicpress-config.php.{long string of numbers}
 
-If this has happened, you won't be able to edit your config through ComicPress Manager.  Try experimenting with different permissions settings on your theme folder to improve the situation, or edit your configuration by hand.
+If this has happened, either use the restore function that appears on the config errors screen, or copy the most recent comicpress-config.php.{long string of numbers} file in your theme's directory back to comicpress-config.php.  Then, try experimenting with different permissions settings on your theme folder to see if the situation improves, or use ComicPress Manager generate the config that you can then copy and paste into ComicPress Manager.
 
 = I can't upload a large image file or a large Zip file =
 
@@ -84,6 +91,10 @@ The upload\_max\_filesize setting on your server may be set too low.  You can do
 
 There are three lines at the top of the plugin that define the <code>$access_level</code> of the plugin.  Uncomment the line that defines
 the level of access you want to give and comment out the others.
+
+= How do I change the width of generated thumbnails? =
+
+Change the "Archive Width" in your config to the thumbnail width you wish to have.
 
 = Why can't I generate thumbnails? =
 
@@ -123,13 +134,24 @@ and set it to true;
 
 <pre>define("CPM_SKIP_CHECKS", true);</pre>
 
+= I want to change the date format used by ComicPress and ComicPress Manager from Y-m-d to something else =
+
+At the top of comicpress_manager.php is this line:
+
+<pre>
+// if you've hacked on ComicPress to support a different date format, change it here
+define("CPM_DATE_FORMAT", "Y-m-d");
+</pre>
+
+Change the format to a [<code>date</code>](http://us3.php.net/date) compatible format.  Then, in your ComicPress theme, in the functions.php file, change every instance of <code>Y-m-d</code> to your new format.
+
 = I want to translate your plugin into my language. =
 
 Feel free to contact me, or better yet, send a translation in.  The POT file is in the plugin directory.  I'm still new to this, so if I'm doing something wrong in the code, please tell me.  :)
 
 = I'm having another problem =
 
-Post a detailed description of the problem on the [Lunchbox Funnies ComicPress Support Forum](http://www.lunchboxfunnies.com/forum/viewforum.php?f=7).  If asked, provide the info given when you click the Show Debug Info link on the left-hand side.
+Post a detailed description of the problem on the [Lunchbox Funnies ComicPress Support Forum](http://www.lunchboxfunnies.com/forum/viewforum.php?f=7).  If asked, provide the info given when you click the Show Debug Info link on the left-hand side.  Make sure you're running the most recent stable version of ComicPress Manager, as there are a lot of critical bug fixes between versions.
 
 == License ==
 

@@ -73,7 +73,12 @@ Event.observe(window, 'load', function() {
 
   if ($('upload-destination')) {
     var toggle_upload_destination_holder = function() {
-      if (!$('overwrite-existing-file-selector-checkbox').checked) {
+      var show_upload_destination = true;
+      if ($('overwrite-existing-file-selector-checkbox')) {
+        show_upload_destination = !$('overwrite-existing-file-selector-checkbox').checked;
+      }
+      
+      if (show_upload_destination) {
         if ($('upload-destination').options[$('upload-destination').selectedIndex].value == "comic") {
           $('upload-destination-holder').show();
         } else {
@@ -93,18 +98,24 @@ Event.observe(window, 'load', function() {
       } else {
         Element.hide('specify-date-holder');
         Element.hide('overwrite-existing-holder');
-        $('overwrite-existing-file-selector-checkbox').checked = false;
+        if ($('overwrite-existing-file-selector-checkbox')) {
+          $('overwrite-existing-file-selector-checkbox').checked = false;
+        }
         toggle_upload_destination_holder();
       }
       hide_show_checkbox_holder('overwrite-existing-file-selector');
     }
 
-    Event.observe('overwrite-existing-file-selector-checkbox', 'click', function() {
-      hide_show_checkbox_holder('overwrite-existing-file-selector');
-      toggle_upload_destination_holder();
-    });
+    if ($('overwrite-existing-file-selector-checkbox')) {
+      Event.observe('overwrite-existing-file-selector-checkbox', 'click', function() {
+        hide_show_checkbox_holder('overwrite-existing-file-selector');
+        toggle_upload_destination_holder();
+      });
+    }
 
-    hide_show_checkbox_holder('overwrite-existing-file-selector');
+    if ($('overwrite-existing-file-selector-checkbox')) {
+      hide_show_checkbox_holder('overwrite-existing-file-selector');
+    }
   }
 
   if ($('count-missing-posts-clicker')) {
@@ -122,9 +133,6 @@ Event.observe(window, 'load', function() {
                          onSuccess: function(transport) {
                            if (transport.responseText.match(/missing-posts>(.*)<\/missing-posts/)) {
                              $('missing-posts-display').innerHTML = RegExp.$1;
-                           }
-                           if (RegExp.$1 == 0) {
-                             $('create-missing-posts-holder').innerHTML = "<p><strong>" + messages['count_missing_posts_none_missing'] + "</strong></p>";
                            }
                          }
                        }
