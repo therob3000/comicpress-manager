@@ -3,24 +3,23 @@ Contributors: johncoswell
 Tags: comicpress, webcomics, management, admin, posts, plugin
 Requires at least: 2.5.1
 Tested up to: 2.5.1
-Stable tag: 0.9.5
+Stable tag: 1.0
 Donate link: http://claritycomic.com/comicpress-manager/#donate
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.
 
 == Description ==
 
-(If you're upgrading from a version prior to 0.8, remove your original standalone comicpress\_manager.php file, and to be safe, the original comicpress\_manager folder, from wp-content/plugins/ before installing this newest version.)
-
 The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://www.mindfaucet.com/comicpress/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress.
 
-As of version 0.9.5, it allows you to:
+As of version 1.0, it allows you to:
 
 * Upload individual comic files or a Zip archive of comic files directly into your comics folder and generate posts for each comic as it's uploaded with the correct go-live date and time
   * To save a trip to the Edit Post page, you can use the Visual Editor right in ComicPress Manager to add styled text content to your post.
   * Using this method ensures that the post has the correct date and time as it's being created, reducing mistakes in posting.
   * You can also upload a single file that does not specify a date in the filename, and enter in the post date on the upload page.
   * You can also replace a single existing file with any other file, preserving the original file's name after upload
+  * If you're using a different date naming convention, you can convert the old convention to the currently defined date naming convention
 * Upload thumbnails directly to the archive and RSS folders
 * Generate thumbnails for all uploaded comics for your archive and RSS folders
 * Re-generate thumbnails after you've changed thumbnail parameters
@@ -34,6 +33,7 @@ As of version 0.9.5, it allows you to:
       * NOTE: This check is done by examining the name of the theme as defined in style.css. If you want this non-fatal check to succeed, leave the term "ComicPress" in the theme title.
     * You have comics in your comics folder (if there aren't any, it could be a sign of other problems)
   * You can also disable these checks once you know your configuration is correct, to improve performance
+  * Additionally, you can see a table that shows what posts have comics, what comics have posts, and which of each have thumbnails.
 * Preview the comic that will go live with your comic post
   * Save a trip to your blog and see what comic will be going live with your post straight from the Write Post screen. You are also informed if thumbnails exist for this comic.
 * Create any missing posts for comics that have been uploaded to your comics folder
@@ -46,6 +46,10 @@ As of version 0.9.5, it allows you to:
   * If you're using a comicpress-config.php file, and the permissions are set correctly, you can modify the settings directly from ComicPress manager. If your permissions are not correct, the config file that ComicPress Manager would have written will be shown so that you can copy and paste it into your comicpress-config.php file.
   * If your config goes awry, you can also restore from a backup config.
 
+Additionally, on your Dashboard, you'll see the latest stories from the ComicPress site, so you can keep up on updates, upgrades, and other news to make your Webcomics publishing using WordPress/ComicPress easier and more fun.
+
+As of 0.9.8, ComicPress Manager's configuration is defined in the comicpress\_manager\_config.php file in the comicpress\_manager folder.
+
 ComicPress Manager is built for WordPress 2.5.1 and ComicPress 2.1 and 2.5. ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.
 
 Before you begin working with ComicPress Manager, and especially while the software is still in development, it is recommended that you make regular backups of your WordPress database and comics folder.
@@ -54,7 +58,7 @@ Before you begin working with ComicPress Manager, and especially while the softw
 
 (These instructions have changed since 0.8, so be careful!  If you're upgrading, remove your original standalone comicpress\_manager.php file, and, to be safe the comicpress\_manager folder, before proceeding.)
 
-Copy the comicpress_manager directory to your wp-content/plugins/ directory and activate the plugin.  ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.
+Copy the comicpress\_manager directory to your wp-content/plugins/ directory and activate the plugin.  ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.  If you modified your comicpress\_manager\_config.php file, be sure to back it up before upgrading.
 
 == Frequently Asked Questions ==
 
@@ -89,12 +93,11 @@ The upload\_max\_filesize setting on your server may be set too low.  You can do
 
 = How can I change the minimum access level for the plugin? =
 
-There are three lines at the top of the plugin that define the <code>$access_level</code> of the plugin.  Uncomment the line that defines
-the level of access you want to give and comment out the others.
+There are three lines at the top of comicpress\_manager\_config.php that define the <code>$access_level</code> of the plugin.  Uncomment the line that defines the level of access you want to give and comment out the others.
 
 = How do I change the width of generated thumbnails? =
 
-Change the "Archive Width" in your config to the thumbnail width you wish to have.
+Change the "Archive Width" in your ComicPress config (comicpress-config.php in your theme) to the thumbnail width you wish to have.
 
 = Why can't I generate thumbnails? =
 
@@ -102,7 +105,7 @@ You will need either GD library support compiled into PHP or the ImageMagick "co
 
 = What if I don't want to automatically generate thumbnails? =
 
-At the top of comicpress_manager.php file, within the ComicPressConfig class, is the following:
+Inside of comicpress\_manager\_config.php file is the following:
 
 <pre>
 'archive_generate_thumbnails' => true,
@@ -126,7 +129,7 @@ If you are importing a large number of files, especially if you're generating th
 
 = I know what I'm doing.  How do I disable the sanity checks to improve performance? =
 
-Find this line:
+Find this line in comicpress\_manager\_config.php:
 
 <pre>define("CPM_SKIP_CHECKS", false);</pre>
 
@@ -136,14 +139,18 @@ and set it to true;
 
 = I want to change the date format used by ComicPress and ComicPress Manager from Y-m-d to something else =
 
-At the top of comicpress_manager.php is this line:
+Inside of comicpress\_manager\_config.php is this line:
 
 <pre>
 // if you've hacked on ComicPress to support a different date format, change it here
 define("CPM_DATE_FORMAT", "Y-m-d");
 </pre>
 
-Change the format to a [<code>date</code>](http://us3.php.net/date) compatible format.  Then, in your ComicPress theme, in the functions.php file, change every instance of <code>Y-m-d</code> to your new format.
+Change the format to a [<code>date</code>](http://us3.php.net/date) compatible format.  Then, in your ComicPress theme, in the functions.php file, change every instance of <code>Y-m-d</code> to your new format (or better yet, use CPM\_DATE\_FORMAT directory, as comicpress\_manager\_config.php is loaded with every page load in WordPress).
+
+= I don't want to clutter up my Dashboard with the ComicPress RSS widget =
+
+Set <code>CPM_SHOW_DASHBOARD_RSS_FEED</code> to false.
 
 = I want to translate your plugin into my language. =
 
