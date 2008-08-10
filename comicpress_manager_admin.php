@@ -102,14 +102,20 @@ function cpm_add_pages() {
   if ( !$widget_options || !is_array($widget_options) )
     $widget_options = array();
 
-  $editor_load_pages = array(plugin_basename(__FILE__), plugin_basename(__FILE__ . '-import'));
+  cpm_read_information_and_check_config();
 
-  if (in_array($plugin_page, $editor_load_pages)) {
-    wp_enqueue_script('editor');
-    wp_enqueue_script('wp_tiny_mce');
+  if (strpos($plugin_page, pathinfo(__FILE__, PATHINFO_BASENAME)) !== false) {
+    $editor_load_pages = array(plugin_basename(__FILE__), plugin_basename(__FILE__ . '-import'));
+
+    if (in_array($plugin_page, $editor_load_pages)) {
+      wp_enqueue_script('editor');
+      wp_enqueue_script('wp_tiny_mce');
+    }
+
+    wp_enqueue_script('prototype');
+
+    cpm_handle_actions();
   }
-
-  wp_enqueue_script('prototype');
 
   if (!isset($access_level)) { $access_level = 10; }
 
@@ -123,9 +129,6 @@ function cpm_add_pages() {
   add_submenu_page(__FILE__, $plugin_title, __("Change Dates", 'comicpress-manager'), $access_level, __FILE__ . '-dates', 'cpm_manager_dates');
   add_submenu_page(__FILE__, $plugin_title, __("Delete", 'comicpress-manager'), $access_level, __FILE__ . '-delete', 'cpm_manager_delete');
   add_submenu_page(__FILE__, $plugin_title, __("Config", 'comicpress-manager'), $access_level, __FILE__ . '-config', 'cpm_manager_config');
-  
-  cpm_read_information_and_check_config();
-  cpm_handle_actions();
 
   if (CPM_SHOW_DASHBOARD_RSS_FEED) {
     wp_register_sidebar_widget( 'dashboard_cpm', __("ComicPress News", "comicpress-manager"), 'cpm_dashboard_widget',
@@ -682,7 +685,7 @@ function cpm_manager_dates() {
   $end_date = substr(pathinfo(end($cpm_config->comic_files), PATHINFO_BASENAME), 0, strlen($comic_format_date_string));
   $end_date = date("Y-m-d", strtotime($end_date));
 
-  if (isset($_POST['start-date'])) {
+  if (isset($_POST['start-date']) && !empty($_POST['start-date'])) {
     $target_start_date = strtotime($_POST['start-date']);
     if (($target_start_date != -1) && ($target_start_date !== false)) {
       $start_date = date("Y-m-d", $target_start_date);
@@ -1057,7 +1060,7 @@ function find_comic_by_date($timestamp) {
 function breakdown_comic_filename($filename, $allow_override = false) {
   $pattern = CPM_DATE_FORMAT;
   if ($allow_override) {
-    if (isset($_POST['upload-date-format'])) { $pattern = $_POST['upload-date-format']; }
+    if (isset($_POST['upload-date-format']) && !empty($_POST['upload-date-format'])) { $pattern = $_POST['upload-date-format']; }
   }
   $pattern = preg_replace('#Y#', '[0-9]{4,4}', $pattern);
   $pattern = preg_replace('#m#', '[0-9]{2,2}', $pattern);
@@ -1069,7 +1072,7 @@ function breakdown_comic_filename($filename, $allow_override = false) {
     if (strtotime($date) === false) { return false; }
     $converted_title = ucwords(trim(preg_replace('/[\-\_]/', ' ', $title)));
 
-    return compact('date', 'converted_title');
+    return compact('date', 'title', 'converted_title');
   } else {
     return false;
   }
@@ -1299,7 +1302,7 @@ function generate_view_edit_post_links($post_info) {
  * @return array The post information or false if the date is invalid.
  */
 function generate_post_hash($filename_date, $filename_converted_title) {
-  if (isset($_POST['time'])) {
+  if (isset($_POST['time']) && !empty($_POST['time'])) {
     $filename_date .= " " . $_POST['time'];
   }
   if (($timestamp = strtotime($filename_date)) !== false) {
@@ -1310,14 +1313,14 @@ function generate_post_hash($filename_date, $filename_converted_title) {
     $category_name = get_cat_name($_POST['category']);
 
     $post_content = "";
-    if (isset($_POST['content'])) {
+    if (isset($_POST['content']) && !empty($_POST['content'])) {
       $post_content = $_POST['content'];
       $post_content = preg_replace('/\{date\}/', date('F j, Y', $timestamp), $post_content);
       $post_content = preg_replace('/\{title\}/', $filename_converted_title, $post_content);
       $post_content = preg_replace('/\{category\}/', $category_name, $post_content);
     }
 
-    $post_title    = (isset($_POST['override-title'])) ? $_POST['override-title-to-use'] : $filename_converted_title;
+    $post_title    = (isset($_POST['override-title']) && !empty($_POST['override-title'])) ? $_POST['override-title-to-use'] : $filename_converted_title;
     $post_date     = date('Y-m-d H:i:s', $timestamp);
     $post_category = array($_POST['category']);
     $post_status   = isset($_POST['publish']) ? "publish" : "draft";
@@ -1460,12 +1463,12 @@ function cpm_handle_file_uploads($files) {
                   extract($result, EXTR_PREFIX_ALL, 'filename');
                   $target_path = $target_root . '/' . zip_entry_name($zip_entry);
                   $target_filename = zip_entry_name($zip_entry);
-                  
-                  if (isset($_POST['upload-date-format'])) {
-                    $target_filename = date(CPM_DATE_FORMAT, strtotime($result['date'])) . '-' . 
-                                        $result['converted_title'] . '.' . pathinfo($_FILES[$key]['name'], PATHINFO_EXTENSION);
+
+                  if (isset($_POST['upload-date-format']) && !empty($_POST['upload-date-format'])) {
+                    $target_filename = date(CPM_DATE_FORMAT, strtotime($result['date'])) .
+                                        $result['title'] . '.' . pathinfo($_FILES[$key]['name'], PATHINFO_EXTENSION);
                   } 
-                                    
+
                   if (zip_entry_open($zip, $zip_entry, "r")) {
                     $temp_path = $target_path . '-' . md5(rand());
                     file_put_contents($temp_path,
@@ -1522,9 +1525,9 @@ function cpm_handle_file_uploads($files) {
               }
             }
           } else {
-            if (isset($_POST['upload-date-format'])) {
-              $target_filename = date(CPM_DATE_FORMAT, strtotime($result['date'])) . '-' . 
-                                 $result['converted_title'] . '.' . pathinfo($_FILES[$key]['name'], PATHINFO_EXTENSION);
+            if (isset($_POST['upload-date-format']) && !empty($_POST['upload-date-format'])) {
+              $target_filename = date(CPM_DATE_FORMAT, strtotime($result['date'])) . 
+                                 $result['title'] . '.' . pathinfo($_FILES[$key]['name'], PATHINFO_EXTENSION);
             } 
           }
 
@@ -2729,7 +2732,7 @@ function cpm_show_footer() { ?>
     <?php _e('<a href="http://claritycomic.com/comicpress-manager/" target="_new">ComicPress Manager</a> is built for the <a href="http://www.mindfaucet.com/comicpress/" target="_new">ComicPress</a> theme', 'comicpress-manager') ?> |
     <?php _e('Copyright 2008 <a href="mailto:john@claritycomic.com?Subject=ComicPress Manager Comments">John Bintz</a>', 'comicpress-manager') ?> |
     <?php _e('Released under the GNU GPL', 'comicpress-manager') ?> |
-    <?php _e('Version 1.0', 'comicpress-manager') ?> |
+    <?php _e('Version 1.0.1', 'comicpress-manager') ?> |
     <?php _e('Uses the <a target="_new" href="http://www.dynarch.com/projects/calendar/">Dynarch DHTML Calendar Widget</a>', 'comicpress-manager') ?>
   </div>
 <?php }
