@@ -18,9 +18,17 @@ div#cpm-container h3 { margin-top: 0 }
 div#cpm-container em { font-style: oblique }
 
 div#cpm-container div#cpm-left-column {
-  position: absolute;
+  float: left;
+  display: inline;
   width: 320px;
-  margin-top: 5px;
+  padding-top: 10px;
+}
+
+div#cpm-container div#cpm-right-column {
+ float: left;
+ display: inline;
+ width: 540px;
+ margin-left: 10px;
 }
 
 div#cpm-container div#comicpress-details {
@@ -43,11 +51,6 @@ div#cpm-container div#config-editor {
   margin-top: 10px;
 }
 
-div#cpm-container div#cpm-right-column {
- padding-left: 330px;
- width: 540px;
-}
-
 div#cpm-container div.activity-box {
   border: solid #999 1px;
   padding: 10px;
@@ -61,7 +64,8 @@ div#cpm-container div.top-activity-box {
 div#cpm-container div#cpm-footer {
   color: #777;
   margin-top: 10px;
-  text-align: left
+  text-align: left;
+  clear: both
 }
 
 div#cpm-container div#new-post-holder,
@@ -70,6 +74,13 @@ div#cpm-container div#multiple-new-post-holder {
   padding: 5px;
   width: 510px;
   margin-top: 5px;
+}
+
+div#zip-upload-warning {
+  border: solid red 1px;
+  background-color: #dcc;
+  margin: 5px;
+  padding: 5px;
 }
 
 div#image-preview {
@@ -106,7 +117,7 @@ form#config-editor span.config-title {
 form#config-editor span.config-field {
   width: 390px;
   margin-left: 180px;
-  display: block;
+  display: inline;
 }
 
 form#config-editor input.update-config {
@@ -124,7 +135,7 @@ form span.form-title {
 
 form span.form-field {
   width: 200px;
-  display: block;
+  display: inline;
   margin-left: 290px;
   height: 30px;
 }

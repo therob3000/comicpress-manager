@@ -127,13 +127,19 @@ Event.observe(window, 'load', function() {
 
       new Ajax.Request(ajax_request_uri,
                        {
+                         method: 'post',
                          parameters: {
                            action: "count-missing-posts"
                          },
                          onSuccess: function(transport) {
                            if (transport.responseText.match(/missing-posts>(.*)<\/missing-posts/)) {
                              $('missing-posts-display').innerHTML = RegExp.$1;
+                           } else {
+                             $('missing-posts-display').innerHTML = messages['count_missing_posts_none_missing'];
                            }
+                         },
+                         onFailure: function(transport) {
+                           $('missing-posts-display').innerHTML = messages['failure_in_counting_posts'];
                          }
                        }
                       );
@@ -142,8 +148,4 @@ Event.observe(window, 'load', function() {
   }
 
   if ($('image-preview')) { change_image_preview(); }
-
-  // just in case...
-
-  $('cpm-right-column').style.minHeight = $('cpm-left-column').offsetHeight + "px";
 });

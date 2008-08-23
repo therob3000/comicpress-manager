@@ -26,6 +26,23 @@ define("CPM_DO_GD_FILETYPE_CHECKS", true);
 // if you don't want to see the ComicPress News Dashboard widget, set this to false
 define("CPM_SHOW_DASHBOARD_RSS_FEED", true);
 
+// if you need ot use a different level of permissions when uploading/modifying
+// files, change it here
+//
+// for Windows users, your permissions will automatically be set to 0777 (writable).
+// there is no easy way in PHP to modify permissions on an NTFS filesystem (and no
+// permissions to speak of on FAT32!)
+
+if (strpos(PHP_OS, "WIN") !== false) {
+  // for Windows users
+  define("CPM_FILE_UPLOAD_CHMOD", 0777);
+} else {
+  // for Unix (Linux, Mac OS X, *BSD) users
+  // define("CPM_FILE_UPLOAD_CHMOD", 0644); // writable by webserver process only      (rare)
+  define("CPM_FILE_UPLOAD_CHMOD", 0664);    // writable by owner and any group members (common)
+  // define("CPM_FILE_UPLOAD_CHMOD", 0666); // writable by anyone                      (rare)
+}
+
 $cpm_config_properties = array(
   // change these to something you like better...
 
@@ -38,13 +55,13 @@ $cpm_config_properties = array(
   'thumbnail_quality'           => 80
 );
 
-// if you have a non-standard WP setup, you'll probably need to set
-// the absolute path to the folder where your site's index.php file
-// is located.  By default, this is:
+// CPM_DOCUMENT_ROOT override
 //
-// $_SERVER['DOCUMENT_ROOT'] . parse_url(get_bloginfo('url'), PHP_URL_PATH)
-
-$cpm_config_comics_site_root = null;
+// If you are having issues with your comics folders or your WordPress site root
+// not being found, then you will need to override the auto-calaculated
+// CPM_DOCUMENT_ROOT with the absolute path to your site root (where the WordPress
+// index.php is located, and most likely the same location as your comics folders).
+// Please make sure there is no / at the end of the path!
 
 // define('CPM_DOCUMENT_ROOT', '/your/very/nonstandard/setup/path')
 
