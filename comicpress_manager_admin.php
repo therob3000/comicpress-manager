@@ -1408,11 +1408,24 @@ function generate_post_hash($filename_date, $filename_converted_title) {
 function cpm_write_thumbnail($input, $target_filename, $do_rebuild = false) {
   global $cpm_config;
 
+  /*if (defined("CPM_OVERRIDE_THUMBNAIL_FORMAT")) {
+    if (in_array(strtolower(CPM_OVERRIDE_THUMBNAIL_FORMAT), array("jpeg", "jpg", "png", "gif"))) {
+      $target_format = strtolower(CPM_OVERRIDE_THUMBNAIL_FORMAT);
+    } else {
+      return false;
+    }
+  } else {*/
+    $target_format = pathinfo($target_filename, PATHINFO_EXTENSION);
+  //}
+
   $write_targets = array();
   foreach ($cpm_config->separate_thumbs_folder_defined as $type => $value) {
     if ($value) {
       if ($cpm_config->thumbs_folder_writable[$type]) {
-        $target = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"] . '/' . $target_filename;
+
+        $converted_target_filename = preg_replace('#\.[^\.]+$#', '', $target_filename) . '.' . $target_format;
+
+        $target = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"] . '/' . $converted_target_filename;
 
         if (!in_array($target, $write_targets)) {
           $write_targets[] = $target;
@@ -1441,8 +1454,28 @@ function cpm_write_thumbnail($input, $target_filename, $do_rebuild = false) {
         case CPM_SCALE_IMAGEMAGICK:
           $ok = true;
           foreach ($write_targets as $target) {
-            $convert_to_jpeg_thumb = escapeshellcmd(
-              "convert \"${input}\" -filter Lanczos -resize " . $cpm_config->properties['archive_comic_width'] . "x -quality " . $cpm_config->properties['thumbnail_quality'] . " \"${target}\"");
+            $command = array("convert",
+                             "\"${input}\"",
+                             "-filter Lanczos",
+                             "-resize " . $cpm_config->properties['archive_comic_width'] . "x");
+
+
+            switch(strtolower($target_format)) {
+              case "jpg":
+              case "jpeg":
+                $command[] = "-quality " . $cpm_config->properties['thumbnail_quality'];
+                break;
+              case "gif":
+                break;
+              case "png":
+                $command[] = "-quality 100";
+                break;
+              default:
+            }
+
+            $command[] = "\"${target}\"";
+
+            $convert_to_jpeg_thumb = escapeshellcmd(implode(" ", $command));
 
             exec($convert_to_jpeg_thumb);
 
@@ -1454,12 +1487,8 @@ function cpm_write_thumbnail($input, $target_filename, $do_rebuild = false) {
           }
           return $ok;
         case CPM_SCALE_GD:
-          echo "made it";
           list ($width, $height) = getimagesize($input);
-          echo "made it";
 
-          var_dump(getimagesize($input));
-          
           if ($width > 0) {
             $archive_comic_height = ($cpm_config->properties['archive_comic_width'] * $height) / $width;
 
@@ -1486,7 +1515,33 @@ function cpm_write_thumbnail($input, $target_filename, $do_rebuild = false) {
             $ok = true;
 
             foreach ($write_targets as $target) {
-              imagejpeg($thumb_image, $target, $cpm_config->properties['thumbnail_quality']);
+              switch(strtolower($target_format)) {
+                case "jpg":
+                case "jpeg":
+                  if (imagetypes() & IMG_JPG) {
+                    imagejpeg($thumb_image, $target, $cpm_config->properties['thumbnail_quality']);
+                  } else {
+                    return false;
+                  }
+                  break;
+                case "gif":
+                  if (imagetypes() & IMG_GIF) {
+                    imagegif($thumb_image, $target);
+                  } else {
+                    return false;
+                  }
+                  break;
+                case "png":
+                  if (imagetypes() & IMG_PNG) {
+                    imagepng($thumb_image, $target, 9);
+                  } else {
+                    return false;
+                  }
+                  break;
+                default:
+                  return false;
+              }
+
               if (!file_exists($target)) {
                 $ok = false;
               } else {
@@ -1559,7 +1614,7 @@ function cpm_handle_file_uploads($files) {
                                       zip_entry_read($zip_entry,
                                                      zip_entry_filesize($zip_entry)));
 
-                    if (file_exsts($temp_path)) {
+                    if (file_exists($temp_path)) {
                       $file_ok = true;
                       if (extension_loaded("gd") && CPM_DO_GD_FILETYPE_CHECKS) {
                         $file_ok = (getimagesize($temp_path) !== false);
@@ -1567,7 +1622,7 @@ function cpm_handle_file_uploads($files) {
 
                       if ($file_ok) {
                         @rename($temp_path, $target_root . '/' . $target_filename);
-                        $files_uploaded[] = zip_entry_name($target_filename);
+                        $files_uploaded[] = zip_entry_name($zip_entry);
                       } else {
                         @unlink($temp_path);
                         $invalid_filenames[] = zip_entry_name($zip_entry);
@@ -1886,6 +1941,12 @@ function cpm_read_information_and_check_config() {
     if ($any_cpm_document_root_failures) {
       $cpm_config->errors[] = print_r($cpm_attempted_document_roots, true);
     }
+
+    /*if (defined("CPM_OVERRIDE_THUMBNAIL_FORMAT")) {
+      if (!in_array(strtolower(CPM_OVERRIDE_THUMBNAIL_FORMAT), array("jpeg", "jpg", "png", "gif"))) {
+        $cpm_config->errors[] = sprintf(__("The thumbnail format you defined, <strong>%s</strong>, is not valid. Valid formats are: jpeg, jpg, png, gif"), CPM_OVERRIDE_THUMBNAIL_FORMAT);
+      }
+    }*/
 
     // folders that are the same as the comics folder won't be written to
     $all_the_same = array();
@@ -2839,7 +2900,7 @@ function cpm_show_footer() { ?>
     <?php _e('<a href="http://claritycomic.com/comicpress-manager/" target="_new">ComicPress Manager</a> is built for the <a href="http://www.mindfaucet.com/comicpress/" target="_new">ComicPress</a> theme', 'comicpress-manager') ?> |
     <?php _e('Copyright 2008 <a href="mailto:john@claritycomic.com?Subject=ComicPress Manager Comments">John Bintz</a>', 'comicpress-manager') ?> |
     <?php _e('Released under the GNU GPL', 'comicpress-manager') ?> |
-    <?php _e('Version 1.1', 'comicpress-manager') ?> |
+    <?php _e('Version 1.1.1', 'comicpress-manager') ?> |
     <?php _e('Uses the <a target="_new" href="http://www.dynarch.com/projects/calendar/">Dynarch DHTML Calendar Widget</a>', 'comicpress-manager') ?>
   </div>
 <?php }
