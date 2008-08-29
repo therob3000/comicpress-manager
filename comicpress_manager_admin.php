@@ -48,7 +48,9 @@ class ComicPressConfig {
 
 $cpm_config = new ComicPressConfig();
 
-$cpm_config->properties = array_merge($cpm_config->properties, $cpm_config_properties);
+if (isset($cpm_config_properties)) {
+  $cpm_config->properties = array_merge($cpm_config->properties, $cpm_config_properties);
+}
 
 $default_comicpress_config_file = explode("\n", '<?' . 'php' . <<<ENDPHP
 
@@ -1176,8 +1178,6 @@ function generate_comic_categories_options($form_name) {
  * TESTED
  */
 function get_functions_php_filepath() {
-  $current_theme_info = get_theme(get_current_theme());
-
   $template_files = glob(TEMPLATEPATH . '/*');
   if ($template_files === false) { $template_files = array(); }
 
@@ -1984,9 +1984,7 @@ function cpm_read_information_and_check_config() {
                 $cpm_config->warnings[] = $message;
               }
 
-              @trigger_error("");
-              @stat($path . '/' . $tmp_filename);
-              if (error_get_last() != "") {
+              if (@stat($path . '/' . $tmp_filename) === false) {
                 $cpm_config->errors[] = __('<strong>Files written to the %s directory by the Webserver cannot be read again!</strong>  Are you using IIS7 with FastCGI?');
               } else {
                 if ($thumb_type != "") {
@@ -2900,7 +2898,7 @@ function cpm_show_footer() { ?>
     <?php _e('<a href="http://claritycomic.com/comicpress-manager/" target="_new">ComicPress Manager</a> is built for the <a href="http://www.mindfaucet.com/comicpress/" target="_new">ComicPress</a> theme', 'comicpress-manager') ?> |
     <?php _e('Copyright 2008 <a href="mailto:john@claritycomic.com?Subject=ComicPress Manager Comments">John Bintz</a>', 'comicpress-manager') ?> |
     <?php _e('Released under the GNU GPL', 'comicpress-manager') ?> |
-    <?php _e('Version 1.1.1', 'comicpress-manager') ?> |
+    <?php _e('Version 1.1.2', 'comicpress-manager') ?> |
     <?php _e('Uses the <a target="_new" href="http://www.dynarch.com/projects/calendar/">Dynarch DHTML Calendar Widget</a>', 'comicpress-manager') ?>
   </div>
 <?php }
