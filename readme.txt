@@ -2,8 +2,8 @@
 Contributors: johncoswell
 Tags: comicpress, webcomics, management, admin, posts, plugin
 Requires at least: 2.5.1
-Tested up to: 2.6
-Stable tag: 1.1.2
+Tested up to: 2.6.2
+Stable tag: 1.1.3
 Donate link: http://claritycomic.com/comicpress-manager/#donate
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.
@@ -12,7 +12,7 @@ ComicPress Manager ties in with the ComicPress theme to make managing your WordP
 
 The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://www.mindfaucet.com/comicpress/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress.
 
-As of version 1.1.2, it allows you to:
+As of version 1.1.3, it allows you to:
 
 * Upload individual comic files or a Zip archive of comic files directly into your comics folder and generate posts for each comic as it's uploaded with the correct go-live date and time
   * To save a trip to the Edit Post page, you can use the Visual Editor right in ComicPress Manager to add styled text content to your post.
@@ -48,7 +48,7 @@ As of version 1.1.2, it allows you to:
 
 Additionally, on your Dashboard, you'll see the latest stories from the ComicPress site, so you can keep up on updates, upgrades, and other news to make your Webcomics publishing using WordPress/ComicPress easier and more fun.
 
-ComicPress Manager is built for WordPress 2.5.1 and ComicPress 2.1 and 2.5. ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.
+ComicPress Manager is built for WordPress 2.5.1 & above and ComicPress 2.1 and 2.5. ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.
 
 Before you begin working with ComicPress Manager, and especially while the software is still in development, it is recommended that you make regular backups of your WordPress database and comics folder.
 
@@ -95,7 +95,7 @@ The upload\_max\_filesize setting on your server may be set too low.  You can do
 
 There seems to be an issue with FastCGI for IIS, where permissions on files created by the Webserver process have no permissions whatsoever, and need to have permissions granted by a user with Administrator privileges.
 
-Additionally, there should only be one instance of <code>upload\_tmp\_file</code> in your php.ini file, and the directory specified needs to be writable by the Webserver, and has to have no backslash at the end of the path:
+Additionally, there should only be one instance of <code>upload_tmp_file</code> in your php.ini file, and the directory specified needs to be writable by the Webserver, and has to have no backslash at the end of the path:
 
 <pre>upload_tmp_dir = "c:\inetpub\temp\uploads"</pre>
 

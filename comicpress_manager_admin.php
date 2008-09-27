@@ -589,7 +589,7 @@ function cpm_manager_status() {
     }  
   }
   
-  foreach (get_posts(cpm_generate_get_comic_posts_string()) as $comic_post) {
+  foreach (cpm_query_posts() as $comic_post) {
     $timestamp = strtotime($comic_post->post_date);
     $post_date = date("Y-m-d", $timestamp);
     if (!isset($data_by_date[$post_date])) {
@@ -2223,15 +2223,16 @@ function cpm_available_backup_files_sort($a, $b) {
   return ($a[1] > $b[1]) ? -1 : 1;
 }
 
-function cpm_generate_get_comic_posts_string() {
+function cpm_query_posts() {
   global $cpm_config;
-  $get_posts_string = "numberposts=999999&post_status=&category=";
+  $query_posts_string = "posts_per_page=999999&cat=";
   if (is_array($cpm_config->properties['comiccat'])) {
-    $get_posts_string .= implode(",", $cpm_config->properties['comiccat']);
+    $query_posts_string .= implode(",", $cpm_config->properties['comiccat']);
   } else {
-    $get_posts_string .= $cpm_config->properties['comiccat'];
+    $query_posts_string .= $cpm_config->properties['comiccat'];
   }
-  return $get_posts_string;
+
+  return query_posts($query_posts_string);
 }
 
 /**
@@ -2240,7 +2241,6 @@ function cpm_generate_get_comic_posts_string() {
 function cpm_handle_actions() {
   global $cpm_config;
 
-  $get_posts_string = cpm_generate_get_comic_posts_string();
   //
   // take actions based upon $_POST['action']
   //
@@ -2276,7 +2276,7 @@ function cpm_handle_actions() {
         // toward one blog/one comic...
         $all_post_dates = array();
 
-        foreach (get_posts($get_posts_string) as $comic_post) {
+        foreach (cpm_query_posts() as $comic_post) {
           $all_post_dates[] = date(CPM_DATE_FORMAT, strtotime($comic_post->post_date));
         }
         $all_post_dates = array_unique($all_post_dates);
@@ -2298,7 +2298,7 @@ function cpm_handle_actions() {
       // create all missing posts
       case "create-missing-posts":
         $all_post_dates = array();
-        foreach (get_posts($get_posts_string) as $comic_post) {
+        foreach (cpm_query_posts() as $comic_post) {
           $all_post_dates[] = date(CPM_DATE_FORMAT, strtotime($comic_post->post_date));
         }
         $all_post_dates = array_unique($all_post_dates);
@@ -2352,7 +2352,7 @@ function cpm_handle_actions() {
             extract($result, EXTR_PREFIX_ALL, 'filename');
 
             $all_possible_posts = array();
-            foreach (get_posts($get_posts_string) as $comic_post) {
+            foreach (cpm_query_posts() as $comic_post) {
               if (date(CPM_DATE_FORMAT, strtotime($comic_post->post_date)) == $filename_date) {
                 $all_possible_posts[] = $comic_post->ID;
               }
@@ -2504,7 +2504,7 @@ function cpm_handle_actions() {
 
         $comic_posts_to_change = array();
 
-        $all_posts = get_posts($get_posts_string);
+        $all_posts = cpm_query_posts();
 
         // get the target dates for all files to move
         if (count($comic_posts_to_date_shift) > 0) {
