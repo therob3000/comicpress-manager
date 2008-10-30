@@ -50,6 +50,7 @@ $cpm_config_properties = array(
   'default_post_content' => "",
   'default_override_title' => '',
   'default_post_tags' => "",
+  'default_additional_categories' => array(12),
   'archive_generate_thumbnails' => true,
   'rss_generate_thumbnails'     => true,
   'thumbnail_quality'           => 80

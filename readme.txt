@@ -2,8 +2,8 @@
 Contributors: johncoswell
 Tags: comicpress, webcomics, management, admin, posts, plugin
 Requires at least: 2.5.1
-Tested up to: 2.6.2
-Stable tag: 1.1.3
+Tested up to: 2.6.3
+Stable tag: 1.2.0
 Donate link: http://claritycomic.com/comicpress-manager/#donate
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.
@@ -12,7 +12,7 @@ ComicPress Manager ties in with the ComicPress theme to make managing your WordP
 
 The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://www.mindfaucet.com/comicpress/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress.
 
-As of version 1.1.3, it allows you to:
+As of version 1.2.0, it allows you to:
 
 * Upload individual comic files or a Zip archive of comic files directly into your comics folder and generate posts for each comic as it's uploaded with the correct go-live date and time
   * To save a trip to the Edit Post page, you can use the Visual Editor right in ComicPress Manager to add styled text content to your post.
@@ -20,6 +20,7 @@ As of version 1.1.3, it allows you to:
   * You can also upload a single file that does not specify a date in the filename, and enter in the post date on the upload page.
   * You can also replace a single existing file with any other file, preserving the original file's name after upload
   * If you're using a different date naming convention, you can convert the old convention to the currently defined date naming convention
+* Use a stripped-down version of the Comic uploader straight from the Write menu (Write -> Comic)
 * Upload thumbnails directly to the archive and RSS folders
 * Generate thumbnails for all uploaded comics for your archive and RSS folders
 * Re-generate thumbnails after you've changed thumbnail parameters
@@ -46,7 +47,7 @@ As of version 1.1.3, it allows you to:
   * If you're using a comicpress-config.php file, and the permissions are set correctly, you can modify the settings directly from ComicPress manager. If your permissions are not correct, the config file that ComicPress Manager would have written will be shown so that you can copy and paste it into your comicpress-config.php file.
   * If your config goes awry, you can also restore from a backup config.
 
-Additionally, on your Dashboard, you'll see the latest stories from the ComicPress site, so you can keep up on updates, upgrades, and other news to make your Webcomics publishing using WordPress/ComicPress easier and more fun.
+Additionally, on your Dashboard, you'll see the latest stories from the ComicPress site, so you can keep up on updates, upgrades, and other news to make your Webcomics publishing using WordPress + ComicPress easier and more fun.
 
 ComicPress Manager is built for WordPress 2.5.1 & above and ComicPress 2.1 and 2.5. ComicPress Manager works on PHP 4, but using PHP 5 is strongly recommended.
 
@@ -76,6 +77,10 @@ This means that functions.php is attempting to include the comicpress-config.php
 * A file (or files) named comicpress-config.php.{long string of numbers}
 
 If this has happened, either use the restore function that appears on the config errors screen, or copy the most recent comicpress-config.php.{long string of numbers} file in your theme's directory back to comicpress-config.php.  Then, try experimenting with different permissions settings on your theme folder to see if the situation improves, or use ComicPress Manager generate the config that you can then copy and paste into ComicPress Manager.
+
+= I'm getting permissions errors when uploading comics =
+
+Depending on your hosting type and set up, you may need to use your FTP client's chmod command or your Webhost's file management frontend to increase the permissions of your folders. chmod 775 or chmod 777 are both settings that may work on your hosting.
 
 = I can't upload a Zip file at all =
 
@@ -178,6 +183,6 @@ The Dynarch DHTML Calendar Widget is released under the GNU LGPL.
 
 == Credits ==
 
-Big thanks to Tyler Martin for his assistance, bug finding, and with coming up with ComicPress in the first place.  Additional big thanks to Philip Hofer of Frumph.NET for assistance in debugging problems with Yahoo! hosting and Windows/IIS.  Also thanks to Danny Burleson, karchesky, tk0169, Tim Hengeveld, and Keith C. Smith for beta testing, the folks at the Lunchbox Funnies forum for finding bugs in the initial releases, and everyone who donated time, money, or equipment to make this software great.
+Big thanks to Tyler Martin for his assistance, bug finding, and with coming up with ComicPress in the first place.  Additional big thanks to Philip Hofer of Frumph.NET for assistance in debugging problems with Yahoo! hosting and Windows/IIS.  Also thanks to John LaRusic for the initial code contribution for Write Comic. Also thanks to Danny Burleson, karchesky, tk0169, Tim Hengeveld, Keith C. Smith, and philipspence for beta testing, the folks at the Lunchbox Funnies forum for finding bugs in the initial releases, and everyone who donated time, money, or equipment to make this software great.
 
 ComicPress Manager uses the [Dynarch DHTML Calendar Widget](http://www.dynarch.com/projects/calendar/) for date fields.

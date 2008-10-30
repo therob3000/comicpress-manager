@@ -107,22 +107,13 @@ div#editor-toolbar a.active {
   background-color: #CEE1EF
 }
 
-form#config-editor span.config-title {
-  width: 180px;
-  display: block;
-  position: absolute;
-  font-weight: bold
-}
-
-form#config-editor span.config-field {
-  width: 390px;
-  margin-left: 180px;
-  display: inline;
-}
-
 form#config-editor input.update-config {
   clear: both;
   width: 295px;
+}
+
+.form-title {
+  font-weight: bold
 }
 
 form span.form-title {
@@ -130,7 +121,6 @@ form span.form-title {
   display: block;
   position: absolute;
   height: 30px;
-  font-weight: bold
 }
 
 form span.form-field {
@@ -140,7 +130,11 @@ form span.form-field {
   height: 30px;
 }
 
-form span.form-field input {
+table td {
+  padding-bottom: 5px
+}
+
+table input {
   font-size: 12px;
   border: solid black 1px;
   padding: 1px;
