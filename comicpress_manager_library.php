@@ -51,7 +51,8 @@ class ComicPressConfig {
 
 function cpm_get_home_url() {
   if (function_exists('get_current_site')) { // WPMU
-    return preg_replace('#/$#', '', "http://" . get_current_site()->domain . get_current_site()->path);
+    $site = get_current_site();
+    return preg_replace('#/$#', '', "http://" . $site->domain . $site->path);
   } else {
     return get_option('home');
   }
