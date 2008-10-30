@@ -1,0 +1,199 @@
+div#cpm-container {
+  padding: 10px;
+  padding-bottom: 0
+}
+
+div#cpm-container h1 {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+div#cpm-container h2 {
+  margin-top: 0;
+  margin-bottom: 4px;
+}
+
+div#cpm-container h3 { margin-top: 0 }
+
+div#cpm-container em { font-style: oblique }
+
+div#cpm-container div#cpm-left-column {
+  float: left;
+  display: inline;
+  width: 320px;
+  padding-top: 10px;
+}
+
+div#cpm-container div#cpm-right-column {
+ float: left;
+ display: inline;
+ width: 540px;
+ margin-left: 10px;
+}
+
+div#cpm-container div#comicpress-details {
+  border: solid #acb 1px;
+  background-color: #dfe;
+  padding: 10px;
+}
+
+div#cpm-container div#comicpress-help {
+  border: solid #cab 1px;
+  background-color: #fde;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+div#cpm-container div#config-editor {
+  border: solid #abc 1px;
+  background-color: #fed;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+div#cpm-container div.activity-box {
+  border: solid #999 1px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+div#cpm-container div.top-activity-box {
+  margin-top: 0;
+}
+
+div#cpm-container div#cpm-footer {
+  color: #777;
+  margin-top: 10px;
+  text-align: left;
+  clear: both
+}
+
+div#cpm-container div#new-post-holder,
+div#cpm-container div#multiple-new-post-holder {
+  border: solid #444 1px;
+  padding: 5px;
+  width: 510px;
+  margin-top: 5px;
+}
+
+div#zip-upload-warning {
+  border: solid red 1px;
+  background-color: #dcc;
+  margin: 5px;
+  padding: 5px;
+}
+
+div#image-preview {
+  margin: 5px;
+  padding: 5px;
+  background-color: #777;
+  border: solid black 2px
+}
+
+div#editor-toolbar {
+  text-align: right;
+  overflow: hidden
+}
+
+div#editor-toolbar a {
+  padding: 5px;
+  display: block;
+  float: right;
+  cursor: pointer;
+  cursor: hand;
+}
+
+div#editor-toolbar a.active {
+  background-color: #CEE1EF
+}
+
+form#config-editor input.update-config {
+  clear: both;
+  width: 295px;
+}
+
+.form-title {
+  font-weight: bold
+}
+
+form span.form-title {
+  width: 280px;
+  display: block;
+  position: absolute;
+  height: 30px;
+}
+
+form span.form-field {
+  width: 200px;
+  display: inline;
+  margin-left: 290px;
+  height: 30px;
+}
+
+table td {
+  padding-bottom: 5px
+}
+
+table input {
+  font-size: 12px;
+  border: solid black 1px;
+  padding: 1px;
+}
+
+#cpm-container h2 { padding-right: 0; }
+
+#comicpress-details h3 {
+  color: #7f958a;
+  border-bottom: 1px solid #acb;
+}
+
+#comicpress-help h2 {
+  color: #b17f98;
+  border-color: #cab;
+}
+
+#categories-table { border-top: solid #aaa 1px }
+
+#categories-table th { padding: 0 10px }
+
+#categories-table td { border-top: solid #ddd 1px; }
+
+.code-block {
+  background-color: white;
+  border:solid black 2px;
+  padding: 5px;
+  overflow: auto;
+  height: 300px;
+  font-family: 'courier new';
+  white-space: pre;
+  display: block
+}
+
+div.upload-holder {
+  text-align: center;
+  padding: 3px 0;
+  border-top: solid #ddd 1px;
+}
+
+div#cpm-messages, div#cpm-errors, div#cpm-warnings {
+  padding: 5px;
+  margin-bottom: 5px;
+  border-width: 1px;
+  border-style: solid
+}
+
+div#cpm-messages {
+  background-color: #ffe;
+  border-color: #ddc;
+}
+
+div#cpm-warnings {
+  background-color: #fee;
+  border-color: #dcc;
+}
+
+div#cpm-errors {
+  background-color: #330007;
+  border-color: #a00;
+  color: white
+}
