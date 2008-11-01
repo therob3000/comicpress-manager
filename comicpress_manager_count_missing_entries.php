@@ -17,6 +17,8 @@
       $cpm_config->properties = array_merge($cpm_config->properties, $cpm_config_properties);
     }
 
+    cpm_read_information_and_check_config();
+
     if (isset($_REQUEST['blog_id']) && function_exists('switch_to_blog')) {
       switch_to_blog((int)$_REQUEST['blog_id']);
     }
