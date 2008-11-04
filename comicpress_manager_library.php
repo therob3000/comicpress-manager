@@ -266,4 +266,280 @@ function cpm_read_comics_folder() {
   }
 }
 
+/**
+ * Read information about the current installation.
+ */
+function cpm_read_information_and_check_config() {
+  global $cpm_config, $cpm_attempted_document_roots, $blog_id;
+
+  $cpm_config->config_method = read_current_theme_comicpress_config();
+  $cpm_config->config_filepath = get_functions_php_filepath();
+  $cpm_config->can_write_config = can_write_comicpress_config($cpm_config->config_filepath);
+
+  $cpm_config->path = get_comic_folder_path();
+  $cpm_config->plugin_path = PLUGINDIR . '/' . plugin_basename(__FILE__);
+
+  foreach (array_keys($cpm_config->separate_thumbs_folder_defined) as $type) {
+    $cpm_config->separate_thumbs_folder_defined[$type] = ($cpm_config->properties['comic_folder'] != $cpm_config->properties[$type . '_comic_folder']);
+  }
+
+  $cpm_config->errors = array();
+  $cpm_config->warnings = array();
+  $cpm_config->detailed_warnings = array();
+  $cpm_config->messages = array();
+  $cpm_config->show_config_editor = true;
+
+  $folders = array(
+    array('comic folder', 'comic_folder', true, ""),
+    array('RSS feed folder', 'rss_comic_folder', false, 'rss'),
+    array('archive folder', 'archive_comic_folder', false, 'archive'));
+
+  if (CPM_SKIP_CHECKS) {
+    // if the user knows what they're doing, disabling all of the checks improves performance
+    
+    foreach ($folders as $folder_info) {
+      list ($name, $property, $is_fatal, $thumb_type) = $folder_info;
+      $path = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$property];
+      if ($thumb_type != "") {
+        $cpm_config->thumbs_folder_writable[$thumb_type] = true;
+      }
+    }
+    $cpm_config->comic_category_info = get_object_vars(get_category($cpm_config->properties['comiccat']));
+    $cpm_config->blog_category_info = get_object_vars(get_category($cpm_config->properties['blogcat']));
+    $cpm_config->comic_files = cpm_read_comics_folder();
+  } else {
+    // quick check to see if the theme is ComicPress.
+    // this needs to be made more robust.
+    if (preg_match('/ComicPress/', get_current_theme()) == 0) {
+      $cpm_config->detailed_warnings[] = __("The current theme isn't the ComicPress theme.  If you've renamed the theme, ignore this warning.", 'comicpress-manager');
+    }
+
+    $any_cpm_document_root_failures = false;
+
+    // is the site root configured properly?
+    if (!file_exists(CPM_DOCUMENT_ROOT)) {
+      $cpm_config->errors[] = sprintf(__('The comics site root <strong>%s</strong> does not exist. Check your <a href="options-general.php">WordPress address and address settings</a>.', 'comicpress-manager'), CPM_DOCUMENT_ROOT);
+      $any_cpm_document_root_failures = true;
+    }
+
+    if (!file_exists(CPM_DOCUMENT_ROOT . '/index.php')) {
+      $cpm_config->errors[] = sprintf(__('The comics site root <strong>%s</strong> does not contain a WordPress index.php file. Check your <a href="options-general.php">WordPress address and address settings</a>.', 'comicpress-manager'), CPM_DOCUMENT_ROOT);
+      $any_cpm_document_root_failures = true;
+    }
+
+    if ($any_cpm_document_root_failures) {
+      $cpm_config->errors[] = print_r($cpm_attempted_document_roots, true);
+    }
+
+    // folders that are the same as the comics folder won't be written to
+    $all_the_same = array();
+    foreach ($cpm_config->separate_thumbs_folder_defined as $type => $value) {
+      if (!$value) { $all_the_same[] = $type; }
+    }
+
+    if (count($all_the_same) > 0) {
+      $cpm_config->detailed_warnings[] = sprintf(__("The <strong>%s</strong> folders and the comics folder are the same.  You won't be able to generate thumbnails until you change these folders.", 'comicpress-manager'), implode(", ", $all_the_same));
+    }
+
+    // check the existence and writability of all image folders
+    foreach ($folders as $folder_info) {
+      list ($name, $property, $is_fatal, $thumb_type) = $folder_info;
+      if (($thumb_type == "") || ($cpm_config->separate_thumbs_folder_defined[$thumb_type] == true)) {
+        $path = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$property];
+        if (function_exists('get_current_site')) { // WPMU
+          $path .= "/" . $blog_id;
+        }
+        if (!file_exists($path)) {
+          $cpm_config->errors[] = sprintf(__('The %1$s <strong>%2$s</strong> does not exist.  Did you create it within the <strong>%3$s</strong> folder?' , 'comicpress-manager'), $name, $cpm_config->properties[$property], CPM_DOCUMENT_ROOT);
+        } else {
+          do {
+            $tmp_filename = "test-" . md5(rand());
+          } while (file_exists($path . '/' . $tmp_filename));
+
+          $ok_to_warn = true;
+          if ($thumb_type != "") {
+            $ok_to_warn = $cpm_config->properties[$thumb_type . "_generate_thumbnails"];
+          }
+
+          if ($ok_to_warn) {
+            if (!@touch($path . '/' . $tmp_filename)) {
+              $message = sprintf(__('The %1$s <strong>%2$s</strong> is not writable by the Webserver.', 'comicpress-manager'), $name, $cpm_config->properties[$property]);
+              if ($is_fatal) {
+                $cpm_config->errors[] = $message;
+              } else {
+                $cpm_config->warnings[] = $message;
+              }
+            } else {
+              if (@stat($path . '/' . $tmp_filename) === false) {
+                $cpm_config->errors[] = __('<strong>Files written to the %s directory by the Webserver cannot be read again!</strong>  Are you using IIS7 with FastCGI?', $cpm_config->properties[$property]);
+              } else {
+                if ($thumb_type != "") {
+                  $cpm_config->thumbs_folder_writable[$thumb_type] = false;
+                }
+              }
+
+              @unlink($path . '/' . $tmp_filename);
+              if ($thumb_type != "") {
+                $cpm_config->thumbs_folder_writable[$thumb_type] = true;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // to generate thumbnails, a supported image processor is needed
+    if ($cpm_config->get_scale_method() == CPM_SCALE_NONE) {
+      $cpm_config->detailed_warnings[] = __("No image resize methods are installed (GD or ImageMagick).  You are unable to generate thumbnails automatically.", 'comicpress-manager');
+      $cpm_config->properties['archive_generate_thumbnails'] = false;
+      $cpm_config->properties['rss_generate_thumbnails'] = false;
+    }
+
+    // are there enough categories created?
+    if (count(get_all_category_ids()) < 2) {
+      $cpm_config->errors[] = __("You need to define at least two categories, a blog category and a comics category, to use ComicPress.  Visit <a href=\"categories.php\">Manage -> Categories</a> and create at least two categories, then return here to continue your configuration.", 'comicpress-manager');
+      $cpm_config->show_config_editor = false;
+    } else {
+      // ensure the defined comic category exists
+      if (is_null($cpm_config->properties['comiccat'])) {
+        // all non-blog categories are comic categories
+        $cpm_config->comic_category_info = array(
+          'name' => __("All other categories", 'comicpress-manager'),
+        );
+        $cpm_config->properties['comiccat'] = array_diff(get_all_category_ids(), array($cpm_config->properties['blogcat']));
+
+        if (count($cpm_config->properties['comiccat']) == 1) {
+          $cpm_config->properties['comiccat'] = $cpm_config->properties['comiccat'][0];
+          $cpm_config->comic_category_info = get_object_vars(get_category($cpm_config->properties['comiccat']));
+        }
+      } else {
+        if (!is_numeric($cpm_config->properties['comiccat'])) {
+          // the property is non-numeric
+          $cpm_config->errors[] = __("The comic category needs to be defined as a number, not an alphanumeric string.", 'comicpress-manager');
+        } else {
+          // one comic category is specified
+          if (is_null($cpm_config->comic_category_info = get_category($cpm_config->properties['comiccat']))) {
+            $cpm_config->errors[] = sprintf(__("The requested category ID for your comic, <strong>%s</strong>, doesn't exist!", 'comicpress-manager'), $cpm_config->properties['comiccat']);
+          } else {
+            $cpm_config->comic_category_info = get_object_vars($cpm_config->comic_category_info);
+          }
+        }
+      }
+
+      // ensure the defined blog category exists
+      // TODO: multiple blog categories
+      if (!is_numeric($cpm_config->properties['blogcat'])) {
+        // the property is non-numeric
+        $cpm_config->errors[] = __("The blog category needs to be defined as a number, not an alphanumeric string.", 'comicpress-manager');
+      } else {
+        if (is_null($cpm_config->blog_category_info = get_category($cpm_config->properties['blogcat']))) {
+          $cpm_config->errors[] = sprintf(__("The requested category ID for your blog, <strong>%s</strong>, doesn't exist!", 'comicpress-manager'), $cpm_config->properties['blogcat']);
+        } else {
+          $cpm_config->blog_category_info = get_object_vars($cpm_config->blog_category_info);
+        }
+
+        if (!is_array($cpm_config->properties['blogcat']) && !is_array($cpm_config->properties['comiccat'])) {
+          if ($cpm_config->properties['blogcat'] == $cpm_config->properties['comiccat']) {
+            $cpm_config->warnings[] = __("Your comic and blog categories are the same.  This will cause browsing problems for visitors to your site.", 'comicpress-manager');
+          }
+        }
+      }
+    }
+
+    // a quick note if you have no comics uploaded.
+    // could be a sign of something more serious.
+    if (count($cpm_config->comic_files = cpm_read_comics_folder()) == 0) {
+      $cpm_config->detailed_warnings[] = __("Your comics folder is empty!", 'comicpress-manager');
+    }
+  }
+}
+
+/**
+ * Read the ComicPress config from a file.
+ */
+function read_current_theme_comicpress_config() {
+  $current_theme_info = get_theme(get_current_theme());
+
+  $method = null;
+
+  $config_json_file = ABSPATH . '/' . $current_theme_info['Template Dir'] . '/config.json';
+
+  // harmonious json_decode
+  if (function_exists("json_decode")) {
+    if (file_exists($config_json_file)) {
+      $config = json_decode(file_get_contents($config_json_file), true);
+
+      $cpm_config->properties = array_merge($cpm_config->properties, $config);
+      $method = "config.json";
+    }
+  }
+  //harmonious_end
+
+  if (is_null($method)) {
+    if (!is_null($filepath = get_functions_php_filepath())) {
+      read_comicpress_config_functions_php($filepath);
+      $method = basename($filepath);
+    }
+  }
+
+  return $method;
+}
+
+/**
+ * Read the ComicPress config from a functions.php file.
+ * Note: this isn't super-robust, but should cover basic use cases.
+ */
+function read_comicpress_config_functions_php($filepath) {
+  global $cpm_config;
+
+  if (!file_exists($filepath)) { $cpm_config->warnings[] = "file not found: ${filepath}"; return; }
+
+  $file = file_get_contents($filepath);
+
+  $variable_values = array();
+
+  foreach (array_keys($cpm_config->properties) as $variable) {
+    if (preg_match("#\\$${variable}\ *\=\ *([^\;]*)\;#", $file, $matches) > 0) {
+      $variable_values[$variable] = preg_replace('#"#', '', $matches[1]);
+    }
+  }
+
+  $cpm_config->properties = array_merge($cpm_config->properties, $variable_values);
+}
+
+/**
+ * Get the path to the currently used config.
+ */
+function get_functions_php_filepath() {
+  $template_files = glob(TEMPLATEPATH . '/*');
+  if ($template_files === false) { $template_files = array(); }
+
+  foreach (array("comicpress-config.php", "functions.php") as $possible_file) {
+    foreach ($template_files as $file) {
+      if (pathinfo($file, PATHINFO_BASENAME) == $possible_file) {
+        return $file;
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * See if we can write to the config folder.
+ */
+function can_write_comicpress_config($filepath) {
+  $perm_check_filename = $filepath . '-' . md5(rand());
+  if (@touch($perm_check_filename) === true) {
+    $move_check_filename = $perm_check_filename . '-' . md5(rand());
+    if (@rename($perm_check_filename, $move_check_filename)) {
+      @unlink($move_check_filename);
+      return true;
+    } else {
+      @unlink($perm_check_filename);
+      return false;
+    }
+  }
+  return false;
+}
+
 ?>
