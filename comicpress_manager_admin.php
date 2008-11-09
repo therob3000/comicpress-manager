@@ -1476,7 +1476,7 @@ function cpm_show_footer() { ?>
     <?php _e('<a href="http://claritycomic.com/comicpress-manager/" target="_new">ComicPress Manager</a> is built for the <a href="http://www.mindfaucet.com/comicpress/" target="_new">ComicPress</a> theme', 'comicpress-manager') ?> |
     <?php _e('Copyright 2008 <a href="mailto:john@claritycomic.com?Subject=ComicPress Manager Comments">John Bintz</a>', 'comicpress-manager') ?> |
     <?php _e('Released under the GNU GPL', 'comicpress-manager') ?> |
-    <?php _e('Version 1.2.2', 'comicpress-manager') ?> |
+    <?php _e('Version 1.2.5', 'comicpress-manager') ?> |
     <?php _e('Uses the <a target="_new" href="http://www.dynarch.com/projects/calendar/">Dynarch DHTML Calendar Widget</a>', 'comicpress-manager') ?>
   </div>
 <?php }

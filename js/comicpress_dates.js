@@ -33,7 +33,7 @@ function reschedule_posts(start) {
         if (all_valid) {
           interval = parts;
           date_parts = $F('dates[' + comic_files_keys[i] + ']').split("-");
-          current_date = Date.UTC(date_parts[0], date_parts[1] - 1, date_parts[2], 6) + 86400 * 1000;
+          current_date = Date.UTC(date_parts[0], date_parts[1] - 1, date_parts[2], 2) + 86400 * 1000;
         } else {
           alert(interval + " " + valid_interval_message);
           break;

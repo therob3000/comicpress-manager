@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/comicpress_manager\n"
-"POT-Creation-Date: 2008-11-03 20:56-0500\n"
+"POT-Creation-Date: 2008-11-09 08:28-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,63 +17,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: actions/comicpress_change-dates.php:89
+#: actions/comicpress_change-dates.php:90
 #, php-format
 msgid "<strong>Post %1$s moved to %2$s.</strong>"
 msgstr ""
 
-#: actions/comicpress_change-dates.php:92
+#: actions/comicpress_change-dates.php:93
 #, php-format
 msgid ""
 "<strong>Moving post %1$s to %2$s would cause two comic posts to exist on the "
 "same day.</strong>  This is not allowed in the automated process."
 msgstr ""
 
-#: actions/comicpress_change-dates.php:100
+#: actions/comicpress_change-dates.php:101
 #, php-format
 msgid ""
 "<strong>You are moving two comics to the same date: %s.</strong>  This is "
 "not allowed in the automated process."
 msgstr ""
 
-#: actions/comicpress_change-dates.php:109
-#: actions/comicpress_change-dates.php:146
+#: actions/comicpress_change-dates.php:110
+#: actions/comicpress_change-dates.php:147
 msgid "comic folder"
 msgstr ""
 
-#: actions/comicpress_change-dates.php:110
-#: actions/comicpress_change-dates.php:147 pages/comicpress_index.php:90
+#: actions/comicpress_change-dates.php:111
+#: actions/comicpress_change-dates.php:148 pages/comicpress_index.php:90
 msgid "RSS feed folder"
 msgstr ""
 
-#: actions/comicpress_change-dates.php:111
-#: actions/comicpress_change-dates.php:148
+#: actions/comicpress_change-dates.php:112
+#: actions/comicpress_change-dates.php:149
 msgid "archive folder"
 msgstr ""
 
-#: actions/comicpress_change-dates.php:127
+#: actions/comicpress_change-dates.php:128
 #, php-format
 msgid "The %1$s <strong>%2$s</strong> does not exist."
 msgstr ""
 
-#: actions/comicpress_change-dates.php:133
+#: actions/comicpress_change-dates.php:134
 #, php-format
 msgid "<strong>Rename %1$s file %2$s to %3$s.</strong>"
 msgstr ""
 
-#: actions/comicpress_change-dates.php:135
+#: actions/comicpress_change-dates.php:136
 #, php-format
 msgid ""
 "<strong>The renaming of %1$s to %2$s failed.</strong>  Check the permissions "
 "on %3$s"
 msgstr ""
 
-#: actions/comicpress_change-dates.php:157
+#: actions/comicpress_change-dates.php:158
 #, php-format
 msgid "<strong>Rolling back %s.</strong>"
 msgstr ""
 
-#: actions/comicpress_change-dates.php:166
+#: actions/comicpress_change-dates.php:168
 #, php-format
 msgid "<strong>Rename error, rolling back post %1$s to %2$s.</strong>"
 msgstr ""
@@ -654,7 +654,7 @@ msgid "Released under the GNU GPL"
 msgstr ""
 
 #: comicpress_manager_admin.php:1479
-msgid "Version 1.2.2"
+msgid "Version 1.2.5"
 msgstr ""
 
 #: comicpress_manager_admin.php:1480
