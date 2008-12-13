@@ -19,7 +19,10 @@ function cpm_action_update_config() {
     }
   }
 
-  if (function_exists('get_site_option')) { cpm_wpmu_save_options(); }
+  if (function_exists('get_site_option')) {
+    cpm_wpmu_save_options();
+    $cpm_config->is_wp_options = true;
+  }
 
   if (!$cpm_config->is_wp_options) {
     if (!$do_write) {

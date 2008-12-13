@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/comicpress_manager\n"
-"POT-Creation-Date: 2008-12-13 10:41-0500\n"
+"POT-Creation-Date: 2008-12-13 10:57-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -172,24 +172,24 @@ msgid ""
 "directories on your own."
 msgstr ""
 
-#: actions/comicpress_update-config.php:29
+#: actions/comicpress_update-config.php:32
 msgid ""
 "<strong>No comicpress-config.php file was found in your theme folder.</"
 "strong> Using default configuration file."
 msgstr ""
 
-#: actions/comicpress_update-config.php:31
+#: actions/comicpress_update-config.php:34
 msgid "<strong>Your configuration:</strong>"
 msgstr ""
 
-#: actions/comicpress_update-config.php:43
+#: actions/comicpress_update-config.php:46
 #, php-format
 msgid ""
 "<strong>Configuration updated and original config backed up to %s.</strong> "
 "Rename this file to comicpress-config.php if you are having problems."
 msgstr ""
 
-#: actions/comicpress_update-config.php:47
+#: actions/comicpress_update-config.php:50
 #, php-format
 msgid ""
 "<strong>Configuration not updated</strong>, check the permissions of %s and "
@@ -198,7 +198,7 @@ msgid ""
 "php file:"
 msgstr ""
 
-#: actions/comicpress_update-config.php:56
+#: actions/comicpress_update-config.php:59
 msgid "<strong>Configuration updated in database.</strong>"
 msgstr ""
 
