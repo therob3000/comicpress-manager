@@ -128,13 +128,13 @@ function cpm_manager_index() {
         </div>
       </div>
     </div>
-    <br /><input id="submit" type="submit" value="<?php
+    <br /><input class="button" id="submit" type="submit" value="<?php
       if (extension_loaded("zip")) {
         _e("Upload Image &amp; Zip Files", 'comicpress-manager');
       } else {
         _e("Upload Image Files", 'comicpress-manager');
       }
-    ?>" style="width: 520px" />
+    ?>" />
   </form>
   <script type="text/javascript">
     Calendar.setup({

@@ -4,7 +4,7 @@
  * Write Comic Post is a stripped-down version of the ComicPress Upload screen
  * that lives in the Write menu of WP Admin.
  */
-function cpm_manager_write_comic() {
+function cpm_manager_write_comic($form_target, $show_header = true) {
   global $cpm_config;
 
   $ok_to_generate_thumbs = false;
@@ -14,7 +14,7 @@ function cpm_manager_write_comic() {
     foreach ($cpm_config->thumbs_folder_writable as $type => $value) {
       if ($value) {
         if ($cpm_config->separate_thumbs_folder_defined[$type] !== false) {
-          if ($cpm_config->properties[$type . "_generate_thumbnails"] == true) {
+          if (cpm_option("${type}-generate-thumbnails") == 1) {
             $ok_to_generate_thumbs = true;
             $thumbnails_to_generate[] = $type;
           }
@@ -29,7 +29,9 @@ function cpm_manager_write_comic() {
     <div id="cpm-container">
       <?php cpm_handle_warnings() ?>
       <?php if (count($cpm_config->errors) == 0) { ?>
-        <h2><?php _e("Write Comic Post", 'comicpress-manager') ?></h2>
+        <?php if ($show_header) { ?>
+          <h2><?php _e("Write Comic Post", 'comicpress-manager') ?></h2>
+        <?php } ?>
 
         <p>
           <?php printf(__("<strong>Upload a single comic file</strong> and immediately start editing the associated post. Your post will be going live at <strong>%s</strong> on the provided date.", 'comicpress-manager'), $cpm_config->properties['default_post_time']) ?>
@@ -40,7 +42,7 @@ function cpm_manager_write_comic() {
           <?php } ?>
         </p>
 
-        <form action="" method="post" enctype="multipart/form-data">
+        <form action="?page=<?php echo $form_target ?>" method="post" enctype="multipart/form-data">
           <input type="hidden" name="action" value="write-comic-post" />
           <input type="hidden" name="upload-destination" value="comic" />
           <input type="hidden" name="new_post" value="yes" />
@@ -62,7 +64,7 @@ function cpm_manager_write_comic() {
               </tr>
             <?php } ?>
           </table>
-          <input type="submit" value="Upload Comic File and Edit Post" />
+          <input type="submit" class="button" value="Upload Comic File and Edit Post" />
         </form>
       <?php } ?>
     </div>

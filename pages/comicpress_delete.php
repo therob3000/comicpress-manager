@@ -26,7 +26,7 @@ function cpm_manager_delete() {
       <p>
         <?php _e("<strong>NOTE:</strong> If more than one possible post is found, neither the posts nor the comic file will be deleted.  ComicPress Manager cannot safely resolve such a conflict.", 'comicpress-manager') ?>
       </p>
-      <input type="submit" id="submit" value="<?php _e("Delete comic and post", 'comicpress-manager') ?>" style="width: 520px" />
+      <input class="button" type="submit" id="submit" value="<?php _e("Delete comic and post", 'comicpress-manager') ?>" />
     </form>
   <?php } else { ?>
     <p><?php _e("You haven't uploaded any comics yet.", 'comicpress-manager') ?></p>
