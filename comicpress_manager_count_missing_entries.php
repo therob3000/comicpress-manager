@@ -13,10 +13,6 @@
 
     $cpm_config = new ComicPressConfig();
 
-    if (isset($cpm_config_properties)) {
-      $cpm_config->properties = array_merge($cpm_config->properties, $cpm_config_properties);
-    }
-
     cpm_read_information_and_check_config();
 
     if (isset($_REQUEST['blog_id']) && function_exists('switch_to_blog')) {
@@ -37,7 +33,9 @@
       $comic_file = pathinfo($comic_file, PATHINFO_BASENAME);
       if (($result = cpm_breakdown_comic_filename($comic_file)) !== false) {
         if (!in_array($result['date'], $all_post_dates)) {
-          $missing_comic_count++;
+          if (($post_hash = generate_post_hash($result['date'], $result['converted_title'])) !== false) {
+            $missing_comic_count++;
+          }
         }
       }
     }

@@ -116,7 +116,7 @@ function cpm_action_change_dates() {
             if ($type != "") {
               if ($cpm_config->separate_thumbs_folder_defined[$type]) {
                 if ($cpm_config->thumbs_folder_writable[$type]) {
-                  $do_move = ($cpm_config->properties[$type . "_generate_thumbnails"]);
+                  $do_move = (cpm_option("${type}-generate-thumbnails") == 1);
                 }
               }
               $calculate_do_move[$type] = $do_move;

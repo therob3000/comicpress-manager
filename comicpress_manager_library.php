@@ -6,21 +6,17 @@
  */
 
 class ComicPressConfig {
-  /**
-    * This array stores the config that is read from disk.
-    * The only parameters you should change, if you wish, are the
-    * default_post_time and the default_post_content.
-    */
   var $properties = array(
     // Leave these alone! These values should be read from your comicpress-config.php file.
     // If your values from comicpress-config.php are not being read, then something is wrong in your config.
-    'comic_folder' => 'comics',
-    'comiccat'     => '1',
-    'blogcat'      => '2',
-    'rss_comic_folder' => 'comics',
+    'comic_folder'         => 'comics',
+    'comiccat'             => '1',
+    'blogcat'              => '2',
+    'rss_comic_folder'     => 'comics',
     'archive_comic_folder' => 'comics',
-    'archive_comic_width' => '380',
-    'blog_postcount' => '10'
+    'archive_comic_width'  => '380',
+    'rss_comic_width'      => '380',
+    'blog_postcount'       => '10'
   );
 
   var $warnings, $messages, $errors, $detailed_warnings, $show_config_editor;
@@ -28,6 +24,8 @@ class ComicPressConfig {
   var $comic_files, $blog_category_info, $comic_category_info;
   var $scale_method_cache, $identify_method_cache, $can_write_config;
   var $need_calendars = false;
+  var $is_wp_options = false;
+  var $wpmu_disk_space_message;
 
   var $separate_thumbs_folder_defined = array('rss' => null, 'archive' => null);
   var $thumbs_folder_writable = array('rss' => null, 'archive' => null);
@@ -47,32 +45,27 @@ class ComicPressConfig {
     $this->scale_method_cache = CPM_SCALE_GD;
     return $this->scale_method_cache;
   }
-}
 
-function cpm_get_home_url() {
-  if (function_exists('get_current_site')) { // WPMU
-    $site = get_current_site();
-    return preg_replace('#/$#', '', "http://" . $site->domain . $site->path);
-  } else {
-    return get_option('home');
+  function ComicPressConfig() {
+    if (function_exists('cpm_wpmu_config_setup')) { cpm_wpmu_config_setup($this); }
   }
 }
 
-function cpm_get_admin_url() {
-  if (function_exists('get_current_site')) { // WPMU
-    return cpm_get_home_url();
-  } else {
-    return get_option('siteurl');
-  }
-}
+/**
+ * Get a ComicPress Manager option from WP Options.
+ */
+function cpm_option($name) { return get_option("comicpress-manager-${name}"); }
 
+/**
+ * Calculate the document root where comics are stored.
+ */
 function cpm_calculate_document_root() {
   global $cpm_attempted_document_roots;
   $cpm_attempted_document_roots = array();
 
   $document_root = null;
 
-  $parsed_url = parse_url(cpm_get_home_url());
+  $parsed_url = parse_url(get_option('home'));
 
   $translated_script_filename = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']);
 
@@ -88,9 +81,16 @@ function cpm_calculate_document_root() {
 
   if (is_null($document_root)) { $document_root = $_SERVER['DOCUMENT_ROOT'] . $parsed_url['path']; }
 
+  if (function_exists('get_site_option')) {
+    $document_root = cpm_wpmu_modify_path($document_root);
+  }
+
   return $document_root;
 }
 
+/**
+ * Define the constants for the document root.
+ */
 function cpm_get_cpm_document_root() {
   if (!defined('CPM_DOCUMENT_ROOT')) {
     define('CPM_DOCUMENT_ROOT', cpm_calculate_document_root());
@@ -98,6 +98,10 @@ function cpm_get_cpm_document_root() {
   }
 }
 
+/**
+ * Transform a date()-compatible string into a human-parseable string.
+ * Useful for generating examples of date() usage.
+ */
 function cpm_transform_date_string($string, $replacements) {
   if (!is_array($replacements)) { return false; }
   if (!is_string($string)) { return false; }
@@ -112,10 +116,16 @@ function cpm_transform_date_string($string, $replacements) {
   return $transformed_string;
 }
 
+/**
+ * Generate an example date string.
+ */
 function cpm_generate_example_date($example_date) {
   return cpm_transform_date_string($example_date, array('Y' => "YYYY", 'm' => "MM", 'd' => "DD"));
 }
 
+/**
+ * Build the URI to a comic file.
+ */
 function cpm_build_comic_uri($filename, $base_dir = null) {
   if (($realpath_result = realpath($filename)) !== false) {
     $filename = $realpath_result;
@@ -156,6 +166,9 @@ function cpm_breakdown_comic_filename($filename, $allow_override = false) {
   }
 }
 
+/**
+ * Steal a user's private info.
+ */
 function cpm_steal_private_info() {
   // this one's for you, Tyler. :)
   // http://twitter.com/johncoswell/statuses/970351937
@@ -215,7 +228,7 @@ function generate_post_hash($filename_date, $filename_converted_title) {
  */
 function cpm_query_posts() {
   global $cpm_config;
-  $query_posts_string = "posts_per_page=999999&cat=";
+  $query_posts_string = "posts_per_page=999999&post_status=draft,pending,future,inherit,publish&cat=";
   if (is_array($cpm_config->properties['comiccat'])) {
     $query_posts_string .= implode(",", $cpm_config->properties['comiccat']);
   } else {
@@ -229,14 +242,9 @@ function cpm_query_posts() {
  * Get the absolute filepath to the comic folder.
  */
 function get_comic_folder_path() {
-  global $cpm_config, $blog_id;
+  global $cpm_config;
 
-  $path = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['comic_folder'];
-  if (function_exists('get_current_site')) {
-    $path .= (!empty($blog_id) ? "/${blog_id}" : "");
-  }
-
-  return $path;
+  return CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['comic_folder'];
 }
 
 /**
@@ -253,7 +261,7 @@ function cpm_read_comics_folder() {
     return array(); 
   }
 
-  if (CPM_SKIP_CHECKS) {
+  if (cpm_option("cpm-skip-checks") == 1) {
     return $glob_results;
   } else {
     $files = array();
@@ -294,9 +302,8 @@ function cpm_read_information_and_check_config() {
     array('RSS feed folder', 'rss_comic_folder', false, 'rss'),
     array('archive folder', 'archive_comic_folder', false, 'archive'));
 
-  if (CPM_SKIP_CHECKS) {
+  if (cpm_option("cpm-skip-checks") == 1) {
     // if the user knows what they're doing, disabling all of the checks improves performance
-    
     foreach ($folders as $folder_info) {
       list ($name, $property, $is_fatal, $thumb_type) = $folder_info;
       $path = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$property];
@@ -346,9 +353,6 @@ function cpm_read_information_and_check_config() {
       list ($name, $property, $is_fatal, $thumb_type) = $folder_info;
       if (($thumb_type == "") || ($cpm_config->separate_thumbs_folder_defined[$thumb_type] == true)) {
         $path = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$property];
-        if (function_exists('get_current_site')) { // WPMU
-          $path .= "/" . $blog_id;
-        }
         if (!file_exists($path)) {
           $cpm_config->errors[] = sprintf(__('The %1$s <strong>%2$s</strong> does not exist.  Did you create it within the <strong>%3$s</strong> folder?' , 'comicpress-manager'), $name, $cpm_config->properties[$property], CPM_DOCUMENT_ROOT);
         } else {
@@ -358,7 +362,7 @@ function cpm_read_information_and_check_config() {
 
           $ok_to_warn = true;
           if ($thumb_type != "") {
-            $ok_to_warn = $cpm_config->properties[$thumb_type . "_generate_thumbnails"];
+            $ok_to_warn = (cpm_option("${thumb_type}-generate-thumbnails") == 1);
           }
 
           if ($ok_to_warn) {
@@ -391,8 +395,6 @@ function cpm_read_information_and_check_config() {
     // to generate thumbnails, a supported image processor is needed
     if ($cpm_config->get_scale_method() == CPM_SCALE_NONE) {
       $cpm_config->detailed_warnings[] = __("No image resize methods are installed (GD or ImageMagick).  You are unable to generate thumbnails automatically.", 'comicpress-manager');
-      $cpm_config->properties['archive_generate_thumbnails'] = false;
-      $cpm_config->properties['rss_generate_thumbnails'] = false;
     }
 
     // are there enough categories created?
@@ -458,6 +460,13 @@ function cpm_read_information_and_check_config() {
  * Read the ComicPress config from a file.
  */
 function read_current_theme_comicpress_config() {
+  global $cpm_config;
+
+  if (function_exists('get_site_option')) {
+    cpm_wpmu_load_options();
+    return __("WordPress Options", 'comicpress-manager');
+  }
+
   $current_theme_info = get_theme(get_current_theme());
 
   $method = null;
