@@ -19,7 +19,7 @@ function cpm_manager_thumbnails() {
       foreach ($cpm_config->thumbs_folder_writable as $type => $value) {
         if ($value) {
           if ($cpm_config->separate_thumbs_folder_defined[$type] !== false) {
-            if ($cpm_config->properties[$type . "_generate_thumbnails"] == true) {
+            if (cpm_option("cpm-${type}-generate-thumbnails") == 1) {
               $ok_to_generate_thumbs = true; break;
             }
           }
@@ -32,16 +32,23 @@ function cpm_manager_thumbnails() {
         <form onsubmit="$('submit').disabled=true" action="" method="post">
           <input type="hidden" name="action" value="generate-thumbnails" />
 
-          <p><?php printf(__("You'll be generating thumbnails that are %s pixels wide.", 'comicpress-manager'), $cpm_config->properties['archive_comic_width']) ?></p>
+          <p><?php printf(__("You'll be generating <strong>archive thumbnails</strong> that are <strong>%s</strong> pixels wide and <strong>RSS thumbnails</strong> that are <strong>%s</strong> pixels wide.", 'comicpress-manager'), $cpm_config->properties['archive_comic_width'], $cpm_config->properties['rss_comic_width']) ?></p>
 
           <?php _e("Thumbnails to regenerate (<em>to select multiple comics, [Ctrl]-click on Windows &amp; Linux, [Command]-click on Mac OS X</em>):", 'comicpress-manager') ?>
           <br />
             <select style="height: auto; width: 445px" id="select-comics-dropdown" name="comics[]" size="<?php echo min(count($cpm_config->comic_files), 30) ?>" multiple>
-              <?php foreach ($cpm_config->comic_files as $file) { ?>
-                <option value="<?php echo substr($file, CPM_STRLEN_REALPATH_DOCUMENT_ROOT) ?>"><?php echo pathinfo($file, PATHINFO_BASENAME) ?></option>
+              <?php foreach ($cpm_config->comic_files as $file) {
+                $any_thumbs = false;
+                foreach (array('rss', 'archive') as $type) {
+                  $thumb_file = str_replace($cpm_config->properties['comic_folder'],
+                                            $cpm_config->properties["${type}_comic_folder"],
+                                            $file);
+                  if (file_exists($thumb_file)) { $any_thumbs = true; break; }
+                }
+                ?><option value="<?php echo substr($file, CPM_STRLEN_REALPATH_DOCUMENT_ROOT) ?>"><?php echo pathinfo($file, PATHINFO_BASENAME) ?><?php echo ($any_thumbs) ? " (*)" : "" ?></option>
               <?php } ?>
             </select>
-          <input type="submit" id="submit" value="<?php _e("Generate Thumbnails for Selected Comics", 'comicpress-manager') ?>" style="width: 520px" />
+          <input class="button" type="submit" id="submit" value="<?php _e("Generate Thumbnails for Selected Comics", 'comicpress-manager') ?>" style="width: 520px" />
         </form>
       <?php } else { ?>
         <p><?php _e("You haven't uploaded any comics yet.", 'comicpress-manager') ?></p>

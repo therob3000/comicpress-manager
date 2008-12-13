@@ -34,7 +34,7 @@ function cpm_manager_import() {
 
       <?php cpm_post_editor() ?>
 
-      <input type="submit" id="submit" value="<?php _e("Create posts", 'comicpress-manager') ?>" style="width: 520px" />
+      <input class="button" type="submit" id="submit" value="<?php _e("Create posts", 'comicpress-manager') ?>" />
     </form>
   </div>
 

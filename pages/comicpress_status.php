@@ -6,7 +6,7 @@
 function cpm_manager_status() {
   global $cpm_config;
 
-  $help_content = __("<p><strong>Status</strong> shows all comic files, posts in the comics category, and thumbnail existence in one table, to make it easy to analyze the current status of your site.</p>", 'comicpress-manager');
+  $help_content = __("<p><strong>Status</strong> shows all comic files, posts in the comics category, and thumbnail existence in one table, to make it easy to analyze the current status of your site. Problem dates will be indicated with <strong>red</strong> row colors.</p>", 'comicpress-manager');
 
   ob_start(); ?>
   
@@ -23,16 +23,23 @@ function cpm_manager_status() {
       $timestamp = strtotime($result['date']);
       $comic_date = date("Y-m-d", $timestamp);
       if (!isset($data_by_date[$comic_date])) {
-        $data_by_date[$comic_date] = array('timestamp' => $timestamp); 
+        $data_by_date[$comic_date] = array();
       }
-      $data_by_date[$comic_date]['comic_file'] = $comic_file;
-      $data_by_date[$comic_date]['comic_uri'] = cpm_build_comic_uri($comic_filepath, CPM_DOCUMENT_ROOT);
+
+      $comic_info = array(
+        'type' => 'comic',
+        'timestamp' => $timestamp,
+        'comic_file' => $comic_file,
+        'comic_uri' => cpm_build_comic_uri($comic_filepath, CPM_DOCUMENT_ROOT)
+      );
 
       if (count($thumbnails_found = cpm_find_thumbnails($result['date'])) > 0) {
         foreach ($thumbnails_found as $thumb_type => $thumb_filename) {
-          $data_by_date[$comic_date]["thumbnails_found_${thumb_type}"] = $thumb_filename;
+          $comic_info["thumbnails_found_${thumb_type}"] = $thumb_filename;
         }
       }
+
+      $data_by_date[$comic_date][] = $comic_info;
     }
   }
 
@@ -40,10 +47,17 @@ function cpm_manager_status() {
     $timestamp = strtotime($comic_post->post_date);
     $post_date = date("Y-m-d", $timestamp);
     if (!isset($data_by_date[$post_date])) {
-      $data_by_date[$post_date] = array('timestamp' => $timestamp); 
+      $data_by_date[$post_date] = array();
     }
-    $data_by_date[$post_date]['post_id'] = $comic_post->ID;
-    $data_by_date[$post_date]['post_title'] = $comic_post->post_title;
+
+    $post_info = array(
+      'type' => 'post',
+      'timestamp' => $timestamp,
+      'post_id' => $comic_post->ID,
+      'post_title' => $comic_post->post_title
+    );
+
+    $data_by_date[$post_date][] = $post_info;
   }
 
   krsort($data_by_date);
@@ -62,41 +76,78 @@ function cpm_manager_status() {
     }
 
     th.enabled { color: blue; }
+
+    tr.grey { background-color: #ddd }
+    tr.problem { background-color: #daa }
+    tr.problem.grey { background-color: #c99 }
   </style>
   <div id="table-holder">
     <table>
       <tr>
-        <th width="20%">Date</th>
-        <th width="30%" class="toggler" id="comic_file">File?</th>
-        <th width="10%" class="toggler" id="thumbnails_found_archive">Archive?</th>
-        <th width="10%" class="toggler" id="thumbnails_found_rss">RSS?</th>
+        <th width="15%">Date</th>
+        <th width="25%" class="toggler" id="comic_file">File?</th>
+        <th width="15%" class="toggler" id="thumbnails_found_archive">Archive?</th>
+        <th width="15%" class="toggler" id="thumbnails_found_rss">RSS?</th>
         <th width="30%" class="toggler" id="post_id">Post?</th>
       </tr>
-      <?php foreach ($data_by_date as $date => $data) { ?>
-        <tr class="data-row <?php echo implode(" ", array_keys($data)) ?>">
+      <?php
+      $is_grey = false;
+
+      foreach ($data_by_date as $date => $data) {
+        $all_objects_by_type = array();
+        $is_problem = (count($data) > 2);;
+        foreach ($data as $object) {
+          if (!isset($all_objects_by_type[$object['type']])) {
+            $all_objects_by_type[$object['type']] = array();
+          }
+          $all_objects_by_type[$object['type']][] = $object;
+        }
+        $row_title = __("No problems", 'comicpress-manager');
+        $classes = array("data-row");
+        if ($is_grey) { $classes[] = "grey"; }
+
+        if ($is_problem) {
+          $classes[] = "problem";
+
+          $too_many_comics = (count($all_objects_by_type['comic']) > 1);
+          $too_many_posts = (count($all_objects_by_type['post']) > 1);
+
+          if ($too_many_comics) { $row_title = __("Too many comics on this date", 'comicpress-manager'); }
+          if ($too_many_posts)  { $row_title = __("Too many posts on this date", 'comicpress-manager'); }
+          if ($too_many_comics && $too_many_posts) { $row_title = __("Too many comics and posts on this date", 'comicpress-manager'); }
+        }
+        ?>
+        <tr class="<?php echo implode(" ", $classes) ?>" title="<?php echo $row_title ?>">
           <td><?php echo $date ?></td>
           <td>
-            <?php if (isset($data['comic_file'])) { ?>
-              <a href="<?php echo $data['comic_uri'] ?>"><?php echo $data['comic_file'] ?></a>
+            <?php foreach ($all_objects_by_type['comic'] as $comic_info) { ?>
+              <a href="<?php echo $comic_info['comic_uri'] ?>"><?php echo $comic_info['comic_file'] ?></a><br />
             <?php } ?>
           </td>
           <td>
-            <?php if (isset($data['thumbnails_found_archive'])) { ?>
-              <a href="<?php echo $data['thumbnails_found_archive'] ?>">Yes</a>
+            <?php foreach ($all_objects_by_type['comic'] as $comic_info) { ?>
+              <?php if (isset($comic_info['thumbnails_found_archive'])) { ?>
+                <a href="<?php echo $comic_info['thumbnails_found_archive'] ?>"><?php echo $comic_info['comic_file'] ?></a>
+              <?php } ?>
             <?php } ?>
           </td>
           <td>
-            <?php if (isset($data['thumbnails_found_rss'])) { ?>
-              <a href="<?php echo $data['thumbnails_found_rss'] ?>">Yes</a>
+            <?php foreach ($all_objects_by_type['comic'] as $comic_info) { ?>
+              <?php if (isset($comic_info['thumbnails_found_rss'])) { ?>
+                <a href="<?php echo $comic_info['thumbnails_found_rss'] ?>"><?php echo $comic_info['comic_file'] ?></a>
+              <?php } ?>
             <?php } ?>
           </td>
           <td>
-            <?php if (isset($data['post_id'])) { ?>
-              <a title="Edit post" href="post.php?action=edit&amp;post=<?php echo $data['post_id'] ?>"><?php echo $data['post_title'] ?></a>
+            <?php foreach ($all_objects_by_type['post'] as $post_info) { ?>
+              <?php if (isset($post_info['post_id'])) { ?>
+                <a title="Edit post" href="post.php?action=edit&amp;post=<?php echo $post_info['post_id'] ?>"><?php echo $post_info['post_title'] ?></a>
+              <?php } ?>
             <?php } ?>
           </td>
         </tr>
-      <?php } ?>
+        <?php $is_grey = !$is_grey;
+      } ?>
     </table>
     <script type="text/javascript">setup_status_togglers()</script>
   </div>

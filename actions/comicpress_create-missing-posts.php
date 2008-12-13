@@ -46,8 +46,12 @@ function cpm_action_create_missing_posts() {
     }
   }
 
-  cpm_display_operation_messages(compact('invalid_filenames', 'thumbnails_written',
-                                         'thumbnails_not_written', 'posts_created'));
+  if (count($posts_created) > 0) {
+    cpm_display_operation_messages(compact('invalid_filenames', 'thumbnails_written',
+                                           'thumbnails_not_written', 'posts_created'));
+  } else {
+    $cpm_config->messages[] = __("<strong>No new posts needed to be created.</strong>", 'comicpress-manager');
+  }
 }
 
 ?>
