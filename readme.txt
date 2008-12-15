@@ -52,6 +52,7 @@ As of version 1.3.3, it allows you to:
 Additionally, on your Dashboard, you'll see the latest stories from the ComicPress site, so you can keep up on updates, upgrades, and other news to make your Webcomics publishing using WordPress + ComicPress easier and more fun.
 
 You can also change what is viewed in the left sidebar as you're working in ComicPress Manager. You can see:
+
 * The classic ComicPress Manager sidebar and help boxes.
 * The current, last, and upcoming comics to be published on your site, with thumbnails to ensure the right comic is going live.
 
