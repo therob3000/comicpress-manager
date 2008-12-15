@@ -66,12 +66,20 @@ function cpm_manager_index() {
       _e("Upload Image Files", 'comicpress-manager');
     } ?>
   </h2>
-  <h3>&mdash; <?php _e("any existing files with the same name will be overwritten", 'comicpress-manager') ?></h3>
+  <h3>&mdash;
+    <?php if (cpm_option('cpm-obfuscate-filenames-on-upload') === "none") { ?>
+      <?php _e("any existing files with the same name will be overwritten", 'comicpress-manager') ?>
+    <?php } else { ?>
+      <?php _e("uploaded filenames will be obfuscated, therefore no old files will be overwritten after uploading", 'comicpress-manager') ?>
+    <?php } ?>
+  </h3>
 
-  <?php if (!$zip_extension_loaded) { ?>
-    <div id="zip-upload-warning">
-      <?php printf(__('<strong>You do not have the Zip extension installed.</strong> Uploading a Zip file <strong>will not work</strong>. Either upload files individually or <a href="%s">FTP/SFTP the files to your site and import them</a>.'), "?page=" .  plugin_basename(__FILE__ . '-import')) ?>
-    </div>
+  <?php if (!function_exists('get_site_option')) { ?>
+    <?php if (!$zip_extension_loaded) { ?>
+      <div id="zip-upload-warning">
+        <?php printf(__('<strong>You do not have the Zip extension installed.</strong> Uploading a Zip file <strong>will not work</strong>. Either upload files individually or <a href="%s">FTP/SFTP the files to your site and import them</a>.'), "?page=" .  plugin_basename(realpath(dirname(__FILE__) . '/../comicpress_manager_admin.php') . '-import')) ?>
+      </div>
+    <?php } ?>
   <?php } ?>
 
   <form onsubmit="$('submit').disabled=true" action="" method="post" enctype="multipart/form-data">
@@ -82,59 +90,84 @@ function cpm_manager_index() {
       [<a href="#" onclick="add_file_upload(); return false"><?php _e("Add file to upload", 'comicpress-manager') ?></a>]
     </div>
 
-    <p>
-      <?php _e("Destination for uploaded files:", 'comicpress-manager') ?>
-      <select name="upload-destination" id="upload-destination">
-        <option value="comic"><?php _e("Comics folder", 'comicpress-manager') ?></option>
-        <option value="archive_comic"><?php _e("Archive folder", 'comicpress-manager') ?></option>
-        <option value="rss_comic"><?php _e("RSS feed folder", 'comicpress-manager') ?></option>
-      </select>
-    </p>
-
-    <?php if (count($cpm_config->comic_files) > 0) { ?>
-      <div id="overwrite-existing-holder">
-        <input type="checkbox" name="overwrite-existing-file-selector-checkbox" id="overwrite-existing-file-selector-checkbox" value="yes"
-        <?php if (isset($_GET['replace'])) { echo "checked"; } ?> /> <label for="overwrite-existing-file-selector-checkbox"><?php _e("(<em>for single file uploads only</em>) Overwrite an existing file:", 'comicpress-manager') ?></label>
-        <div id="overwrite-existing-file-selector-holder">
-          <select name="overwrite-existing-file-choice">
-            <?php foreach ($cpm_config->comic_files as $file) {
-              $basename = pathinfo($file, PATHINFO_BASENAME);
-              ?>
-              <option value="<?php echo $basename ?>"
-              <?php echo ($_GET['replace'] == $basename) ? "selected" : "" ?>><?php echo $basename ?></option>
-            <?php } ?>
+    <table class="form-table">
+      <tr>
+        <th scope="row"><?php _e("Destination for uploaded files:", 'comicpress-manager') ?></th>
+        <td>
+          <select name="upload-destination" id="upload-destination">
+            <option value="comic"><?php _e("Comics folder", 'comicpress-manager') ?></option>
+            <option value="archive_comic"><?php _e("Archive folder", 'comicpress-manager') ?></option>
+            <option value="rss_comic"><?php _e("RSS feed folder", 'comicpress-manager') ?></option>
           </select>
-        </div>
-      </div>
-    <?php } ?>
+        </td>
+      </tr>
+      <?php if (count($cpm_config->comic_files) > 0) { ?>
+        <tr id="overwrite-existing-holder">
+          <th scope="row"><?php _e("Overwrite an existing file:", 'comicpress-manager') ?></th>
+          <td>
+            <select name="overwrite-existing-file-choice" id="overwrite-existing-file-choice">
+              <option value=""><?php _e("-- no --", 'comicpress-manager') ?></option>
+              <?php foreach ($cpm_config->comic_files as $file) {
+                $basename = pathinfo($file, PATHINFO_BASENAME);
+                ?>
+                <option value="<?php echo $basename ?>"
+                <?php echo ($_GET['replace'] == $basename) ? "selected" : "" ?>><?php echo $basename ?></option>
+              <?php } ?>
+            </select>
+          </td>
+        </tr>
+      <?php } ?>
+      <tr>
+        <td align="center" colspan="2">
+          <input class="button" id="submit" type="submit" value="<?php
+            if (extension_loaded("zip")) {
+              _e("Upload Image &amp; Zip Files", 'comicpress-manager');
+            } else {
+              _e("Upload Image Files", 'comicpress-manager');
+            }
+          ?>" />
+        </td>
+      </tr>
+    </table>
 
     <div id="upload-destination-holder">
-      <p>
-         <input id="multiple-new-post-checkbox" type="checkbox" name="new_post" value="yes" checked /> <label for="multiple-new-post-checkbox"><?php _e("Generate new posts for each uploaded file:", 'comicpress-manager') ?></label>
-      </p>
+      <table class="form-table">
+        <tr>
+          <th scope="row"><?php _e("Generate new posts for each uploaded file:", 'comicpress-manager') ?></th>
+          <td>
+            <input id="multiple-new-post-checkbox" type="checkbox" name="new_post" value="yes" checked />
+            <label for="multiple-new-post-checkbox"><em>(if you only want to upload a series of files to replace others, leave this unchecked)</em></label>
+          </td>
+        </tr>
+      </table>
+
       <div id="multiple-new-post-holder">
+        <table class="form-table" id="specify-date-holder">
+          <tr>
+            <th scope="row"><?php _e("Date for uploaded file:", 'comicpress-manager') ?></th>
+            <td>
+              <input type="text" id="override-date" name="override-date" /> <?php _e("<em>(click to open calendar. for single file uploads only. can accept any date format parseable by <a href=\"http://us.php.net/strtotime\" target=\"php\">strtotime()</a>)</em>", 'comicpress-manager') ?>
+            </td>
+          </tr>
+        </table>
+
         <?php cpm_post_editor(420) ?>
 
-        <div id="specify-date-holder">
-          <div>
-            <?php _e("(<em>for single file uploads only, can accept any date format parseable by <a href=\"http://us.php.net/strtotime\" target=\"php\">strtotime()</a></em>)", 'comicpress-manager') ?>
-          </div>
-          <table cellspacing="0">
-            <tr>
-              <td class="form-title"><?php _e("Date for uploaded file:", 'comicpress-manager') ?></td>
-              <td><input type="text" id="override-date" name="override-date" /></td>
-            </tr>
-          </table>
-        </div>
+        <table class="form-table">
+          <tr>
+            <td align="center">
+              <input class="button" id="submit" type="submit" value="<?php
+                if (extension_loaded("zip")) {
+                  _e("Upload Image &amp; Zip Files", 'comicpress-manager');
+                } else {
+                  _e("Upload Image Files", 'comicpress-manager');
+                }
+              ?>" />
+            </td>
+          </tr>
+        </table>
       </div>
     </div>
-    <br /><input id="submit" type="submit" value="<?php
-      if (extension_loaded("zip")) {
-        _e("Upload Image &amp; Zip Files", 'comicpress-manager');
-      } else {
-        _e("Upload Image Files", 'comicpress-manager');
-      }
-    ?>" style="width: 520px" />
   </form>
   <script type="text/javascript">
     Calendar.setup({

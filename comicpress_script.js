@@ -18,11 +18,7 @@ function setup_hide_show_checkbox_holder(which) {
 function hide_show_div_on_checkbox(div, checkbox, flip_behavior) {
   if ($(checkbox) && $(div)) {
     ok = (flip_behavior) ? !$(checkbox).checked : $(checkbox).checked;
-    if (ok) {
-      $(div).show();
-    } else {
-      $(div).hide();
-    }
+    (ok) ? $(div).show() : $(div).hide();
   }
 }
 
@@ -77,7 +73,7 @@ Event.observe(window, 'load', function() {
       if ($('overwrite-existing-file-selector-checkbox')) {
         show_upload_destination = !$('overwrite-existing-file-selector-checkbox').checked;
       }
-      
+
       if (show_upload_destination) {
         if ($('upload-destination').options[$('upload-destination').selectedIndex].value == "comic") {
           $('upload-destination-holder').show();

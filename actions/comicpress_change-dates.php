@@ -85,6 +85,7 @@ function cpm_action_change_dates() {
     if ($final_post_day_counts[$new_post_day] == 1) {
       $old_post_date = $comic_post->post_date;
       $comic_post->post_date = $new_post_date;
+      $comic_post->post_date_gmt = get_gmt_from_date($new_post_date);
       wp_update_post($comic_post);
       $cpm_config->messages[] = sprintf(__('<strong>Post %1$s moved to %2$s.</strong>', 'comicpress-manager'), $id, date("Y-m-d", $new_post_day));
       $posts_moved[$new_post_day] = array($comic_post, $old_post_date);
@@ -115,7 +116,7 @@ function cpm_action_change_dates() {
             if ($type != "") {
               if ($cpm_config->separate_thumbs_folder_defined[$type]) {
                 if ($cpm_config->thumbs_folder_writable[$type]) {
-                  $do_move = ($cpm_config->properties[$type . "_generate_thumbnails"]);
+                  $do_move = (cpm_option("${type}-generate-thumbnails") == 1);
                 }
               }
               $calculate_do_move[$type] = $do_move;
@@ -162,6 +163,7 @@ function cpm_action_change_dates() {
           if (isset($posts_moved[$target_date])) {
             list($comic_post, $old_post_date) = $posts_moved[$target_date];
             $comic_post->post_date = $old_post_date;
+            $comic_post->post_date_gmt = get_gmt_from_date($old_post_date);
             wp_update_post($comic_post);
             $cpm_config->messages[] = sprintf(__('<strong>Rename error, rolling back post %1$s to %2$s.</strong>', 'comicpress-manager'), $comic_post->ID, $old_post_date);
           }

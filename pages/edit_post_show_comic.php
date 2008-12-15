@@ -53,7 +53,7 @@ function cpm_show_comic() {
             <p>
               <?php printf(__("The comic that will be shown with this post is %s.", 'comicpress-manager'), $link) ?>
               <?php _e("Mouse over the icon to the right to see a larger version of the image.", 'comicpress-manager') ?>
-              <a href="admin.php?page=<?php echo substr(__FILE__, strlen(ABSPATH . '/' . PLUGINDIR)) ?>&replace=<?php echo $comic_filename ?>"><?php _e('Replace this image with another', 'comicpress-manager') ?></a>.
+              <a href="admin.php?page=<?php echo plugin_basename(realpath(dirname(__FILE__) . "/../comicpress_manager_admin.php")) ?>&replace=<?php echo $comic_filename ?>"><?php _e('Replace this image with another', 'comicpress-manager') ?></a>.
             </p>
 
             <?php if (count($thumbnails_found) > 0) { ?>
