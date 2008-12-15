@@ -120,28 +120,36 @@ function cpm_manager_status() {
         <tr class="<?php echo implode(" ", $classes) ?>" title="<?php echo $row_title ?>">
           <td><?php echo $date ?></td>
           <td>
-            <?php foreach ($all_objects_by_type['comic'] as $comic_info) { ?>
-              <a href="<?php echo $comic_info['comic_uri'] ?>"><?php echo $comic_info['comic_file'] ?></a><br />
-            <?php } ?>
-          </td>
-          <td>
-            <?php foreach ($all_objects_by_type['comic'] as $comic_info) { ?>
-              <?php if (isset($comic_info['thumbnails_found_archive'])) { ?>
-                <a href="<?php echo $comic_info['thumbnails_found_archive'] ?>"><?php echo $comic_info['comic_file'] ?></a>
+            <?php if (isset($all_objects_by_type['comic'])) { ?>
+              <?php foreach ($all_objects_by_type['comic'] as $comic_info) { ?>
+                <a href="<?php echo $comic_info['comic_uri'] ?>"><?php echo $comic_info['comic_file'] ?></a><br />
               <?php } ?>
             <?php } ?>
           </td>
           <td>
-            <?php foreach ($all_objects_by_type['comic'] as $comic_info) { ?>
-              <?php if (isset($comic_info['thumbnails_found_rss'])) { ?>
-                <a href="<?php echo $comic_info['thumbnails_found_rss'] ?>"><?php echo $comic_info['comic_file'] ?></a>
+            <?php if (isset($all_objects_by_type['comic'])) { ?>
+              <?php foreach ($all_objects_by_type['comic'] as $comic_info) { ?>
+                <?php if (isset($comic_info['thumbnails_found_archive'])) { ?>
+                  <a href="<?php echo $comic_info['thumbnails_found_archive'] ?>"><?php echo $comic_info['comic_file'] ?></a>
+                <?php } ?>
               <?php } ?>
             <?php } ?>
           </td>
           <td>
-            <?php foreach ($all_objects_by_type['post'] as $post_info) { ?>
-              <?php if (isset($post_info['post_id'])) { ?>
-                <a title="Edit post" href="post.php?action=edit&amp;post=<?php echo $post_info['post_id'] ?>"><?php echo $post_info['post_title'] ?></a>
+            <?php if (isset($all_objects_by_type['comic'])) { ?>
+              <?php foreach ($all_objects_by_type['comic'] as $comic_info) { ?>
+                <?php if (isset($comic_info['thumbnails_found_rss'])) { ?>
+                  <a href="<?php echo $comic_info['thumbnails_found_rss'] ?>"><?php echo $comic_info['comic_file'] ?></a>
+                <?php } ?>
+              <?php } ?>
+            <?php } ?>
+          </td>
+          <td>
+            <?php if (isset($all_objects_by_type['post'])) { ?>
+              <?php foreach ($all_objects_by_type['post'] as $post_info) { ?>
+                <?php if (isset($post_info['post_id'])) { ?>
+                  <a title="Edit post" href="post.php?action=edit&amp;post=<?php echo $post_info['post_id'] ?>"><?php echo $post_info['post_title'] ?></a>
+                <?php } ?>
               <?php } ?>
             <?php } ?>
           </td>

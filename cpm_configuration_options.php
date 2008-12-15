@@ -10,7 +10,8 @@
       'type' => 'text',
       'size' => 8,
       'default' => '12:00am',
-      'message' => "Default time for comic posts to go live"
+      'message' => "Default time for comic posts to go live, cannot be blank",
+      'not_blank' => true
     ),
     array(
       'id' => 'cpm-default-post-content',
@@ -60,6 +61,14 @@
       'default' => "80",
       'message' => "Quality of JPEG Thumbnails"
     ),
+    array(
+      'id' => 'cpm-obfuscate-filenames-on-upload',
+      'name' => "Obfuscate Filenames on Upload?",
+      'type' => 'dropdown',
+      'options' => "none:No obfuscation|append:Append code to title|replace:Replace title with code",
+      'default' => "none",
+      'message' => "add or replace the title of the image file with a random code to prevent nosy readers from looking ahead in your archive"
+    ),
     "Advanced Configuration",
     array(
       "id" => "cpm-skip-checks",
@@ -67,6 +76,14 @@
       "type" => "checkbox",
       'default' => "1",
       "message" => "if you know your configuration is correct, enable this to improve performance"
+    ),
+    array(
+      "id" => "cpm-sidebar-type",
+      "name" => "ComicPress Manager Sidebar:",
+      "type" => "dropdown",
+      'options' => 'standard:ComicPress Status and Help|latest:Latest Comic Posts',
+      'default' => "standard",
+      "message" => "change the ComicPress Manager sidebar to a different default view"
     ),
     array(
       "id" => "cpm-date-format",
@@ -102,6 +119,7 @@
       "name" => "Unix chmod permissions to assign to uploaded files?",
       "type" => "text",
       "size" => 5,
+      "strip-wpmu" => true,
       'default' => "664",
       "message" => "if you're on a Unix-like operating system, and need to have files uploaded with specific permissions, enter them in here. Windows systems always upload with chmod 777"
     ),
@@ -109,6 +127,7 @@
       "id" => "cpm-document-root",
       "name" => "Specify a WordPress DOCUMENT_ROOT",
       "type" => "text",
+      "strip-wpmu" => true,
       "size" => 30,
       "message" => "if ComicPress Manager isn't able to automatically find the path to your index.php file and comics folders, enter in the proper absolute path here"
     ),

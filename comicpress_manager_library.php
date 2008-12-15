@@ -137,8 +137,10 @@ function cpm_build_comic_uri($filename, $base_dir = null) {
   if (count($parts) < 2) { return false; }
 
   $parsed_url = parse_url(get_bloginfo('url'));
+  $path = $parsed_url['path'];
+  if (function_exists('get_site_option')) { $path = cpm_wpmu_fix_admin_uri($path); }
 
-  return $parsed_url['path'] . '/' . implode('/', array_slice($parts, -2, 2));
+  return $path . '/' . implode('/', array_slice($parts, -2, 2));
 }
 
 /**
@@ -257,15 +259,23 @@ function cpm_read_comics_folder() {
 
   $glob_results = glob(get_comic_folder_path() . "/*");
   if ($glob_results === false) {
-    $cpm_config->warnings[] = "FYI: glob({$cpm_config->path}/*) returned false. This can happen on some PHP installations if you have no files in your comic directory.";
+    $cpm_config->messages[] = "FYI: glob({$cpm_config->path}/*) returned false. This can happen on some PHP installations if you have no files in your comic directory. This message will disappear once you upload a comic to your site.";
     return array(); 
   }
 
+  $allowed_extensions = array("gif", "jpg", "jpeg", "png");
+  $filtered_glob_results = array();
+  foreach ($glob_results as $result) {
+    if (in_array(pathinfo($result, PATHINFO_EXTENSION), $allowed_extensions)) {
+      $filtered_glob_results[] = $result;
+    }
+  }
+
   if (cpm_option("cpm-skip-checks") == 1) {
-    return $glob_results;
+    return $filtered_glob_results;
   } else {
     $files = array();
-    foreach ($glob_results as $file) {
+    foreach ($filtered_glob_results as $file) {
       if (cpm_breakdown_comic_filename(pathinfo($file, PATHINFO_BASENAME)) !== false) {
         $files[] = $file;
       }
@@ -323,15 +333,17 @@ function cpm_read_information_and_check_config() {
 
     $any_cpm_document_root_failures = false;
 
-    // is the site root configured properly?
-    if (!file_exists(CPM_DOCUMENT_ROOT)) {
-      $cpm_config->errors[] = sprintf(__('The comics site root <strong>%s</strong> does not exist. Check your <a href="options-general.php">WordPress address and address settings</a>.', 'comicpress-manager'), CPM_DOCUMENT_ROOT);
-      $any_cpm_document_root_failures = true;
-    }
+    if (!function_exists('get_site_option')) {
+      // is the site root configured properly?
+      if (!file_exists(CPM_DOCUMENT_ROOT)) {
+        $cpm_config->errors[] = sprintf(__('The comics site root <strong>%s</strong> does not exist. Check your <a href="options-general.php">WordPress address and address settings</a>.', 'comicpress-manager'), CPM_DOCUMENT_ROOT);
+        $any_cpm_document_root_failures = true;
+      }
 
-    if (!file_exists(CPM_DOCUMENT_ROOT . '/index.php')) {
-      $cpm_config->errors[] = sprintf(__('The comics site root <strong>%s</strong> does not contain a WordPress index.php file. Check your <a href="options-general.php">WordPress address and address settings</a>.', 'comicpress-manager'), CPM_DOCUMENT_ROOT);
-      $any_cpm_document_root_failures = true;
+      if (!file_exists(CPM_DOCUMENT_ROOT . '/index.php')) {
+        $cpm_config->errors[] = sprintf(__('The comics site root <strong>%s</strong> does not contain a WordPress index.php file. Check your <a href="options-general.php">WordPress address and address settings</a>.', 'comicpress-manager'), CPM_DOCUMENT_ROOT);
+        $any_cpm_document_root_failures = true;
+      }
     }
 
     if ($any_cpm_document_root_failures) {

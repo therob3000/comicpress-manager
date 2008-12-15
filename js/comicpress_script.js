@@ -3,11 +3,7 @@
  */
 function hide_show_checkbox_holder(which, reverse) {
   if (reverse !== true) { reverse = false; }
-  if ($(which + '-checkbox').checked !== reverse) {
-    $(which + '-holder').show();
-  } else {
-    $(which + '-holder').hide();
-  }
+  ($(which + '-checkbox').checked !== reverse) ? new Effect.Appear(which + '-holder') : new Effect.BlindUp(which + '-holder');
 }
 
 function setup_hide_show_checkbox_holder(which) {
@@ -18,11 +14,7 @@ function setup_hide_show_checkbox_holder(which) {
 function hide_show_div_on_checkbox(div, checkbox, flip_behavior) {
   if ($(checkbox) && $(div)) {
     ok = (flip_behavior) ? !$(checkbox).checked : $(checkbox).checked;
-    if (ok) {
-      $(div).show();
-    } else {
-      $(div).hide();
-    }
+    (ok) ? new Effect.Appear(div) : new Effect.BlindUp(div);
   }
 }
 
@@ -69,23 +61,38 @@ function prepare_comicpress_manager() {
 
     hide_show_div_on_checkbox('override-title-holder', 'override-title');
     hide_show_div_on_checkbox('thumbnail-write-holder', 'no-thumbnails', true);
+
+    var add_to_tags = function(href) {
+      var all_tags = [];
+      if (!$F('tags').empty()) {
+        all_tags = $F('tags').replace(/\s*\,\s*/, ",").split(",");
+      }
+
+      if (all_tags.indexOf(href.innerHTML) == -1) {
+        all_tags.push(href.innerHTML);
+      }
+
+      $('tags').value = all_tags.join(",");
+    }
+
+    $$('a.tag').each(function(href) {
+      Event.observe(href, 'click', function(e) {
+        Event.stop(e);
+        add_to_tags(href);
+      });
+    });
   }
 
   if ($('upload-destination')) {
     var toggle_upload_destination_holder = function() {
-      var show_upload_destination = true;
-      if ($('overwrite-existing-file-selector-checkbox')) {
-        show_upload_destination = !$('overwrite-existing-file-selector-checkbox').checked;
-      }
-
-      if (show_upload_destination) {
+      if ($F('overwrite-existing-file-choice') == "") {
         if ($('upload-destination').options[$('upload-destination').selectedIndex].value == "comic") {
-          $('upload-destination-holder').show();
+          new Effect.Appear('upload-destination-holder');
         } else {
-          $('upload-destination-holder').hide();
+          new Effect.BlindUp('upload-destination-holder');
         }
       } else {
-        $('upload-destination-holder').hide();
+        new Effect.BlindUp('upload-destination-holder');
       }
     };
     Event.observe('upload-destination', 'change', toggle_upload_destination_holder);
@@ -93,28 +100,19 @@ function prepare_comicpress_manager() {
 
     on_change_file_upload_count = function(count) {
       if (count == 1) {
-        Element.show('specify-date-holder');
-        Element.show('overwrite-existing-holder');
+        new Effect.Appear('specify-date-holder');
+        new Effect.Appear('overwrite-existing-holder');
       } else {
-        Element.hide('specify-date-holder');
-        Element.hide('overwrite-existing-holder');
-        if ($('overwrite-existing-file-selector-checkbox')) {
-          $('overwrite-existing-file-selector-checkbox').checked = false;
-        }
+        new Effect.BlindUp('specify-date-holder');
+        new Effect.BlindUp('overwrite-existing-holder');
         toggle_upload_destination_holder();
       }
-      hide_show_checkbox_holder('overwrite-existing-file-selector');
     }
 
-    if ($('overwrite-existing-file-selector-checkbox')) {
-      Event.observe('overwrite-existing-file-selector-checkbox', 'click', function() {
-        hide_show_checkbox_holder('overwrite-existing-file-selector');
+    if ($('overwrite-existing-file-choice')) {
+      Event.observe('overwrite-existing-file-choice', 'change', function() {
         toggle_upload_destination_holder();
       });
-    }
-
-    if ($('overwrite-existing-file-selector-checkbox')) {
-      hide_show_checkbox_holder('overwrite-existing-file-selector');
     }
   }
 

@@ -9,6 +9,7 @@ function cpm_action_update_cpm_config() {
     switch ($option_info['type']) {
       case "text":
       case "textarea":
+      case "dropdown":
         if (isset($_POST[$option_info['id']])) {
           update_option('comicpress-manager-' . $option_info['id'], $_POST[$option_info['id']]);
         }
