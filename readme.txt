@@ -46,7 +46,7 @@ As of version 1.3.3, it allows you to:
   * You can use this advanced feature to shift a large number of comics forward or backwards in time.
 * Modify your comicpress-config.php file from ComicPress Manager.
   * If you're using a comicpress-config.php file, and the permissions are set correctly, you can modify the settings directly from ComicPress manager. If your permissions are not correct, the config file that ComicPress Manager would have written will be shown so that you can copy and paste it into your comicpress-config.php file.
-  * Manage your ComicPress Manager configuration directly from the CPM interface, instead of modifying comicpress_manager_config.php
+  * Manage your ComicPress Manager configuration directly from the CPM interface, instead of modifying comicpress\_manager\_config.php
   * If your config goes awry, you can also restore from a backup config.
 
 Additionally, on your Dashboard, you'll see the latest stories from the ComicPress site, so you can keep up on updates, upgrades, and other news to make your Webcomics publishing using WordPress + ComicPress easier and more fun.
