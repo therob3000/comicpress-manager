@@ -14,13 +14,16 @@ function cpm_manager_thumbnails() {
 
   <?php
     $ok_to_generate_thumbs = false;
+    $is_generating = array();
 
     if ($cpm_config->get_scale_method() != CPM_SCALE_NONE) {
       foreach ($cpm_config->thumbs_folder_writable as $type => $value) {
         if ($value) {
           if ($cpm_config->separate_thumbs_folder_defined[$type] !== false) {
-            if ($cpm_config->properties[$type . "_generate_thumbnails"] == true) {
-              $ok_to_generate_thumbs = true; break;
+            if (cpm_option("cpm-${type}-generate-thumbnails") == 1) {
+              $ok_to_generate_thumbs = true;
+              $is_generating[] = sprintf(__('<strong>%1$s thumbnails</strong> that are <strong>%2$s</strong> pixels wide', 'comicpress-manager'),
+                                              $type, $cpm_config->properties["${type}_comic_width"]);
             }
           }
         }
@@ -32,23 +35,33 @@ function cpm_manager_thumbnails() {
         <form onsubmit="$('submit').disabled=true" action="" method="post">
           <input type="hidden" name="action" value="generate-thumbnails" />
 
-          <p><?php printf(__("You'll be generating thumbnails that are %s pixels wide.", 'comicpress-manager'), $cpm_config->properties['archive_comic_width']) ?></p>
+          <p><?php printf(__("You'll be generating %s.", 'comicpress-manager'), implode(__(" and ", 'comicpress-manager'), $is_generating)) ?></p>
 
           <?php _e("Thumbnails to regenerate (<em>to select multiple comics, [Ctrl]-click on Windows &amp; Linux, [Command]-click on Mac OS X</em>):", 'comicpress-manager') ?>
           <br />
-            <select style="height: auto; width: 445px" id="select-comics-dropdown" name="comics[]" size="<?php echo min(count($cpm_config->comic_files), 30) ?>" multiple>
-              <?php foreach ($cpm_config->comic_files as $file) { ?>
-                <option value="<?php echo substr($file, CPM_STRLEN_REALPATH_DOCUMENT_ROOT) ?>"><?php echo pathinfo($file, PATHINFO_BASENAME) ?></option>
-              <?php } ?>
-            </select>
-          <input type="submit" id="submit" value="<?php _e("Generate Thumbnails for Selected Comics", 'comicpress-manager') ?>" style="width: 520px" />
+          <select style="height: auto; width: 445px" id="select-comics-dropdown" name="comics[]" size="<?php echo min(count($cpm_config->comic_files), 30) ?>" multiple>
+            <?php foreach ($cpm_config->comic_files as $file) {
+              $filename = pathinfo($file, PATHINFO_BASENAME);
+              $any_thumbs = false;
+              foreach (array('rss', 'archive') as $type) {
+                $thumb_file = str_replace($cpm_config->properties['comic_folder'],
+                                          $cpm_config->properties["${type}_comic_folder"],
+                                          $file);
+                if (file_exists($thumb_file)) { $any_thumbs = true; break; }
+              }
+              ?><option value="<?php echo $filename ?>"><?php echo $filename . (($any_thumbs) ? " (*)" : "") ?></option>
+            <?php } ?>
+          </select>
+          <div style="text-align: center">
+            <input class="button" type="submit" id="submit" value="<?php _e("Generate Thumbnails for Selected Comics", 'comicpress-manager') ?>" />
+          </div>
         </form>
       <?php } else { ?>
         <p><?php _e("You haven't uploaded any comics yet.", 'comicpress-manager') ?></p>
       <?php }
     } else { ?>
       <p>
-        <?php _e("<strong>You either aren't able or are unwilling to generate any thumbnails for your comics.</strong> This may be caused by a configuration error.", 'comicpress-manager') ?>
+        <?php _e("<strong>You either aren't able to generate any thumbnails for your comics, or you have disabled thumbnail generation.</strong> This may be caused by a configuration error. Have you set up your RSS and archive directories and <a href=\"?page=" . plugin_basename(realpath(dirname(__FILE__) . '/../comicpress_manager_admin.php')) . "-config\">configured your ComicPress theme to use them</a>? Do you have either the GD library or Imagemagick installed?", 'comicpress-manager') ?>
       </p>
     <?php }
   ?>

@@ -27,7 +27,7 @@ div#cpm-container div#cpm-left-column {
 div#cpm-container div#cpm-right-column {
  float: left;
  display: inline;
- width: 540px;
+ width: 625px;
  margin-left: 10px;
 }
 
@@ -51,10 +51,21 @@ div#cpm-container div#config-editor {
   margin-top: 10px;
 }
 
+form#config-editor h3 {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+form#config-editor table.form-table {
+  padding-bottom: 10px;
+  margin-top: 5px;
+}
+
 div#cpm-container div.activity-box {
   border: solid #999 1px;
   padding: 10px;
   margin-top: 10px;
+  overflow: hidden
 }
 
 div#cpm-container div.top-activity-box {
@@ -65,15 +76,15 @@ div#cpm-container div#cpm-footer {
   color: #777;
   margin-top: 10px;
   text-align: left;
-  clear: both
+  clear: both;
+  overflow: hidden
 }
 
-div#cpm-container div#new-post-holder,
-div#cpm-container div#multiple-new-post-holder {
-  border: solid #444 1px;
-  padding: 5px;
-  width: 510px;
-  margin-top: 5px;
+div#cpm-footer-paypal {
+  width: 100px;
+  float: right;
+  display: inline;
+  text-align: right
 }
 
 div#zip-upload-warning {
@@ -196,4 +207,48 @@ div#cpm-errors {
   background-color: #330007;
   border-color: #a00;
   color: white
+}
+
+div#first-run-holder {
+  border: solid #a77 1px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  background-color: #fff0f0;
+  padding: 5px;
+  text-align: center;
+  margin-top: 10px
+}
+
+div#dashboard_quomicpress div.wrap {
+  margin: 0
+}
+
+div#dashboard_quomicpress div#cpm-container {
+  padding: 0
+}
+
+div#comicpress-latest-posts h3 {
+  text-align: center;
+  padding-top: 5px;
+}
+
+div#comicpress-latest-posts div.comic-found,
+div#comicpress-latest-posts div.comic-not-found {
+  border-top: solid #aaa 1px;
+  padding: 0 5px 5px;
+}
+
+div#comicpress-latest-posts div.comic-not-found {
+  background-color: #ffe0e0
+}
+
+div#comicpress-latest-posts div.comic-not-found div.alert {
+  border: solid #a00 2px;
+  margin: 10px;
+  padding: 10px;
+  background-color: white;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold
 }
