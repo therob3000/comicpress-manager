@@ -10,34 +10,17 @@ add_action("add_category_form_pre", "cpm_comicpress_categories_warning");
 
 $cpm_config = new ComicPressConfig();
 
-$default_comicpress_config_file = explode("\n", '<?' . 'php' . <<<ENDPHP
+include('cp_configuration_options.php');
 
-//COMIC CATEGORY - the WordPress ID of your comic category (default "1").
-\$comiccat = "1";
+$default_comicpress_config_file_lines = array('<?' . 'php');
+foreach ($comicpress_configuration_options as $option_info) {
+  $default_comicpress_config_file_lines[] = "//{$option_info['name']} - {$option_info['description']} (default \"{$option_info['default']}\")";
+  $default_comicpress_config_file_lines[] = "\${$option_info['id']} = \"{$option_info['default']}\";";
+  $default_comicpress_config_file_lines[] = "";
+}
+$default_comicpress_config_file_lines[] = "?>";
 
-//BLOG CATEGORY - the WordPress ID of your blog category (default "2").
-\$blogcat = "2";
-
-//COMIC FOLDER - the folder your comics files are located in (default "comics")
-\$comic_folder = "comics";
-
-//RSS COMIC FOLDER - the folder your comic files are in for the RSS feed (default "comics").
-\$rss_comic_folder = "comics";
-
-//ARCHIVE COMIC FOLDER - the folder your comic files are in for your archive pages (default "comics").
-\$archive_comic_folder = "comics";
-
-//ARCHIVE COMIC WIDTH - the width your comics will appear on archive or search results (default "380").
-\$archive_comic_width = "380";
-
-//RSS COMIC WIDTH - the width your comics will appear in RSS feeds (default "380").
-\$rss_comic_width = "380";
-
-//BLOG POSTCOUNT - the number of blog entries to appear on the home page (default "10").
-\$blog_postcount = "10";
-
-ENDPHP
-. '?>');
+$default_comicpress_config_file = implode("\n", $default_comicpress_config_file_lines);
 
 cpm_get_cpm_document_root();
 cpm_initialize_options();
@@ -589,7 +572,11 @@ function write_comicpress_config_functions_php($filepath, $just_show_config = fa
     }
   }
 
+  include('cp_configuration_options.php');
+
   $properties_written = array();
+
+  $closing_line = null;
 
   for ($i = 0; $i < count($file_lines); $i++) {
     foreach (array_keys($cpm_config->properties) as $variable) {
@@ -598,6 +585,22 @@ function write_comicpress_config_functions_php($filepath, $just_show_config = fa
           $value = $cpm_config->properties[$variable];
           $file_lines[$i] = '$' . $variable . ' = "' . $value . '";';
           $properties_written[] = $variable;
+        }
+      }
+    }
+    if (strpos($file_lines[$i], "?>") !== false) { $closing_line = $i; }
+  }
+
+  foreach (array_keys($cpm_config->properties) as $variable) {
+    if (!in_array($variable, $properties_written)) {
+      foreach ($comicpress_configuration_options as $option_info) {
+        if ($option_info['id'] == $variable) {
+          $comicpress_lines = array();
+          $comicpress_lines[] = "//{$option_info['name']} - {$option_info['description']} (default \"{$option_info['default']}\")";
+          $comicpress_lines[] = "\${$option_info['id']} = \"{$cpm_config->properties[$variable]}\";";
+          $comicpress_lines[] = "";
+          array_splice($file_lines, $closing_line, 0, $comicpress_lines);
+          break;
         }
       }
     }
@@ -957,14 +960,27 @@ function cpm_handle_file_uploads($files) {
             }
           } else {
             if (count($files) == 1) {
-              $date = strtotime($_POST['override-date']);
-              if (($date !== false) && ($date !== -1)) {
-                $target_filename = date(CPM_DATE_FORMAT, $date) . '-' . $target_filename;
-                $cpm_config->messages[] = sprintf(__('Uploaded file %1$s renamed to %2$s.', 'comicpress-manager'), $_FILES[$key]['name'], $target_filename);
-                $result = cpm_breakdown_comic_filename($target_filename);
-              } else {
-                if (preg_match('/\S/', $_POST['override-date']) > 0) {
-                  $cpm_config->warnings[] = sprintf(__("Provided override date %s is not parseable by strtotime().", 'comicpress-manager'), $_POST['override-date']);
+              if (!empty($_POST['override-date'])) {
+                $date = strtotime($_POST['override-date']);
+                if (($date !== false) && ($date !== -1)) {
+                  $new_date = date(CPM_DATE_FORMAT, $date);
+
+                  $old_filename = $target_filename;
+                  if (($target_result = cpm_breakdown_comic_filename($target_filename, true)) !== false) {
+                    $target_filename = $new_date . $target_result['title'] . '.' . pathinfo($target_filename, PATHINFO_EXTENSION);
+                  } else {
+                    $target_filename = $new_date . '-' . $target_filename;
+                  }
+
+                  if ($old_filename !== $target_filename) {
+                    $cpm_config->messages[] = sprintf(__('Uploaded file %1$s renamed to %2$s.', 'comicpress-manager'), $_FILES[$key]['name'], $target_filename);
+                  }
+
+                  $result = cpm_breakdown_comic_filename($target_filename);
+                } else {
+                  if (preg_match('/\S/', $_POST['override-date']) > 0) {
+                    $cpm_config->warnings[] = sprintf(__("Provided override date %s is not parseable by strtotime().", 'comicpress-manager'), $_POST['override-date']);
+                  }
                 }
               }
             }
@@ -1666,6 +1682,21 @@ function cpm_manager_edit_config() {
 
   include('cp_configuration_options.php');
 
+  $folders_to_ignore = implode("|", array('wp-content', 'wp-includes', 'wp-admin'));
+
+  $folder_stack = glob(CPM_DOCUMENT_ROOT . '/*');
+  if ($folder_stack === false) { $folder_stack = array(); }
+  $found_folders = array();
+  while (count($folder_stack) > 0) {
+    $file = array_shift($folder_stack);
+    if (is_dir($file)) {
+      if (preg_match("#(${folders_to_ignore})$#", $file) == 0) {
+        $found_folders[] = $file;
+        $folder_stack = array_merge($folder_stack, glob($file . "/*"));
+      }
+    }
+  }
+
   ob_start(); ?>
 
   <form action="" method="post" id="config-editor">
@@ -1698,15 +1729,10 @@ function cpm_manager_edit_config() {
               <td class="config-field">
                 <select title="<?php _e("List of possible folders at the root of your site", 'comicpress-manager') ?>" name="<?php echo $config_id ?>" id="<?php echo $config_id ?>">
                 <?php 
-                  $comic_site_root_files = glob(CPM_DOCUMENT_ROOT . '/*');
-                  if ($comic_site_root_files === false) { $comic_site_root_files = array(); }
-
-                  foreach ($comic_site_root_files as $file) {
-                    if (is_dir($file)) {
-                      $file = preg_replace("#/#", '', substr($file, strlen(CPM_DOCUMENT_ROOT))); ?>
-                      <option <?php echo ($file == $cpm_config->properties[$config_id]) ? " selected" : "" ?> value="<?php echo $file ?>"><?php echo $file ?></option>
-                    <?php }
-                  } ?>
+                  foreach ($found_folders as $file) {
+                    $file = substr($file, strlen(CPM_DOCUMENT_ROOT) + 1); ?>
+                    <option <?php echo ($file == $cpm_config->properties[$config_id]) ? " selected" : "" ?> value="<?php echo $file ?>"><?php echo $file ?></option>
+                  <?php } ?>
                 </select><?php echo $description ?>
               </td>
             </tr>

@@ -26,9 +26,12 @@ function cpm_action_create_missing_posts() {
         extract($result, EXTR_PREFIX_ALL, 'filename');
 
         $ok_to_create_post = !in_array($result['date'], $all_post_dates);
+        $show_duplicate_post_message = false;
+        $post_id = null;
 
         if (isset($duplicate_posts_within_creation[$result['date']])) {
           $ok_to_create_post = false;
+          $show_duplicate_post_message = true;
           $post_id = $duplicate_posts_within_creation[$result['date']];
         }
 
@@ -67,7 +70,9 @@ function cpm_action_create_missing_posts() {
             $invalid_filenames[] = $comic_file;
           }
         } else {
-          $duplicate_posts[] = array(get_post($post_id, ARRAY_A), $comic_file);
+          if ($show_duplicate_post_message) {
+            $duplicate_posts[] = array(get_post($post_id, ARRAY_A), $comic_file);
+          }
         }
       }
     }
