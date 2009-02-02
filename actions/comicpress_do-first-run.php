@@ -41,9 +41,12 @@ function cpm_action_do_first_run() {
     } else {
       $cpm_config->warnings[] = sprintf(__("<strong>Unable to create directories!</strong> Contact your administrator.", 'comicpress-manager'), $dir_to_make);
     }
+    update_option("comicpress-manager-cpm-did-first-run", 1);
   }
 
-  update_option("comicpress-manager-cpm-did-first-run", 1);
+  $cpm_config->did_first_run = true;
+
+  cpm_read_information_and_check_config();
 }
 
 ?>

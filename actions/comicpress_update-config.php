@@ -12,10 +12,24 @@ function cpm_action_update_config() {
     $use_default_file = true;
   }
 
+  include(realpath(dirname(__FILE__)) . '/../cp_configuration_options.php');
+
   $original_properties = $cpm_config->properties;
-  foreach (array_keys($cpm_config->properties) as $property) {
-    if (isset($_POST[$property])) {
-      $cpm_config->properties[$property] = $_POST[$property];
+
+  foreach ($comicpress_configuration_options as $field_info) {
+    extract($field_info);
+
+    $config_id = (isset($field_info['variable_name'])) ? $field_info['variable_name'] : $field_info['id'];
+
+    switch ($type) {
+      case "folder":
+        $cpm_config->properties[$config_id] = $_POST[$_POST["folder-{$config_id}"] . "-" . $config_id];
+        break;
+      default:
+        if (isset($_POST[$config_id])) {
+          $cpm_config->properties[$config_id] = $_POST[$config_id];
+        }
+        break;
     }
   }
 

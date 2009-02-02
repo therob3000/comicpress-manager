@@ -20,6 +20,11 @@ function cpm_manager_cpm_config() {
         $ok = true;
         if (function_exists('get_site_option')) { $ok = !isset($option['strip-wpmu']); }
         if (is_string($option)) { $ok = true; }
+
+        if ($option['type'] == "categories") {
+          $ok = (count($category_checkboxes = cpm_generate_additional_categories_checkboxes($option['id'], explode(",", $result))) > 0);
+        }
+
         if ($ok) { ?>
           <?php if (is_string($option)) { ?>
             <?php if ($is_table) { ?>
@@ -38,35 +43,33 @@ function cpm_manager_cpm_config() {
                 <?php
                   $result = cpm_option($option['id']);
                   switch($option['type']) {
-                  case "checkbox": ?>
-                    <input type="checkbox" id="<?php echo $option['id'] ?>" name="<?php echo $option['id'] ?>" value="yes" <?php echo ($result == 1) ? " checked" : "" ?> />
-                    <?php break;
-                  case "text": ?>
-                    <input type="text" size="<?php echo (isset($option['size']) ? $option['size'] : 10) ?>" name="<?php echo $option['id'] ?>" value="<?php echo $result ?>" />
-                    <?php break;
-                  case "textarea": ?>
-                    <textarea name="<?php echo $option['id'] ?>" rows="4" cols="30"><?php echo $result ?></textarea>
-                    <?php break;
-                  case "dropdown":
-                    $dropdown_parts = array();
+                    case "checkbox": ?>
+                      <input type="checkbox" id="<?php echo $option['id'] ?>" name="<?php echo $option['id'] ?>" value="yes" <?php echo ($result == 1) ? " checked" : "" ?> />
+                      <?php break;
+                    case "text": ?>
+                      <input type="text" size="<?php echo (isset($option['size']) ? $option['size'] : 10) ?>" name="<?php echo $option['id'] ?>" value="<?php echo $result ?>" />
+                      <?php break;
+                    case "textarea": ?>
+                      <textarea name="<?php echo $option['id'] ?>" rows="4" cols="30"><?php echo $result ?></textarea>
+                      <?php break;
+                    case "dropdown":
+                      $dropdown_parts = array();
 
-                    foreach (explode("|", $option['options']) as $dropdown_option) {
-                      $parts = explode(":", $dropdown_option);
-                      $key = array_shift($parts);
-                      $dropdown_parts[$key] = implode(":", $parts);
-                    }
-                    ?>
-                    <select name="<?php echo $option['id'] ?>">
-                      <?php foreach ($dropdown_parts as $key => $value) { ?>
-                        <option value="<?php echo $key ?>" <?php echo ($result == $key) ? " selected" : "" ?>><?php echo $value ?></option>
-                      <?php } ?>
-                    </select>
-                    <?php break;
-                  case "categories":
-                    if (count($category_checkboxes = cpm_generate_additional_categories_checkboxes($option['id'], explode(",", $result))) > 0) {
+                      foreach (explode("|", $option['options']) as $dropdown_option) {
+                        $parts = explode(":", $dropdown_option);
+                        $key = array_shift($parts);
+                        $dropdown_parts[$key] = implode(":", $parts);
+                      }
+                      ?>
+                      <select name="<?php echo $option['id'] ?>">
+                        <?php foreach ($dropdown_parts as $key => $value) { ?>
+                          <option value="<?php echo $key ?>" <?php echo ($result == $key) ? " selected" : "" ?>><?php echo $value ?></option>
+                        <?php } ?>
+                      </select>
+                      <?php break;
+                    case "categories":
                       echo implode("\n", $category_checkboxes);
-                    }
-                    break;
+                      break;
                   }
                 ?>
                 <em><label for="<?php echo $option['id'] ?>">(<?php echo $option['message'] ?>)<label></em>

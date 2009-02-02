@@ -28,6 +28,7 @@
     }
     $all_post_dates = array_unique($all_post_dates);
 
+    ob_start();
     $missing_comic_count = 0;
     foreach (cpm_read_comics_folder() as $comic_file) {
       $comic_file = pathinfo($comic_file, PATHINFO_BASENAME);
@@ -40,7 +41,7 @@
       }
     }
 
-    header("Content-type: application/json");
-    echo "{missing_posts: ${missing_comic_count}}";
+    header("X-JSON: {missing_posts: ${missing_comic_count}}");
+    ob_end_flush();
   }
 ?>

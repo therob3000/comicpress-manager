@@ -22,8 +22,7 @@ function cpm_manager_thumbnails() {
           if ($cpm_config->separate_thumbs_folder_defined[$type] !== false) {
             if (cpm_option("cpm-${type}-generate-thumbnails") == 1) {
               $ok_to_generate_thumbs = true;
-              $is_generating[] = sprintf(__('<strong>%1$s thumbnails</strong> that are <strong>%2$s</strong> pixels wide', 'comicpress-manager'),
-                                              $type, $cpm_config->properties["${type}_comic_width"]);
+              $is_generating[] = sprintf(__('<strong>%1$s thumbnails</strong> that are <strong>%2$s</strong> pixels wide', 'comicpress-manager'), $type, $cpm_config->properties["${type}_comic_width"]);
             }
           }
         }

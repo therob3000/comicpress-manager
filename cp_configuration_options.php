@@ -21,7 +21,8 @@ $comicpress_configuration_options = array(
     'name' => 'Comic Folder',
     'type' => 'folder',
     'description' => 'The folder your comics are located in',
-    'default' => "comics"
+    'default' => "comics",
+    'no_wpmu' => true
   ),
   array(
     'id' => 'comicsrss_path',
@@ -29,7 +30,8 @@ $comicpress_configuration_options = array(
     'name' => 'RSS Comic Folder',
     'type' => 'folder',
     'description' => 'The folder your comics are located in for the RSS feed',
-    'default' => "comics-rss"
+    'default' => "comics-rss",
+    'no_wpmu' => true
   ),
   array(
     'id' => 'comicsarchive_path',
@@ -37,7 +39,8 @@ $comicpress_configuration_options = array(
     'name' => 'Archive Comic Folder',
     'type' => 'folder',
     'description' => 'The folder your comics are located in for the Archive pages',
-    'default' => "comics-archive"
+    'default' => "comics-archive",
+    'no_wpmu' => true
   ),
   array(
     'id' => 'archive_comic_width',

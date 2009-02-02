@@ -12,6 +12,8 @@ function cpm_action_change_dates() {
   $wp_date_string_length  = strlen(date("Y-m-d"));
   $cpm_date_string_length = strlen(date(CPM_DATE_FORMAT));
 
+  $cpm_config->is_cpm_managing_posts = true;
+
   // find all comic files that will be shifted
   foreach ($cpm_config->comic_files as $comic_file) {
     $comic_filename = pathinfo($comic_file, PATHINFO_BASENAME);

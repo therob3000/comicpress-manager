@@ -1,6 +1,12 @@
 div#cpm-container {
   padding: 10px;
-  padding-bottom: 0
+  padding-bottom: 0;
+  width: 955px
+}
+
+div#cpm-container.no-sidebar {
+  width: 100%;
+  padding: 0;
 }
 
 div#cpm-container h1 {
@@ -13,33 +19,56 @@ div#cpm-container h2 {
   margin-bottom: 4px;
 }
 
+div#cpm-container div h2 {
+  padding-top: 0;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: bold;
+  font-family: "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif
+}
+
 div#cpm-container h3 { margin-top: 0 }
 
 div#cpm-container em { font-style: oblique }
 
-div#cpm-container div#cpm-left-column {
+div#cpm-container div#cpm-sidebar-column {
   float: left;
   display: inline;
   width: 320px;
   padding-top: 10px;
+  margin-left: 10px;
 }
 
-div#cpm-container div#cpm-right-column {
+div#cpm-container div#cpm-activity-column {
  float: left;
  display: inline;
  width: 625px;
- margin-left: 10px;
+}
+
+div#cpm-container div#cpm-activity-column.no-sidebar {
+  margin-left: 0;
+  float: none;
+  display: block;
+  width: 100%
 }
 
 div#cpm-container div#comicpress-details {
-  border: solid #acb 1px;
-  background-color: #dfe;
+  border: solid #E3E3E3 1px;
+  background-color: #f1f1f1;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
   padding: 10px;
 }
 
+div#cpm-container div#comicpress-details ul {
+  list-style-type: circle
+}
+
 div#cpm-container div#comicpress-help {
-  border: solid #cab 1px;
-  background-color: #fde;
+  border: solid #464646 1px;
+  background-color: #b0b0b0;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
   padding: 10px;
   margin-top: 10px;
 }
@@ -62,9 +91,6 @@ form#config-editor table.form-table {
 }
 
 div#cpm-container div.activity-box {
-  border: solid #999 1px;
-  padding: 10px;
-  margin-top: 10px;
   overflow: hidden
 }
 
@@ -159,8 +185,8 @@ table input {
 }
 
 #comicpress-help h2 {
-  color: #b17f98;
-  border-color: #cab;
+  color: #333333;
+  border-color: #333333;
 }
 
 #categories-table { border-top: solid #aaa 1px }
@@ -186,14 +212,14 @@ div.upload-holder {
   border-top: solid #ddd 1px;
 }
 
-div#cpm-messages, div#cpm-errors, div#cpm-warnings {
+div#cpm-messages, div#cpm-errors, div#cpm-warnings, div#import-count-information {
   padding: 5px;
   margin-bottom: 5px;
   border-width: 1px;
   border-style: solid
 }
 
-div#cpm-messages {
+div#cpm-messages, div#import-count-information {
   background-color: #ffe;
   border-color: #ddc;
 }
@@ -207,6 +233,10 @@ div#cpm-errors {
   background-color: #330007;
   border-color: #a00;
   color: white
+}
+
+div#import-count-information {
+  text-align: center
 }
 
 div#first-run-holder {
@@ -251,4 +281,18 @@ div#comicpress-latest-posts div.comic-not-found div.alert {
   text-align: center;
   font-size: 18px;
   font-weight: bold
+}
+
+tr.grey { background-color: #d4d4d4 }
+
+table#status-table {
+  width: 100%
+}
+
+table#status-table td.comic {
+  background-color: #f3f3f3;
+}
+
+table#status-table td.post {
+  background-color: #e0e0e0;
 }

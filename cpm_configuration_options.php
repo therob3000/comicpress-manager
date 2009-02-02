@@ -10,7 +10,7 @@
       'type' => 'text',
       'size' => 8,
       'default' => '12:00am',
-      'message' => "Default time for comic posts to go live, cannot be blank",
+      'message' => "Default time for comic posts to go live, cannot be blank. enter 'now' to always post at the current system time.",
       'not_blank' => true
     ),
     array(
@@ -32,6 +32,13 @@
       'type' => 'text',
       'size' => 40,
       'message' => "Default tags for comic posts"
+    ),
+    array(
+      'id' => 'cpm-default-comic-category-is-last-storyline',
+      'name' => "Default Comic Category is Last Storyline Category",
+      'type' => 'checkbox',
+      'default' => "1",
+      'message' => "If checked, the default comic cateogry for upload/import is the last category in the storyline"
     ),
     array(
       'id' => 'cpm-default-additional-categories',
@@ -75,13 +82,20 @@
       "name" => "Skip Checks?",
       "type" => "checkbox",
       'default' => "1",
-      "message" => "if you know your configuration is correct, enable this to improve performance"
+      "message" => "if you know your configuration is correct, enable this to improve performance. Enabling this also hides ComicPress version incompatibiity messages."
+    ),
+    array(
+      "id" => "cpm-edit-post-integrate",
+      "name" => "Allow date change/deletions in Edit Post to affect associated comic files?",
+      "type" => "checkbox",
+      'default' => "1",
+      "message" => "if checked, working in Edit Post will affect your comic files"
     ),
     array(
       "id" => "cpm-sidebar-type",
       "name" => "ComicPress Manager Sidebar:",
       "type" => "dropdown",
-      'options' => 'standard:ComicPress Status and Help|latest:Latest Comic Posts',
+      'options' => 'standard:ComicPress Status and Help|latest:Latest Comic Posts|none:No Sidebar',
       'default' => "standard",
       "message" => "change the ComicPress Manager sidebar to a different default view"
     ),

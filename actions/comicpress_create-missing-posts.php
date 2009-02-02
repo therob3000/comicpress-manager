@@ -17,6 +17,12 @@ function cpm_action_create_missing_posts() {
   $duplicate_posts = array();
   $new_thumbnails_not_needed = array();
 
+  $execution_time = ini_get("max_execution_time");
+  $max_posts_imported = (int)($execution_time / 2);
+
+  $imported_post_count = 0;
+  $safe_exit = false;
+
   if (strtotime($_POST['time']) === false) {
     $cpm_config->warnings[] = sprintf(__('<strong>There was an error in the post time (%1$s)</strong>.  The time is not parseable by strtotime().', 'comicpress-manager'), $_POST['time']);
   } else {
@@ -48,10 +54,15 @@ function cpm_action_create_missing_posts() {
         if ($ok_to_create_post) {
           if (($post_hash = generate_post_hash($filename_date, $filename_converted_title)) !== false) {
             if (!is_null($post_id = wp_insert_post($post_hash))) {
+              $imported_post_count++;
               $posts_created[] = get_post($post_id, ARRAY_A);
               $date = date(CPM_DATE_FORMAT, strtotime($filename_date));
               $all_post_dates[] = $date;
               $duplicate_posts_within_creation[$date] = $post_id;
+
+              foreach (array('hovertext', 'transcript') as $field) {
+                if (!empty($_POST["${field}-to-use"])) { update_post_meta($post_id, $field, $_POST["${field}-to-use"]); }
+              }
 
               if (isset($_POST['thumbnails'])) {
                 $wrote_thumbnail = cpm_write_thumbnail($cpm_config->path . '/' . $comic_file, $comic_file);
@@ -75,7 +86,16 @@ function cpm_action_create_missing_posts() {
           }
         }
       }
+      if ($imported_post_count >= $max_posts_imported) {
+        $safe_exit = true; break;
+      }
     }
+  }
+
+  $cpm_config->import_safe_exit = $safe_exit;
+
+  if ($safe_exit) {
+    $cpm_config->messages[] = __("<strong>Import safely exited before you ran out of execution time.</strong> Scroll down to continue creating missing posts.", 'comicpress-manager');
   }
 
   if (count($posts_created) > 0) {

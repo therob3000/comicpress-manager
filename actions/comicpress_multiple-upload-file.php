@@ -12,6 +12,18 @@ function cpm_action_multiple_upload_file() {
       if (strpos($name, "upload-") !== false) {
         if (is_uploaded_file($_FILES[$name]['tmp_name'])) {
           $files_to_handle[] = $name;
+        } else {
+          switch ($_FILES[$name]['error']) {
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+              $cpm_config->warnings[] = sprintf(__("<strong>The file %s was too large.</strong>  The max allowed filesize for uploads to your server is %s.", 'comicpress-manager'), $_FILES[$name]['name'], ini_get('upload_max_filesize'));
+              break;
+            case UPLOAD_ERR_NO_FILE:
+              break;
+            default:
+              $cpm_config->warnings[] = sprintf(__("<strong>There was an error in uploading %s.</strong>  The <a href='http://php.net/manual/en/features.file-upload.errors.php'>PHP upload error code</a> was %s.", 'comicpress-manager'), $_FILES[$name]['name'], $_FILES[$name]['error']);
+              break;
+          }
         }
       }
     }

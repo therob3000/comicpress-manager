@@ -49,6 +49,8 @@ if (strpos(PHP_OS, "WIN") !== false) {
 // CPM_DOCUMENT_ROOT override
 
 $result = get_option("comicpress-manager-cpm-document-root");
-if (!empty($result)) { define('CPM_DOCUMENT_ROOT', $result); }
+if (!empty($result)) {
+  define('CPM_DOCUMENT_ROOT', untrailingslashit($result));
+}
 
 ?>
