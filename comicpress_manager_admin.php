@@ -1080,7 +1080,8 @@ function cpm_write_thumbnail($input, $target_filename, $do_rebuild = false) {
             $input_image_size = $width * $height * 4;
             if (strtolower(pathinfo($input, PATHINFO_EXTENSION)) == "gif") { $input_image_size *= 2; }
 
-            $recommended_size = ($input_image_size + $max_thumb_size) * $pixel_size_buffer + memory_get_usage();
+            $recommended_size = ($input_image_size + $max_thumb_size) * $pixel_size_buffer;
+            if (function_exists('memory_get_usage')) { $recommended_size += memory_get_usage(); }
 
             if ($recommended_size > $max_bytes) {
               $cpm_config->warnings[] = sprintf(__("<strong>You don't have enough memory available to PHP and GD to process this file.</strong> You should <strong>set your PHP <tt>memory_size</tt></strong> to at least <strong><tt>%sM</tt></strong> and try again. For more information, read the ComicPress Manager FAQ.", 'comicpress-manager'), (int)($recommended_size / (1024 * 1024)));
