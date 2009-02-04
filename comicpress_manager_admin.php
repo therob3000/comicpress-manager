@@ -152,40 +152,41 @@ function cpm_handle_pre_post_update($post_id) {
   if (!$cpm_config->is_cpm_managing_posts) {
     if (cpm_option("cpm-edit-post-integrate") == 1) {
       $post = get_post($post_id);
-
-      $original_timestamp = false;
-      foreach (array("post_date_gmt", "post_date") as $param) {
-        $result = strtotime($post->{$param});
-        if ($result !== false) {
-          $original_timestamp = $result; break;
-        }
-      }
-
-      $new_timestamp = strtotime(implode("-", array($_POST['aa'], $_POST['mm'], $_POST['jj'])));
-
-      if (!empty($original_timestamp) && !empty($new_timestamp)) {
-        $original_date = date(CPM_DATE_FORMAT, $original_timestamp);
-        $new_date = date(CPM_DATE_FORMAT, $new_timestamp);
-
-        if ($original_date !== $new_date) {
-          if (empty($cpm_config->comic_files)) {
-            cpm_read_information_and_check_config();
+      if (!in_array($post->post_type, array("attachment", "revision", "page"))) {
+        $original_timestamp = false;
+        foreach (array("post_date_gmt", "post_date") as $param) {
+          $result = strtotime($post->{$param});
+          if ($result !== false) {
+            $original_timestamp = $result; break;
           }
+        }
 
-          foreach ($cpm_config->comic_files as $file) {
-            $filename = pathinfo($file, PATHINFO_BASENAME);
-            if (($result = cpm_breakdown_comic_filename($filename)) !== false) {
-              if ($result['date'] == $original_date) {
-                foreach (cpm_find_thumbnails_by_filename($file) as $thumb_file) {
-                  rename($thumb_file, str_replace("/${original_date}", "/${new_date}", $thumb_file));
+        $new_timestamp = strtotime(implode("-", array($_POST['aa'], $_POST['mm'], $_POST['jj'])));
+
+        if (!empty($original_timestamp) && !empty($new_timestamp)) {
+          $original_date = date(CPM_DATE_FORMAT, $original_timestamp);
+          $new_date = date(CPM_DATE_FORMAT, $new_timestamp);
+
+          if ($original_date !== $new_date) {
+            if (empty($cpm_config->comic_files)) {
+              cpm_read_information_and_check_config();
+            }
+
+            foreach ($cpm_config->comic_files as $file) {
+              $filename = pathinfo($file, PATHINFO_BASENAME);
+              if (($result = cpm_breakdown_comic_filename($filename)) !== false) {
+                if ($result['date'] == $original_date) {
+                  foreach (cpm_find_thumbnails_by_filename($file) as $thumb_file) {
+                    rename($thumb_file, str_replace("/${original_date}", "/${new_date}", $thumb_file));
+                  }
+
+                  rename($file, str_replace("/${original_date}", "/${new_date}", $file));
                 }
-
-                rename($file, str_replace("/${original_date}", "/${new_date}", $file));
               }
             }
-          }
 
-          $cpm_config->comic_files = null;
+            $cpm_config->comic_files = null;
+          }
         }
       }
     }
@@ -225,22 +226,24 @@ function cpm_handle_delete_post($post_id) {
   if (!$cpm_config->is_cpm_managing_posts) {
     if (cpm_option("cpm-edit-post-integrate") == 1) {
       $post = get_post($post_id);
-      $original_date = date(CPM_DATE_FORMAT, strtotime($post->post_date_gmt));
+      if (!in_array($post->post_type, array("attachment", "revision", "page"))) {
+        $original_date = date(CPM_DATE_FORMAT, strtotime($post->post_date_gmt));
 
-      if (empty($cpm_config->comic_files)) {
-        cpm_read_information_and_check_config();
-      }
+        if (empty($cpm_config->comic_files)) {
+          cpm_read_information_and_check_config();
+        }
 
-      foreach ($cpm_config->comic_files as $file) {
-        $filename = pathinfo($file, PATHINFO_BASENAME);
-        if (($result = cpm_breakdown_comic_filename($filename)) !== false) {
-          if ($result['date'] == $original_date) {
-            foreach (cpm_find_thumbnails_by_filename($file) as $thumb_file) {
-              $thumb_file = CPM_DOCUMENT_ROOT . $thumb_file;
-              @unlink($thumb_file);
+        foreach ($cpm_config->comic_files as $file) {
+          $filename = pathinfo($file, PATHINFO_BASENAME);
+          if (($result = cpm_breakdown_comic_filename($filename)) !== false) {
+            if ($result['date'] == $original_date) {
+              foreach (cpm_find_thumbnails_by_filename($file) as $thumb_file) {
+                $thumb_file = CPM_DOCUMENT_ROOT . $thumb_file;
+                @unlink($thumb_file);
+              }
+
+              @unlink($file);
             }
-
-            @unlink($file);
           }
         }
       }

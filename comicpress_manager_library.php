@@ -225,7 +225,8 @@ function generate_post_hash($filename_date, $filename_converted_title) {
     }
 
     $post_title    = !empty($override_title) ? $override_title : $filename_converted_title;
-    $post_date     = $post_date_gmt = date('Y-m-d H:i:s', $timestamp);
+    $post_date     = date('Y-m-d H:i:s', $timestamp);
+    $post_date_gmt = get_gmt_from_date($post_date);
     $post_category = array_keys($selected_categories);
 
     if (isset($_POST['additional-categories'])) {
