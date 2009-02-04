@@ -119,7 +119,9 @@ function cpm_manager_dates() {
           });
         }
       </script>
-      <input type="submit" id="submit" value="<?php _e("Change Dates", 'comicpress-manager') ?>" style="width: 520px" />
+      <div style="text-align: center">
+        <input class="button" type="submit" id="submit" value="<?php _e("Change Dates", 'comicpress-manager') ?>" />
+      </div>
     </form>
   <?php } else { ?>
     <p><?php _e("You haven't uploaded any comics yet.", 'comicpress-manager') ?></p>
