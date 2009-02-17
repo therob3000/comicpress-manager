@@ -8,6 +8,10 @@ function cpm_manager_status() {
 
   $cpm_config->need_calendars = true;
 
+  if (cpm_get_subcomic_directory() !== false) {
+    $cpm_config->messages[] = sprintf(__("<strong>Reminder:</strong> You are managing the <strong>%s</strong> comic subdirectory.", 'comicpress-manager'), get_cat_name(get_option('comicpress-manager-manage-subcomic')));
+  }
+
   if (cpm_option('cpm-skip-checks') != 1) {
     if (!function_exists('get_comic_path')) {
       $cpm_config->warnings[] =  __('<strong>It looks like you\'re running an older version of ComicPress.</strong> Storyline, hovertext, and transcript are fully supported in <a href="http://comicpress.org/">ComicPress 2.7</a>. You can use hovertext and transcripts in earlier themes by using <tt>get_post_meta($post->ID, "hovertext", true)</tt> and <tt>get_post_meta($post->ID, "transcript", true)</tt>.', 'comicpress-manager');
@@ -58,21 +62,28 @@ function cpm_manager_status() {
   }
 
   foreach (cpm_query_posts() as $comic_post) {
-    $timestamp = strtotime($comic_post->post_date);
-    $post_date = date("Y-m-d", $timestamp);
-    if (!isset($data_by_date[$post_date])) {
-      $data_by_date[$post_date] = array();
+    $ok = true;
+    if (cpm_get_subcomic_directory() !== false) {
+      $ok = in_array(get_option('comicpress-manager-manage-subcomic'), wp_get_post_categories($comic_post->ID));
     }
 
-    $post_info = array(
-      'type' => 'post',
-      'timestamp' => $timestamp,
-      'post_id' => $comic_post->ID,
-      'post_title' => $comic_post->post_title,
-      'post_object' => (array)$comic_post
-    );
+    if ($ok) {
+      $timestamp = strtotime($comic_post->post_date);
+      $post_date = date("Y-m-d", $timestamp);
+      if (!isset($data_by_date[$post_date])) {
+        $data_by_date[$post_date] = array();
+      }
 
-    $data_by_date[$post_date][] = $post_info;
+      $post_info = array(
+        'type' => 'post',
+        'timestamp' => $timestamp,
+        'post_id' => $comic_post->ID,
+        'post_title' => $comic_post->post_title,
+        'post_object' => (array)$comic_post
+      );
+
+      $data_by_date[$post_date][] = $post_info;
+    }
   }
 
   krsort($data_by_date);

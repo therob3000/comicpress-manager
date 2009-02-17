@@ -43,9 +43,17 @@ function cpm_manager_cpm_config() {
                 <?php
                   $result = cpm_option($option['id']);
                   switch($option['type']) {
-                    case "checkbox": ?>
-                      <input type="checkbox" id="<?php echo $option['id'] ?>" name="<?php echo $option['id'] ?>" value="yes" <?php echo ($result == 1) ? " checked" : "" ?> />
-                      <?php break;
+                    case "checkbox":
+                      $ok = true;
+                      if (isset($option['imagemagick-only'])) {
+                        $ok = ($cpm_config->get_scale_method() == CPM_SCALE_IMAGEMAGICK);
+                      }
+
+                      if ($ok) { ?>
+                        <input type="checkbox" id="<?php echo $option['id'] ?>" name="<?php echo $option['id'] ?>" value="yes" <?php echo ($result == 1) ? " checked" : "" ?> />
+                      <?php }
+
+                      break;
                     case "text": ?>
                       <input type="text" size="<?php echo (isset($option['size']) ? $option['size'] : 10) ?>" name="<?php echo $option['id'] ?>" value="<?php echo $result ?>" />
                       <?php break;

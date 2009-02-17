@@ -153,39 +153,51 @@ function cpm_handle_pre_post_update($post_id) {
     if (cpm_option("cpm-edit-post-integrate") == 1) {
       $post = get_post($post_id);
       if (!in_array($post->post_type, array("attachment", "revision", "page"))) {
-        $original_timestamp = false;
-        foreach (array("post_date_gmt", "post_date") as $param) {
-          $result = strtotime($post->{$param});
-          if ($result !== false) {
-            $original_timestamp = $result; break;
+        $ok = false;
+        extract(cpm_get_all_comic_categories());
+        $post_categories = wp_get_post_categories($post_id);
+        foreach ($category_tree as $node) {
+          $parts = explode("/", $node);
+          if (in_array(end($parts), $post_categories)) {
+            $ok = true; break;
           }
         }
 
-        $new_timestamp = strtotime(implode("-", array($_POST['aa'], $_POST['mm'], $_POST['jj'])));
-
-        if (!empty($original_timestamp) && !empty($new_timestamp)) {
-          $original_date = date(CPM_DATE_FORMAT, $original_timestamp);
-          $new_date = date(CPM_DATE_FORMAT, $new_timestamp);
-
-          if ($original_date !== $new_date) {
-            if (empty($cpm_config->comic_files)) {
-              cpm_read_information_and_check_config();
+        if ($ok) {
+          $original_timestamp = false;
+          foreach (array("post_date", "post_date_gmt") as $param) {
+            $result = strtotime($post->{$param});
+            if ($result !== false) {
+              $original_timestamp = $result; break;
             }
+          }
 
-            foreach ($cpm_config->comic_files as $file) {
-              $filename = pathinfo($file, PATHINFO_BASENAME);
-              if (($result = cpm_breakdown_comic_filename($filename)) !== false) {
-                if ($result['date'] == $original_date) {
-                  foreach (cpm_find_thumbnails_by_filename($file) as $thumb_file) {
-                    rename($thumb_file, str_replace("/${original_date}", "/${new_date}", $thumb_file));
+          $new_timestamp = strtotime(implode("-", array($_POST['aa'], $_POST['mm'], $_POST['jj'])));
+
+          if (!empty($original_timestamp) && !empty($new_timestamp)) {
+            $original_date = date(CPM_DATE_FORMAT, $original_timestamp);
+            $new_date = date(CPM_DATE_FORMAT, $new_timestamp);
+
+            if ($original_date !== $new_date) {
+              if (empty($cpm_config->comic_files)) {
+                cpm_read_information_and_check_config();
+              }
+
+              foreach ($cpm_config->comic_files as $file) {
+                $filename = pathinfo($file, PATHINFO_BASENAME);
+                if (($result = cpm_breakdown_comic_filename($filename)) !== false) {
+                  if ($result['date'] == $original_date) {
+                    foreach (cpm_find_thumbnails_by_filename($file) as $thumb_file) {
+                      @rename($thumb_file, str_replace("/${original_date}", "/${new_date}", $thumb_file));
+                    }
+
+                    @rename($file, str_replace("/${original_date}", "/${new_date}", $file));
                   }
-
-                  rename($file, str_replace("/${original_date}", "/${new_date}", $file));
                 }
               }
-            }
 
-            $cpm_config->comic_files = null;
+              $cpm_config->comic_files = null;
+            }
           }
         }
       }
@@ -200,18 +212,30 @@ function cpm_handle_edit_post($post_id) {
   global $cpm_config;
 
   if (!$cpm_config->is_cpm_managing_posts) {
-    $new_date = date(CPM_DATE_FORMAT, strtotime(implode("-", array($_POST['aa'], $_POST['mm'], $_POST['jj']))));
-
-    foreach (array('hovertext' => 'comicpress-img-title',
-                   'transcript' => 'comicpress-transcript') as $meta_name => $post_name) {
-      if (isset($_POST[$post_name])) {
-        update_post_meta($post_id, $meta_name, $_POST[$post_name]);
+    $ok = false;
+    extract(cpm_get_all_comic_categories());
+    $post_categories = wp_get_post_categories($post_id);
+    foreach ($category_tree as $node) {
+      $parts = explode("/", $node);
+      if (in_array(end($parts), $post_categories)) {
+        $ok = true; break;
       }
     }
 
-    if (is_uploaded_file($_FILES['comicpress-replace-image']['tmp_name'])) {
-      $_POST['override-date'] = $new_date;
-      cpm_handle_file_uploads(array('comicpress-replace-image'));
+    if ($ok) {
+      $new_date = date(CPM_DATE_FORMAT, strtotime(implode("-", array($_POST['aa'], $_POST['mm'], $_POST['jj']))));
+
+      foreach (array('hovertext' => 'comicpress-img-title',
+                     'transcript' => 'comicpress-transcript') as $meta_name => $post_name) {
+        if (isset($_POST[$post_name])) {
+          update_post_meta($post_id, $meta_name, $_POST[$post_name]);
+        }
+      }
+
+      if (is_uploaded_file($_FILES['comicpress-replace-image']['tmp_name'])) {
+        $_POST['override-date'] = $new_date;
+        cpm_handle_file_uploads(array('comicpress-replace-image'));
+      }
     }
   }
 }
@@ -227,22 +251,35 @@ function cpm_handle_delete_post($post_id) {
     if (cpm_option("cpm-edit-post-integrate") == 1) {
       $post = get_post($post_id);
       if (!in_array($post->post_type, array("attachment", "revision", "page"))) {
-        $original_date = date(CPM_DATE_FORMAT, strtotime($post->post_date_gmt));
 
-        if (empty($cpm_config->comic_files)) {
-          cpm_read_information_and_check_config();
+        $ok = false;
+        extract(cpm_get_all_comic_categories());
+        $post_categories = wp_get_post_categories($post_id);
+        foreach ($category_tree as $node) {
+          $parts = explode("/", $node);
+          if (in_array(end($parts), $post_categories)) {
+            $ok = true; break;
+          }
         }
 
-        foreach ($cpm_config->comic_files as $file) {
-          $filename = pathinfo($file, PATHINFO_BASENAME);
-          if (($result = cpm_breakdown_comic_filename($filename)) !== false) {
-            if ($result['date'] == $original_date) {
-              foreach (cpm_find_thumbnails_by_filename($file) as $thumb_file) {
-                $thumb_file = CPM_DOCUMENT_ROOT . $thumb_file;
-                @unlink($thumb_file);
-              }
+        if ($ok) {
+          $original_date = date(CPM_DATE_FORMAT, strtotime($post->post_date));
 
-              @unlink($file);
+          if (empty($cpm_config->comic_files)) {
+            cpm_read_information_and_check_config();
+          }
+
+          foreach ($cpm_config->comic_files as $file) {
+            $filename = pathinfo($file, PATHINFO_BASENAME);
+            if (($result = cpm_breakdown_comic_filename($filename)) !== false) {
+              if ($result['date'] == $original_date) {
+                foreach (cpm_find_thumbnails_by_filename($file) as $thumb_file) {
+                  $thumb_file = CPM_DOCUMENT_ROOT . $thumb_file;
+                  @unlink($thumb_file);
+                }
+
+                @unlink($file);
+              }
             }
           }
         }
@@ -319,7 +356,7 @@ function cpm_manage_posts_custom_column($column_name) {
   global $cpm_config, $broken_down_comic_files, $post;
 
   if ($column_name == "comic") {
-    $post_date = date(CPM_DATE_FORMAT, strtotime($post->post_date_gmt));
+    $post_date = date(CPM_DATE_FORMAT, strtotime($post->post_date));
 
     if ($is_first = empty($broken_down_comic_files)) {
       $broken_down_comic_files = array();
@@ -353,11 +390,18 @@ function cpm_manage_posts_custom_column($column_name) {
     }
 
     $ok = false;
-    extract(cpm_get_all_comic_categories());
-    foreach ($category_tree as $node) {
-      $parts = explode("/", $node);
-      if (in_category(end($parts))) {
-        $ok = true; break;
+
+    if (cpm_get_subcomic_directory() !== false) {
+      if (in_category(get_option('comicpress-manager-manage-subcomic'))) {
+        $ok = true;
+      }
+    } else {
+      extract(cpm_get_all_comic_categories());
+      foreach ($category_tree as $node) {
+        $parts = explode("/", $node);
+        if (in_category(end($parts))) {
+          $ok = true; break;
+        }
       }
     }
 
@@ -493,10 +537,15 @@ function cpm_post_editor($width = 435) {
   }
 
   extract(cpm_normalize_storyline_structure());
-  if (cpm_option('cpm-default-comic-category-is-last-storyline') == 1) {
-    $post_categories = array(end(explode("/", end($category_tree))));
+
+  if (cpm_get_subcomic_directory() !== false) {
+    $post_categories = array(get_option('comicpress-manager-manage-subcomic'));
   } else {
-    $post_categories = array($cpm_config->properties['comiccat']);
+    if (cpm_option('cpm-default-comic-category-is-last-storyline') == 1) {
+      $post_categories = array(end(explode("/", end($category_tree))));
+    } else {
+      $post_categories = array($cpm_config->properties['comiccat']);
+    }
   }
 
   ob_start();
@@ -745,7 +794,11 @@ function cpm_find_thumbnails($date_root) {
   $thumbnails_found = array();
   foreach (array('rss', 'archive') as $type) {
     if ($cpm_config->separate_thumbs_folder_defined[$type]) {
-      $files = glob(CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"] . '/' . $date_root . "*");
+      $path = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"];
+      if (($subdir = cpm_get_subcomic_directory()) !== false) {
+        $path .= '/' . $subdir;
+      }
+      $files = glob($path . '/' . $date_root . "*");
       if ($files === false) { $files = array(); }
 
       if (count($files) > 0) {
@@ -821,10 +874,14 @@ function generate_comic_categories_options($form_name, $label = true) {
   $first_category = null;
 
   extract(cpm_normalize_storyline_structure());
-  if (cpm_option('cpm-default-comic-category-is-last-storyline') == 1) {
-    $default_category = end(explode("/", end($category_tree)));
+  if (cpm_get_subcomic_directory() !== false) {
+    $default_category = get_option('comicpress-manager-manage-subcomic');
   } else {
-    $default_category = $cpm_config->properties['comiccat'];
+    if (cpm_option('cpm-default-comic-category-is-last-storyline') == 1) {
+      $default_category = end(explode("/", end($category_tree)));
+    } else {
+      $default_category = $cpm_config->properties['comiccat'];
+    }
   }
 
   ob_start();
@@ -984,7 +1041,11 @@ function cpm_write_thumbnail($input, $target_filename, $do_rebuild = false) {
 
         $converted_target_filename = preg_replace('#\.[^\.]+$#', '', $target_filename) . '.' . $target_format;
 
-        $target = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"] . '/' . $converted_target_filename;
+        $target = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"];
+        if (($subdir = cpm_get_subcomic_directory()) !== false) {
+          $target .= '/' . $subdir;
+        }
+        $target .= '/' . $converted_target_filename;
 
         if (!in_array($target, $write_targets)) {
           $write_targets[$type] = $target;
@@ -1067,8 +1128,31 @@ function cpm_write_thumbnail($input, $target_filename, $do_rebuild = false) {
             $pixel_size_buffer = 1.25;
 
             $max_bytes = cpm_short_size_string_to_bytes(ini_get('memory_limit'));
+            if ($max_bytes > 0) {
+              $max_thumb_size = 0;
 
-            $max_thumb_size = 0;
+              foreach ($write_targets as $type => $target) {
+                $width_to_use =   (isset($cpm_config->properties["${type}_comic_width"]))
+                                ? $cpm_config->properties["${type}_comic_width"]
+                                : $cpm_config->properties['archive_comic_width'];
+
+                $archive_comic_height = (int)(($width_to_use * $height) / $width);
+
+                $max_thumb_size = max($width_to_use * $archive_comic_height * 4, $max_thumb_size);
+              }
+
+              $input_image_size = $width * $height * 4;
+              if (strtolower(pathinfo($input, PATHINFO_EXTENSION)) == "gif") { $input_image_size *= 2; }
+
+              $recommended_size = ($input_image_size + $max_thumb_size) * $pixel_size_buffer;
+              if (function_exists('memory_get_usage')) { $recommended_size += memory_get_usage(); }
+
+              if ($recommended_size > $max_bytes) {
+                $cpm_config->warnings[] = sprintf(__("<strong>You don't have enough memory available to PHP and GD to process this file.</strong> You should <strong>set your PHP <tt>memory_size</tt></strong> to at least <strong><tt>%sM</tt></strong> and try again. For more information, read the ComicPress Manager FAQ.", 'comicpress-manager'), (int)($recommended_size / (1024 * 1024)));
+
+                return false;
+              }
+            }
 
             foreach ($write_targets as $type => $target) {
               $width_to_use =   (isset($cpm_config->properties["${type}_comic_width"]))
@@ -1077,80 +1161,66 @@ function cpm_write_thumbnail($input, $target_filename, $do_rebuild = false) {
 
               $archive_comic_height = (int)(($width_to_use * $height) / $width);
 
-              $max_thumb_size = max($width_to_use * $archive_comic_height * 4, $max_thumb_size);
-            }
+              $pathinfo = pathinfo($input);
 
-            $input_image_size = $width * $height * 4;
-            if (strtolower(pathinfo($input, PATHINFO_EXTENSION)) == "gif") { $input_image_size *= 2; }
+              $thumb_image = imagecreatetruecolor($width_to_use, $archive_comic_height);
+              imagealphablending($thumb_image, true);
+              switch(strtolower($pathinfo['extension'])) {
+                case "jpg":
+                case "jpeg":
+                  $comic_image = imagecreatefromjpeg($input);
+                  break;
+                case "gif":
+                  $is_gif = true;
 
-            $recommended_size = ($input_image_size + $max_thumb_size) * $pixel_size_buffer;
-            if (function_exists('memory_get_usage')) { $recommended_size += memory_get_usage(); }
+                  $temp_comic_image = imagecreatefromgif($input);
 
-            if ($recommended_size > $max_bytes) {
-              $cpm_config->warnings[] = sprintf(__("<strong>You don't have enough memory available to PHP and GD to process this file.</strong> You should <strong>set your PHP <tt>memory_size</tt></strong> to at least <strong><tt>%sM</tt></strong> and try again. For more information, read the ComicPress Manager FAQ.", 'comicpress-manager'), (int)($recommended_size / (1024 * 1024)));
+                  list($width, $height) = getimagesize($input);
+                  $comic_image = imagecreatetruecolor($width, $height);
 
-              return false;
-            } else {
-              foreach ($write_targets as $type => $target) {
-                $width_to_use =   (isset($cpm_config->properties["${type}_comic_width"]))
-                                ? $cpm_config->properties["${type}_comic_width"]
-                                : $cpm_config->properties['archive_comic_width'];
+                  imagecopy($comic_image, $temp_comic_image, 0, 0, 0, 0, $width, $height);
+                  imagedestroy($temp_comic_image);
+                  break;
+                case "png":
+                  $comic_image = imagecreatefrompng($input);
+                  break;
+                default:
+                  return false;
+              }
+              imagealphablending($comic_image, true);
 
-                $archive_comic_height = (int)(($width_to_use * $height) / $width);
+              if ($is_palette = !imageistruecolor($comic_image)) {
+                $number_of_colors = imagecolorstotal($comic_image);
+              }
 
-                $pathinfo = pathinfo($input);
+              imagecopyresampled($thumb_image, $comic_image, 0, 0, 0, 0, $width_to_use, $archive_comic_height, $width, $height);
 
-                $thumb_image = imagecreatetruecolor($width_to_use, $archive_comic_height);
-                imagealphablending($thumb_image, true);
-                switch(strtolower($pathinfo['extension'])) {
-                  case "jpg":
-                  case "jpeg":
-                    $comic_image = imagecreatefromjpeg($input);
-                    break;
-                  case "gif":
-                    $is_gif = true;
+              $ok = true;
 
-                    $temp_comic_image = imagecreatefromgif($input);
-
-                    list($width, $height) = getimagesize($input);
-                    $comic_image = imagecreatetruecolor($width, $height);
-
-                    imagecopy($comic_image, $temp_comic_image, 0, 0, 0, 0, $width, $height);
-                    imagedestroy($temp_comic_image);
-                    break;
-                  case "png":
-                    $comic_image = imagecreatefrompng($input);
-                    break;
-                  default:
-                    return false;
-                }
-                imagealphablending($comic_image, true);
-
-                if ($is_palette = !imageistruecolor($comic_image)) {
-                  $number_of_colors = imagecolorstotal($comic_image); 
-                }
-
-                imagecopyresampled($thumb_image, $comic_image, 0, 0, 0, 0, $width_to_use, $archive_comic_height, $width, $height);
-
-                $ok = true;
-
+              @touch($target);
+              if (file_exists($target)) {
+                @unlink($target);
                 switch(strtolower($target_format)) {
                   case "jpg":
                   case "jpeg":
                     if (imagetypes() & IMG_JPG) {
-                      imagejpeg($thumb_image, $target, cpm_option("cpm-thumbnail-quality"));
+                      @imagejpeg($thumb_image, $target, cpm_option("cpm-thumbnail-quality"));
                     } else {
                       return false;
                     }
                     break;
                   case "gif":
                     if (imagetypes() & IMG_GIF) {
-                      $temp_comic_image = imagecreate($width_to_use, $archive_comic_height);
-                      imagecopymerge($temp_comic_image, $thumb_image, 0, 0, 0, 0, $width_to_use, $archive_comic_height, 100);
-                      imagecolormatch($thumb_image, $temp_comic_image);
+                      if (function_exists('imagecolormatch')) {
+                        $temp_comic_image = imagecreate($width_to_use, $archive_comic_height);
+                        imagecopymerge($temp_comic_image, $thumb_image, 0, 0, 0, 0, $width_to_use, $archive_comic_height, 100);
+                        imagecolormatch($thumb_image, $temp_comic_image);
 
-                      imagegif($temp_comic_image, $target);
-                      imagedestroy($temp_comic_image);
+                        @imagegif($temp_comic_image, $target);
+                        imagedestroy($temp_comic_image);
+                      } else {
+                        @imagegif($thumb_image, $target);
+                      }
                     } else {
                       return false;
                     }
@@ -1160,7 +1230,7 @@ function cpm_write_thumbnail($input, $target_filename, $do_rebuild = false) {
                       if ($is_palette) {
                         imagetruecolortopalette($thumb_image, true, $number_of_colors);
                       }
-                      imagepng($thumb_image, $target, 9);
+                      @imagepng($thumb_image, $target, 9);
                     } else {
                       return false;
                     }
@@ -1168,17 +1238,17 @@ function cpm_write_thumbnail($input, $target_filename, $do_rebuild = false) {
                   default:
                     return false;
                 }
-
-                if (!file_exists($target)) {
-                  $ok = false;
-                } else {
-                  @chmod($target, CPM_FILE_UPLOAD_CHMOD);
-                  $files_created_in_operation[] = $target;
-                }
-
-                imagedestroy($comic_image);
-                imagedestroy($thumb_image);
               }
+
+              if (!file_exists($target)) {
+                $ok = false;
+              } else {
+                @chmod($target, CPM_FILE_UPLOAD_CHMOD);
+                $files_created_in_operation[] = $target;
+              }
+
+              imagedestroy($comic_image);
+              imagedestroy($thumb_image);
             }
           } else {
             $ok = false;
@@ -1305,6 +1375,10 @@ function cpm_handle_file_uploads($files) {
   $did_convert_cmyk_jpeg = array();
 
   $target_root = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$_POST['upload-destination'] . "_folder"];
+  if (($subdir = cpm_get_subcomic_directory()) !== false) {
+    $target_root .= '/' . $subdir;
+  }
+  
   $write_thumbnails = isset($_POST['thumbnails']) && ($_POST['upload-destination'] == "comic");
   $new_post = isset($_POST['new_post']) && ($_POST['upload-destination'] == "comic");
 
@@ -1426,7 +1500,11 @@ function cpm_handle_file_uploads($files) {
             if (pathinfo($original_filename, PATHINFO_EXTENSION) != pathinfo($target_filename, PATHINFO_EXTENSION)) {
               if (@unlink($target_root . '/' . $target_filename)) {
                 foreach (cpm_get_thumbnails_to_generate() as $type) {
-                  @unlink(CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"] . '/' . $target_filename);
+                  $path = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"];
+                  if (($subdir = cpm_get_thumbnails_to_generate()) !== false) {
+                    $path .= '/' . $subdir;
+                  }
+                  @unlink($path . '/' . $target_filename);
                 }
               }
 
@@ -1474,6 +1552,8 @@ function cpm_handle_file_uploads($files) {
 
           extract(cpm_do_gd_file_check_on_upload($_FILES[$key]['tmp_name'], $target_filename));
 
+          $output_file = null;
+
           if ($result !== false) {
             extract($result, EXTR_PREFIX_ALL, "filename");
 
@@ -1484,10 +1564,12 @@ function cpm_handle_file_uploads($files) {
                 $target_filename = $obfuscated_filename;
               }
 
-              @move_uploaded_file($_FILES[$key]['tmp_name'], $target_root . '/' . $target_filename);
-              $files_created_in_operation[] = $target_root . '/' . $target_filename;
+              $output_file = $target_root . '/' . $target_filename;
 
-              if (file_exists($target_root . '/' . $target_filename)) {
+              @move_uploaded_file($_FILES[$key]['tmp_name'], $output_file);
+              $files_created_in_operation[] = $output_file;
+
+              if (file_exists($output_file)) {
                 $files_uploaded[] = $target_filename;
                 if ($gd_did_rename) { $gd_rename_file[] = $comic_file; }
               } else {
@@ -1506,6 +1588,26 @@ function cpm_handle_file_uploads($files) {
           } else {
             if (!$tried_replace) {
               $invalid_filenames[] = $comic_file;
+            }
+          }
+
+          if (   ($cpm_config->scale_method_cache == CPM_SCALE_IMAGEMAGICK)
+              && (cpm_option('cpm-strip-icc-profiles') == "1")
+              && !empty($output_file)) {
+            $temp_output_file = $output_file . '.' . md5(rand());
+
+            $command = array("convert",
+                             "\"${output_file}\"",
+                             "-strip",
+                             "\"${temp_output_file}\"");
+
+            $strip_profiles = escapeshellcmd(implode(" ", $command));
+
+            exec($strip_profiles);
+
+            if (file_exists($temp_output_file)) {
+              @unlink($output_file);
+              @rename($temp_output_file, $output_file);
             }
           }
         }
@@ -1910,7 +2012,7 @@ function cpm_handle_actions() {
   $valid_actions = array('multiple-upload-file', 'create-missing-posts', 
                          'update-config', 'restore-backup', 'change-dates',
                          'write-comic-post', 'update-cpm-config', 'do-first-run', 'skip-first-run',
-                         'build-storyline-schema', 'batch-processing');
+                         'build-storyline-schema', 'batch-processing', 'manage-subcomic');
 
   //
   // take actions based upon $_POST['action']
@@ -1938,6 +2040,11 @@ function cpm_show_comicpress_details() {
     }
   }
 
+  $subdir_path = '';
+  if (($subdir = cpm_get_subcomic_directory()) !== false) {
+    $subdir_path .= '/' . $subdir;
+  }
+
   ?>
     <!-- ComicPress details -->
     <div id="comicpress-details">
@@ -1959,7 +2066,10 @@ function cpm_show_comicpress_details() {
           <li><strong><?php _e("Available disk space:", 'comicpress-manager') ?></strong>
           <?php printf(__("%0.2f MB"), cpm_wpmu_get_available_disk_space() / 1048576) ?>
         <?php } ?>
-        <li><strong><?php _e('Comics folder:', 'comicpress-manager') ?></strong> <?php echo $cpm_config->properties['comic_folder'] ?><br />
+        <li><strong><?php _e('Comics folder:', 'comicpress-manager') ?></strong>
+                    <?php
+                      echo $cpm_config->properties['comic_folder'] . $subdir_path;
+                    ?><br />
             <?php
               $too_many_comics_message = "";
               if (!$all_comic_dates_ok) {
@@ -1974,7 +2084,7 @@ function cpm_show_comicpress_details() {
         <?php foreach (array('archive' => __('Archive folder:', 'comicpress-manager'),
                              'rss'     => __('RSS feed folder:', 'comicpress-manager'))
                        as $type => $title) { ?>
-          <li><strong><?php echo $title ?></strong> <?php echo $cpm_config->properties["${type}_comic_folder"] ?>
+          <li><strong><?php echo $title ?></strong> <?php echo $cpm_config->properties["${type}_comic_folder"]  . $subdir_path; ?>
             <?php if (
               ($cpm_config->get_scale_method() != CPM_SCALE_NONE) &&
               (cpm_option("cpm-${type}-generate-thumbnails") == 1) &&
@@ -2140,10 +2250,15 @@ function cpm_show_debug_info($display_none = true) {
     clearstatcache();
     $output_config['folder_perms'] = array();
 
+    $subdir = "";
+    if (($subdir = cpm_get_subcomic_directory()) !== false) {
+      $subdir = '/' . $subdir;
+    }
+
     foreach (array(
-      'comic' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['comic_folder'],
-      'rss' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['rss_comic_folder'],
-      'archive' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['archive_comic_folder'],
+      'comic' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['comic_folder'] . $subdir,
+      'rss' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['rss_comic_folder'] . $subdir,
+      'archive' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['archive_comic_folder'] . $subdir,
       'config' => $cpm_config->config_filepath
     ) as $key => $path) {
       if (($s = @stat($path)) !== false) {
@@ -2351,7 +2466,7 @@ function cpm_show_footer() {
       </form>
     </div>
     <div id="cpm-footer-text">
-      <?php _e('<a href="http://claritycomic.com/comicpress-manager/" target="_new">ComicPress Manager</a> is built for the <a href="http://www.mindfaucet.com/comicpress/" target="_new">ComicPress</a> theme', 'comicpress-manager') ?> |
+      <?php _e('<a href="http://wordpress.org/extend/plugins/comicpress-manager/" target="_new">ComicPress Manager</a> is built for the <a href="http://www.mindfaucet.com/comicpress/" target="_new">ComicPress</a> theme', 'comicpress-manager') ?> |
       <?php _e('Copyright 2008-2009 <a href="mailto:john@coswellproductions.com?Subject=ComicPress Manager Comments">John Bintz</a>', 'comicpress-manager') ?> |
       <?php _e('Released under the GNU GPL', 'comicpress-manager') ?> |
       <?php echo $version_string ?>

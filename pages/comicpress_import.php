@@ -6,6 +6,10 @@
 function cpm_manager_import() {
   global $cpm_config;
 
+  if (cpm_get_subcomic_directory() !== false) {
+    $cpm_config->messages[] = sprintf(__("<strong>Reminder:</strong> You are managing the <strong>%s</strong> comic subdirectory.", 'comicpress-manager'), get_cat_name(get_option('comicpress-manager-manage-subcomic')));
+  }
+
   if (cpm_option('cpm-skip-checks') != 1) {
     if (!function_exists('get_comic_path')) {
       $cpm_config->warnings[] =  __('<strong>It looks like you\'re running an older version of ComicPress.</strong> Storyline, hovertext, and transcript are fully supported in <a href="http://comicpress.org/">ComicPress 2.7</a>. You can use hovertext and transcripts in earlier themes by using <tt>get_post_meta($post->ID, "hovertext", true)</tt> and <tt>get_post_meta($post->ID, "transcript", true)</tt>.', 'comicpress-manager');

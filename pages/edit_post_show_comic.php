@@ -25,7 +25,7 @@ function cpm_show_comic() {
 
   if ($post->ID !== 0) {
     $post_time = time();
-    foreach (array('post_date_gmt', 'post_modified_gmt') as $time_value) {
+    foreach (array('post_date', 'post_modified', 'post_date_gmt', 'post_modified_gmt') as $time_value) {
       if (($result = strtotime($post->{$time_value})) !== false) {
         $post_time = $result; break;
       }
@@ -37,25 +37,32 @@ function cpm_show_comic() {
       $in_comics_category = (count(array_intersect($comic_categories, $post_categories)) > 0);
     }
 
-    if (($comic = find_comic_by_date($post_time)) !== false) {
-      $comic_uri = cpm_build_comic_uri($comic);
+    $ok = true;
+    if (cpm_get_subcomic_directory() !== false) {
+      $ok = in_array(get_option('comicpress-manager-manage-subcomic'), wp_get_post_categories($post->ID));
+    }
 
-      $comic_filename = preg_replace('#^.*/([^\/]*)$#', '\1', $comic_uri);
-      $link = "<strong><a target=\"comic_window\" href=\"${comic_uri}\">${comic_filename}</a></strong>";
+    if ($ok) {
+      if (($comic = find_comic_by_date($post_time)) !== false) {
+        $comic_uri = cpm_build_comic_uri($comic);
 
-      $date_root = substr($comic_filename, 0, strlen(date(CPM_DATE_FORMAT)));
-      $thumbnails_found = cpm_find_thumbnails_by_filename($comic);
+        $comic_filename = preg_replace('#^.*/([^\/]*)$#', '\1', $comic_uri);
+        $link = "<strong><a target=\"comic_window\" href=\"${comic_uri}\">${comic_filename}</a></strong>";
 
-      $icon_file_to_use = $comic;
-      foreach (array('rss', 'archive') as $type) {
-        if (isset($thumbnails_found[$type])) {
-          $icon_file_to_use = $thumbnails_found[$type];
+        $date_root = substr($comic_filename, 0, strlen(date(CPM_DATE_FORMAT)));
+        $thumbnails_found = cpm_find_thumbnails_by_filename($comic);
+
+        $icon_file_to_use = $comic;
+        foreach (array('rss', 'archive') as $type) {
+          if (isset($thumbnails_found[$type])) {
+            $icon_file_to_use = $thumbnails_found[$type];
+          }
         }
+
+        $icon_uri = cpm_build_comic_uri($icon_file_to_use);
+
+        $has_comic_file = true;
       }
-
-      $icon_uri = cpm_build_comic_uri($icon_file_to_use);
-
-      $has_comic_file = true;
     }
   }
 
@@ -106,10 +113,16 @@ function cpm_show_comic() {
           <?php _e("Mouse over the icon to the right to see a larger version of the image.", 'comicpress-manager') ?>
         </p>
 
+        <?php
+          if (cpm_get_subcomic_directory() !== false) {
+            printf(__("Comic files will be uploaded to the <strong>%s</strong> comic subdirectory.", 'comicpress-manager'), get_cat_name(get_option('comicpress-manager-manage-subcomic')));
+          }
+        ?>
+
         <?php if (count($thumbnails_found) > 0) { ?>
           <p><?php _e("The following thumbnails for this comic were also found:", 'comicpress-manager') ?>
             <?php foreach ($thumbnails_found as $type => $file) { ?>
-              <a target="comic_window" href="<?php echo $file ?>"><?php echo $type ?></a>
+              <a target="comic_window" href="<?php echo cpm_build_comic_uri(CPM_DOCUMENT_ROOT . '/' . $file) ?>"><?php echo $type ?></a>
             <?php } ?>
           </p>
         <?php } ?>
@@ -133,7 +146,6 @@ function cpm_show_comic() {
           <td>
             <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo cpm_short_size_string_to_bytes(ini_get('upload_max_filesize')) ?>" />
             <input type="file" id="comicpress-replace-image" name="comicpress-replace-image" class="button" /> <?php echo (empty($thumbnails_to_generate)) ? "" : __("<em>(thumbnails will be generated)</em>", 'comicpress-manager') ?><br />
-            <input type="button" id="upload-new-file-button" class="button" value="Upload File and Save Post" />
             <?php if ($has_comic_file) { ?>
               <input type="hidden" name="overwrite-existing-file-choice" value="<?php echo $comic_filename ?>" />
             <?php } ?>
@@ -147,10 +159,6 @@ function cpm_show_comic() {
                           $cpm_config->properties['comiccat'] ?>].each(function(i) {
                 $('in-category-' + i).checked = true;
               });
-            });
-
-            Event.observe('upload-new-file-button', 'click', function(e) {
-              Event.stop(e); $('save-post').click();
             });
           </script>
         </tr>

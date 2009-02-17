@@ -148,7 +148,9 @@ function cpm_build_comic_uri($filename, $base_dir = null) {
   $path = $parsed_url['path'];
   if (function_exists('get_site_option')) { $path = cpm_wpmu_fix_admin_uri($path); }
 
-  return $path . '/' . implode('/', array_slice($parts, -2, 2));
+  $count = (cpm_get_subcomic_directory() !== false) ? 3 : 2;
+
+  return $path . '/' . implode('/', array_slice($parts, -$count, $count));
 }
 
 /**
@@ -234,7 +236,9 @@ function generate_post_hash($filename_date, $filename_converted_title) {
         $post_category = array_merge($post_category, array_intersect(get_all_category_ids(), $_POST['additional-categories']));
       }
     }
-    $post_status   = isset($_POST['publish']) ? "publish" : "draft";
+
+    $publish_mode = ($timestamp > time()) ? "future" : "publish";
+    $post_status   = isset($_POST['publish']) ? $publish_mode : "draft";
     $tags_input    = $tags;
 
     return compact('post_content', 'post_title', 'post_date', 'post_date_gmt', 'post_category', 'post_status', 'tags_input');
@@ -267,7 +271,29 @@ function cpm_query_posts() {
 function get_comic_folder_path() {
   global $cpm_config;
 
-  return CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['comic_folder'];
+  $output = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['comic_folder'];
+
+  if (($subdir = cpm_get_subcomic_directory()) !== false) {
+    $output .= '/' . $subdir;
+  }
+
+  return $output;
+}
+
+function cpm_get_subcomic_directory() {
+  global $cpm_config;
+
+  if (function_exists('get_option')) {
+    $result = get_option('comicpress-manager-manage-subcomic');
+    if (!empty($result)) {
+      if ($result != $cpm_config->properties['comiccat']) {
+        if (($category= get_category($result)) !== false) {
+          return $category->slug;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 /**

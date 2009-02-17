@@ -5,6 +5,7 @@
  */
 function cpm_manager_config() {
   global $cpm_config;
+  extract(cpm_normalize_storyline_structure());
 
   ob_start(); ?>
 
@@ -19,7 +20,37 @@ function cpm_manager_config() {
   echo cpm_manager_edit_config();
   ?>
 
-  <?php
+  <?php if (get_option('comicpress-enable-storyline-support') == 1) { ?>
+    <form action="" method="post">
+      <input type="hidden" name="action" value="manage-subcomic" />
+      <table class="form-table" cellspacing="0">
+        <tr>
+          <th scope="row">Manage a subcomic</th>
+          <td>
+            <select name="comic">
+              <?php
+                $first = true;
+                $path = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['comic_folder'];
+
+                foreach ($category_tree as $node) {
+                  $category = get_category(end(explode("/", $node)));
+
+                  $selected = (get_option('comicpress-manager-manage-subcomic') == $category->term_id) ? " selected" : "";
+
+                  if (is_dir($path . '/' . $category->slug) || $first) { ?>
+                    <option value="<?php echo $category->term_id ?>"<?php echo $selected ?>><?php echo $category->name . ($first ? " (default)" : "") ?></option>
+                  <?php }
+
+                  $first = false;
+                }
+              ?>
+            </select>
+            <input type="submit" value="Submit" />
+          </td>
+        </tr>
+      </table>
+    </form>
+  <?php }
 
   $activity_content = ob_get_clean();
 

@@ -6,6 +6,10 @@
 function cpm_manager_index() {
   global $cpm_config;
 
+  if (cpm_get_subcomic_directory() !== false) {
+    $cpm_config->messages[] = sprintf(__("<strong>Reminder:</strong> You are managing the <strong>%s</strong> comic subdirectory.", 'comicpress-manager'), get_cat_name(get_option('comicpress-manager-manage-subcomic')));
+  }
+
   $cpm_config->need_calendars = true;
 
   $example_date = cpm_generate_example_date(CPM_DATE_FORMAT);

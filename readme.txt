@@ -3,8 +3,8 @@ Contributors: johncoswell
 Tags: comicpress, webcomics, management, admin, posts, plugin
 Requires at least: 2.5.1
 Tested up to: 2.7
-Stable tag: 1.4.1
-Donate link: http://claritycomic.com/comicpress-manager/#donate
+Stable tag: 1.4.2
+Donate link: http://www.coswellproductions.com/wordpress/wordpress-plugins/
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.
 
@@ -12,7 +12,7 @@ ComicPress Manager ties in with the ComicPress theme to make managing your WordP
 
 The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://comicpress.org/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress.
 
-As of version 1.4.1, it allows you to:
+As of version 1.4.2, it allows you to:
 
 * Upload individual comic files or a Zip archive of comic files directly into your comics folder and generate posts for each comic as it's uploaded with the correct go-live date and time
   * To save a trip to the Edit Post page, you can use the Visual Editor right in ComicPress Manager to add styled text content to your post.
@@ -46,6 +46,7 @@ As of version 1.4.1, it allows you to:
   * If you're migrating from another Webcomic hosting solution, or if you prefer to directly transfer your comics into your comics folder, then you can generate posts for all comics that don't already have posts.
 * Bulk Change the post dates and comic filenames for any comic you've uploaded
   * You can use this advanced feature to shift a large number of comics forward or backwards in time.
+* Manage multiple comics running on one WordPress installation by using directories named after category slugs (work in progress)
 * Modify your comicpress-config.php file from ComicPress Manager.
   * If you're using a comicpress-config.php file, and the permissions are set correctly, you can modify the settings directly from ComicPress manager. If your permissions are not correct, the config file that ComicPress Manager would have written will be shown so that you can copy and paste it into your comicpress-config.php file.
   * Manage your ComicPress Manager configuration directly from the CPM interface, instead of modifying comicpress\_manager\_config.php
@@ -162,6 +163,12 @@ You can change the date format on the ComicPress Manager configuration page. Cha
 = I don't want to clutter up my Dashboard with the ComicPress RSS widget or with QuomicPress. =
 
 Disable the appropriate options on the ComicPress Manager configuration page.
+
+= How do I set up my comic directories for subdirectory management? =
+
+Get the category slug for the Storyline category that will represent the new separate comic. Create directories within your existing comic directories that are named after this slug. Make sure the directories are writable, and then go to ComicPress Config and choose the new comic category. All future file operations will only deal with this directory.
+
+This feature is still experimental, and currently requires you to write the comic file handling code for your ComicPress functions.php file.
 
 = I want to translate your plugin into my language. =
 

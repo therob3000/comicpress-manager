@@ -26,7 +26,7 @@ function cpm_manager_write_comic($form_target, $show_header = true) {
         <h2><?php _e("Write Comic Post", 'comicpress-manager') ?></h2>
       <?php } ?>
 
-      <?php if (count($cpm_config->comic_files) == 0) { ?>
+      <?php if ((count($cpm_config->comic_files) == 0) && (cpm_get_subcomic_directory() === false)) { ?>
         <div style="border: solid #daa 1px; background-color: #ffe7e7; padding: 5px">
           <strong>It looks like this is a new ComicPress install.</strong> You should test to make
           sure uploading works correctly by visiting <a href="admin.php?page=<?php echo plugin_basename(realpath(dirname(__FILE__) . '/../comicpress_manager_admin.php')) ?>">ComicPress -> Upload</a>.
@@ -35,6 +35,12 @@ function cpm_manager_write_comic($form_target, $show_header = true) {
 
       <p>
         <?php printf(__("<strong>Upload a single comic file</strong> and immediately start editing the associated published post. Your post will be going live %s on the provided date and will be posted in the <strong>%s</strong> category.", 'comicpress-manager'), $go_live_time_string, generate_comic_categories_options('category')) ?>
+
+        <?php
+          if (cpm_get_subcomic_directory() !== false) {
+            printf(__("Comic files will be uploaded to the <strong>%s</strong> comic subdirectory.", 'comicpress-manager'), get_cat_name(get_option('comicpress-manager-manage-subcomic')));
+          }
+        ?>
 
         <?php if (!empty($thumbnails_to_generate)) {
           $thumbnail_strings = array();
