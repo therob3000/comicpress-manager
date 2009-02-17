@@ -1,13 +1,13 @@
 <?php
 /*
 Plugin Name: ComicPress Manager
-Plugin URI: http://claritycomic.com/comicpress-manager/
-Description: Manage the comics within a <a href="http://www.mindfaucet.com/comicpress/">ComicPress</a> theme installation.
-Version: 1.2.1
+Plugin URI: http://www.coswellproductions.com/wordpress/wordpress-plugins/
+Description: Manage the comics within a <a href="http://www.comicpress.org/">ComicPress</a> theme installation.
+Version: 1.4.2
 Author: John Bintz
-Author URI: http://www.coswellproductions.org/wordpress/
+Author URI: http://www.coswellproductions.com/wordpress/
 
-Copyright 2008 John Bintz  (email : jcoswell@coswellproductions.org)
+Copyright 2009 John Bintz  (email : john@coswellproductions.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

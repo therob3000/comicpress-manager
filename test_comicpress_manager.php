@@ -36,7 +36,10 @@ class TestComicPressManagerLibrary extends UnitTestCase {
       array(CPM_TEST_DOCUMENT_ROOT . '\mycomic\test.gif', '/mycomic/test.gif'),
     ) as $test) {
       list($example_filename, $expected_url) = $test;
-      $this->assertEqual($expected_url, cpm_build_comic_uri($example_filename, CPM_TEST_DOCUMENT_ROOT));
+      echo $example_filename . "\n";
+      $result = cpm_build_comic_uri($example_filename, CPM_TEST_DOCUMENT_ROOT);
+      echo $result . "\n";
+      $this->assertEqual($expected_url, $result);
     }
   }
 
