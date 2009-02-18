@@ -39,9 +39,30 @@ function cpm_action_build_storyline_schema() {
 
     foreach ($category_tree as $node) {
       $category_id = end(explode("/", $node));
-      $category = get_category($category_id);
-      wp_delete_category($category_id);
-      $cpm_config->messages[] = sprintf(__('Category <strong>%s</strong> deleted.', 'comicpress-manager'), $category->cat_name);
+
+      // ensure that we're not deleting a ComicPress category
+      $ok = true;
+      foreach (array('comiccat', 'blogcat') as $type) {
+        if ($category_id == $cpm_config->properties[$type]) { $ok = false; }
+      }
+
+      // ensure that the category truly is a child of the comic category
+      if ($ok) {
+        $category = get_category($category_id);
+        $ok = false;
+
+        if (!is_wp_error($category)) {
+          while (($category->parent != 0) && ($category->parent != $cpm_config->properties['comiccat'])) {
+            $category = get_category($category->parent);
+          }
+          if ($category->parent == $cpm_config->properties['comiccat']) { $ok = true; }
+        }
+      }
+
+      if ($ok) {
+        wp_delete_category($category_id);
+        $cpm_config->messages[] = sprintf(__('Category <strong>%s</strong> deleted.', 'comicpress-manager'), $category->cat_name);
+      }
     }
 
     uksort($categories_to_create, 'cpm_sort_category_keys_by_length');
