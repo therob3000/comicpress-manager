@@ -10,6 +10,10 @@ function cpm_manager_dates() {
 
   $cpm_config->need_calendars = true;
 
+  if (cpm_get_subcomic_directory() !== false) {
+    $cpm_config->messages[] = __("<strong>Subdirectory support enabled.</strong> Change Dates may not work as expected.", 'comicpress-manager');
+  }
+
   $comic_format_date_string = date(CPM_DATE_FORMAT);
 
   $dates_output_format = "Y-m-d";
@@ -119,7 +123,9 @@ function cpm_manager_dates() {
           });
         }
       </script>
-      <input type="submit" id="submit" value="<?php _e("Change Dates", 'comicpress-manager') ?>" style="width: 520px" />
+      <div style="text-align: center">
+        <input class="button" type="submit" id="submit" value="<?php _e("Change Dates", 'comicpress-manager') ?>" />
+      </div>
     </form>
   <?php } else { ?>
     <p><?php _e("You haven't uploaded any comics yet.", 'comicpress-manager') ?></p>
