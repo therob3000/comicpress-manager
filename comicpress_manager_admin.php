@@ -8,7 +8,7 @@ add_action("admin_menu", "cpm_add_pages");
 add_action("edit_form_advanced", "cpm_show_comic_caller");
 add_action("add_category_form_pre", "cpm_comicpress_categories_warning");
 add_action("pre_post_update", "cpm_handle_pre_post_update");
-add_action("edit_post", "cpm_handle_edit_post");
+add_action("save_post", "cpm_handle_edit_post");
 add_action("delete_post", "cpm_handle_delete_post");
 add_filter("manage_posts_columns", "cpm_manage_posts_columns");
 add_action("manage_posts_custom_column", "cpm_manage_posts_custom_column");
@@ -166,7 +166,7 @@ function cpm_handle_pre_post_update($post_id) {
         if ($ok) {
           $original_timestamp = false;
           foreach (array("post_date", "post_date_gmt") as $param) {
-            $result = strtotime($post->{$param});
+            $result = strtotime(date("Y-m-d", strtotime($post->{$param})));
             if ($result !== false) {
               $original_timestamp = $result; break;
             }
@@ -220,6 +220,13 @@ function cpm_handle_edit_post($post_id) {
       if (in_array(end($parts), $post_categories)) {
         $ok = true; break;
       }
+    }
+
+    if (is_uploaded_file($_FILES['comicpress-replace-image']['tmp_name']) && !$ok) {
+      $post_categories = wp_get_post_categories($post_id);
+      $post_categories[] = end(explode("/", reset($category_tree)));
+      wp_set_post_categories($post_id, $post_categories);
+      $ok = true;
     }
 
     if ($ok) {
@@ -525,7 +532,7 @@ function cpm_initialize_options() {
  * Show the Post Editor.
  * @param integer $width The width in pixels of the text editor widget.
  */
-function cpm_post_editor($width = 435) {
+function cpm_post_editor($width = 435, $is_import = false) {
   global $cpm_config;
 
   $form_titles_and_fields = array();
@@ -578,11 +585,15 @@ function cpm_post_editor($width = 435) {
     __(" <label for=\"publish\"><em>(set the status of this post to <strong>published</strong> instead of <strong>draft</strong>)</em></label>", "comicpress-manager")
   );
 
-  $form_titles_and_fields[] = array(
-    '<label for="duplicate-check">' . __("Check for duplicate posts:", 'comicpress-manager') . '</label>',
-    '<input id="duplicate-check" type="checkbox" name="duplicate_check" value="yes" checked />' .
-    __(" <label for=\"duplicate-check\"><em>(if you've set up ComicPress to use multiple posts on the same day, you'll need to disable this option to allow ComicPress Manager to make multiple posts)</em></label>", "comicpress-manager")
-  );
+  if (!$is_import) {
+    $form_titles_and_fields[] = array(
+      '<label for="duplicate-check">' . __("Check for duplicate posts:", 'comicpress-manager') . '</label>',
+      '<input id="duplicate-check" type="checkbox" name="duplicate_check" value="yes" checked />' .
+      __(" <label for=\"duplicate-check\"><em>(if you've set up ComicPress to use multiple posts on the same day, you'll need to disable this option to allow ComicPress Manager to make multiple posts)</em></label>", "comicpress-manager")
+    );
+  } else {
+    $form_titles_and_fields[] = '<input type="hidden" name="duplicate_check" value="yes" />';
+  }
 
   if ($cpm_config->get_scale_method() != CPM_SCALE_NONE) {
     $thumbnail_writes = cpm_get_thumbnails_to_generate();

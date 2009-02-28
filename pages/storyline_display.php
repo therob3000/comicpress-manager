@@ -16,7 +16,6 @@
       <div style="margin-left: <?php echo (count($parts) - 2) * 50 ?>px; overflow: hidden; background-color: #ddd">
         <a href="<?php echo $first_comic_permalink ?>"><img src="<?php echo $archive_image ?>" /></a>
         <h3><a href="<?php echo get_category_link($category_id) ?>"><?php echo $category->cat_name ?></a></h3>
-        <?php 
         <p>First comic in storyline:
           <strong>
             <a href="<?php echo $first_comic_permalink ?>"><?php echo $first_comic_in_category->post_title ?></a>

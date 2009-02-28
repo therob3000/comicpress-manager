@@ -88,7 +88,7 @@ function cpm_manager_import() {
     <form onsubmit="$('submit').disabled=true" action="" method="post" style="margin-top: 10px">
       <input type="hidden" name="action" value="create-missing-posts" />
 
-      <?php cpm_post_editor() ?>
+      <?php cpm_post_editor(435, true) ?>
 
       <table class="form-table">
         <tr>
