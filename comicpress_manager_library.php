@@ -262,7 +262,9 @@ function cpm_query_posts() {
 
   $query_posts_string .= implode(",", $comic_categories);
 
-  return query_posts($query_posts_string);
+  $result = query_posts($query_posts_string);
+  if (empty($result)) { $result = array(); }
+  return $result;
 }
 
 /**

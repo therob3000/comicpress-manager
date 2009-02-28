@@ -39,6 +39,7 @@ function cpm_manager_storyline() {
   <form action="" method="post">
     <input type="hidden" name="action" value="build-storyline-schema" />
     <input type="hidden" name="order" id="order" value="" />
+    <input type="hidden" name="original-categories" value="<?php echo implode(",", $category_tree) ?>" />
     <div style="margin-bottom: 5px">
       <label>
         <input type="checkbox"

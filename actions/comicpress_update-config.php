@@ -3,6 +3,8 @@
 function cpm_action_update_config() {
   global $cpm_config;
 
+  $cpm_config->is_cpm_managing_posts = true;
+
   $do_write = false;
   $use_default_file = false;
 
