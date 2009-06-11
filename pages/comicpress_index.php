@@ -88,13 +88,11 @@ function cpm_manager_index() {
     <?php } ?>
   </h3>
 
-  <?php if (!function_exists('get_site_option')) { ?>
     <?php if (!$zip_extension_loaded) { ?>
       <div id="zip-upload-warning">
         <?php printf(__('<strong>You do not have the Zip extension installed.</strong> Uploading a Zip file <strong>will not work</strong>. Either upload files individually or <a href="%s">FTP/SFTP the files to your site and import them</a>.'), "?page=" .  plugin_basename(realpath(dirname(__FILE__) . '/../comicpress_manager_admin.php') . '-import')) ?>
       </div>
     <?php } ?>
-  <?php } ?>
 
   <?php $target_url = add_query_arg("upload", "1") ?>
 

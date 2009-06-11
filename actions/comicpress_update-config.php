@@ -3,6 +3,8 @@
 function cpm_action_update_config() {
   global $cpm_config;
 
+  $cpm_config->is_cpm_managing_posts = true;
+
   $do_write = false;
   $use_default_file = false;
 
@@ -33,10 +35,10 @@ function cpm_action_update_config() {
     }
   }
 
-  if (function_exists('get_site_option')) {
-    cpm_wpmu_save_options();
-    $cpm_config->is_wp_options = true;
-  }
+  //if (function_exists('get_site_option')) {
+  //  cpm_wpmu_save_options();
+  //  $cpm_config->is_wp_options = true;
+  //}
 
   if (!$cpm_config->is_wp_options) {
     if (!$do_write) {

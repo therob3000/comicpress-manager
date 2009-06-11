@@ -86,9 +86,9 @@ function cpm_calculate_document_root() {
 
   if (is_null($document_root)) { $document_root = $_SERVER['DOCUMENT_ROOT'] . $parsed_url['path']; }
 
-  if (function_exists('get_site_option')) {
-    $document_root = cpm_wpmu_modify_path($document_root);
-  }
+  //if (function_exists('get_site_option')) {
+  //  $document_root = cpm_wpmu_modify_path($document_root);
+  //}
 
   return untrailingslashit($document_root);
 }
@@ -146,7 +146,7 @@ function cpm_build_comic_uri($filename, $base_dir = null) {
 
   $parsed_url = parse_url(get_bloginfo('url'));
   $path = $parsed_url['path'];
-  if (function_exists('get_site_option')) { $path = cpm_wpmu_fix_admin_uri($path); }
+  //if (function_exists('get_site_option')) { $path = cpm_wpmu_fix_admin_uri($path); }
 
   $count = (cpm_get_subcomic_directory() !== false) ? 3 : 2;
 
@@ -262,7 +262,9 @@ function cpm_query_posts() {
 
   $query_posts_string .= implode(",", $comic_categories);
 
-  return query_posts($query_posts_string);
+  $result = query_posts($query_posts_string);
+  if (empty($result)) { $result = array(); }
+  return $result;
 }
 
 /**
@@ -386,7 +388,7 @@ function cpm_read_information_and_check_config() {
 
     $any_cpm_document_root_failures = false;
 
-    if (!function_exists('get_site_option')) {
+    //if (!function_exists('get_site_option')) {
       // is the site root configured properly?
       if (!file_exists(CPM_DOCUMENT_ROOT)) {
         $cpm_config->errors[] = sprintf(__('The comics site root <strong>%s</strong> does not exist. Check your <a href="options-general.php">WordPress address and address settings</a>.', 'comicpress-manager'), CPM_DOCUMENT_ROOT);
@@ -397,7 +399,7 @@ function cpm_read_information_and_check_config() {
         $cpm_config->errors[] = sprintf(__('The comics site root <strong>%s</strong> does not contain a WordPress index.php file. Check your <a href="options-general.php">WordPress address and address settings</a>.', 'comicpress-manager'), CPM_DOCUMENT_ROOT);
         $any_cpm_document_root_failures = true;
       }
-    }
+    //}
 
     if ($any_cpm_document_root_failures) {
       $cpm_config->errors[] = print_r($cpm_attempted_document_roots, true);
@@ -533,10 +535,10 @@ function cpm_read_information_and_check_config() {
 function read_current_theme_comicpress_config() {
   global $cpm_config;
 
-  if (function_exists('get_site_option')) {
-    cpm_wpmu_load_options();
-    return __("WordPress Options", 'comicpress-manager');
-  }
+  //if (function_exists('get_site_option')) {
+  //  cpm_wpmu_load_options();
+  //  return __("WordPress Options", 'comicpress-manager');
+  //}
 
   $current_theme_info = get_theme(get_current_theme());
 

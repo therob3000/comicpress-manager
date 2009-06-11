@@ -18,7 +18,7 @@ function cpm_manager_cpm_config() {
     <input type="hidden" name="action" value="update-cpm-config" />
       <?php foreach ($configuration_options as $option) {
         $ok = true;
-        if (function_exists('get_site_option')) { $ok = !isset($option['strip-wpmu']); }
+        //if (function_exists('get_site_option')) { $ok = !isset($option['strip-wpmu']); }
         if (is_string($option)) { $ok = true; }
 
         if ($option['type'] == "categories") {
