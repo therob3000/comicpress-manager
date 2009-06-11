@@ -10,7 +10,7 @@ function cpm_action_do_first_run() {
     CPM_DOCUMENT_ROOT . '/comics-archive'
   );
 
-  if ($is_wpmu = function_exists('get_site_option')) { $dir_list = cpm_wpmu_first_run_dir_list(); }
+  //if ($is_wpmu = function_exists('get_site_option')) { $dir_list = cpm_wpmu_first_run_dir_list(); }
 
   $any_made = false;
   $all_made = true;

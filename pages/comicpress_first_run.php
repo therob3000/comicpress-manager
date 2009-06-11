@@ -8,7 +8,7 @@ function cpm_manager_first_run($target_page) {
 
   $target_page = "?page=${target_page}";
 
-  $is_wpmu = function_exists("get_site_option");
+  //$is_wpmu = function_exists("get_site_option");
 
   ob_start();
 
