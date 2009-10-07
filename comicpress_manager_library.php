@@ -14,8 +14,10 @@ class ComicPressConfig {
     'blogcat'              => '2',
     'rss_comic_folder'     => 'comics',
     'archive_comic_folder' => 'comics',
+    'mini_comic_folder'    => 'comics',
     'archive_comic_width'  => '380',
     'rss_comic_width'      => '380',
+    'mini_comic_width'     => '100',
     'blog_postcount'       => '10'
   );
 
@@ -32,8 +34,8 @@ class ComicPressConfig {
   var $is_cpm_managing_posts, $is_cpm_modifying_categories;
   var $wpmu_disk_space_message;
 
-  var $separate_thumbs_folder_defined = array('rss' => null, 'archive' => null);
-  var $thumbs_folder_writable = array('rss' => null, 'archive' => null);
+  var $separate_thumbs_folder_defined = array('rss' => null, 'archive' => null, 'mini' => null);
+  var $thumbs_folder_writable = array('rss' => null, 'archive' => null, 'mini' => null);
   var $allowed_extensions = array("gif", "jpg", "jpeg", "png");
 
   function get_scale_method() {
@@ -65,28 +67,22 @@ function cpm_option($name) { return get_option("comicpress-manager-${name}"); }
  * Calculate the document root where comics are stored.
  */
 function cpm_calculate_document_root() {
-  global $cpm_attempted_document_roots, $wpmu_version;
-  $cpm_attempted_document_roots = array();
+  global $wpmu_version;
 
-  $document_root = null;
+  $document_root = "";
 
-  $parsed_url = parse_url(get_option('home'));
-
-  $translated_script_filename = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']);
-
-  foreach (array('SCRIPT_NAME', 'SCRIPT_URL') as $var_to_try) {
-    $root_to_try = substr($translated_script_filename, 0, -strlen($_SERVER[$var_to_try]))  . $parsed_url['path'];
-    $cpm_attempted_document_roots[] = $root_to_try;
-
-    if (file_exists($root_to_try . '/index.php')) {
-      $document_root = $root_to_try;
-      break;
-    }
+  // a base document root to try and use
+  if (isset($_SERVER['SCRIPT_FILENAME'])) {
+    $document_root = dirname($_SERVER['SCRIPT_FILENAME']);
   }
 
-  if (is_null($document_root)) { $document_root = $_SERVER['DOCUMENT_ROOT'] . $parsed_url['path']; }
+  $cwd = getcwd();
+  if ($cwd !== false) {
+    // Strip the wp-admin part and just get to the root.
+    $document_root = preg_replace('#[\\/]wp-(admin|content).*#', '', $cwd);
+  }
 
-  if ($wpmu_version) {
+  if (isset($wpmu_version)) {
     $document_root = cpm_wpmu_modify_path($document_root);
   }
 
@@ -308,6 +304,7 @@ function cpm_read_comics_folder() {
   global $cpm_config;
 
   $glob_results = glob(get_comic_folder_path() . "/*");
+
   if ($glob_results === false) {
     //$cpm_config->messages[] = "FYI: glob({$cpm_config->path}/*) returned false. This can happen on some PHP installations if you have no files in your comic directory. This message will disappear once you upload a comic to your site.";
     return array(); 
@@ -359,7 +356,9 @@ function cpm_read_information_and_check_config() {
   $folders = array(
     array('comic folder', 'comic_folder', true, ""),
     array('RSS feed folder', 'rss_comic_folder', false, 'rss'),
-    array('archive folder', 'archive_comic_folder', false, 'archive'));
+    array('archive folder', 'archive_comic_folder', false, 'archive'),
+    array('mini thumb folder', 'mini_comic_folder', false, 'mini'),
+  );
 
   foreach ($folders as $folder_info) {
     list ($name, $property, $is_fatal, $thumb_type) = $folder_info;
@@ -391,6 +390,10 @@ function cpm_read_information_and_check_config() {
     // this needs to be made more robust.
     if (preg_match('/ComicPress/', get_current_theme()) == 0) {
       $cpm_config->detailed_warnings[] = __("The current theme isn't the ComicPress theme.  If you've renamed the theme, ignore this warning.", 'comicpress-manager');
+    }
+
+    if (!extension_loaded('zip')) {
+      $cpm_config->detailed_warnings[] = __("You do not have the Zip extension installed. Uploading a Zip file will not work.", 'comicpress-manager');
     }
 
     $any_cpm_document_root_failures = false;

@@ -43,6 +43,15 @@ $comicpress_configuration_options = array(
     'no_wpmu' => true
   ),
   array(
+    'id' => 'comicsmini_path',
+    'variable_name' => 'mini_comic_folder',
+    'name' => 'Minithumb Comic Folder',
+    'type' => 'folder',
+    'description' => 'The folder for your your mini thumbs',
+    'default' => "comics-mini",
+    'no_wpmu' => true
+  ),
+  array(
     'id' => 'archive_comic_width',
     'name' => 'Archive Comic Width',
     'type' => 'integer',
@@ -55,6 +64,13 @@ $comicpress_configuration_options = array(
     'type' => 'integer',
     'description' => 'The width your comics will appear in the RSS feed',
     'default' => "380"
+  ),
+  array(
+    'id' => 'mini_comic_width',
+    'name' => 'Mini Comic Width',
+    'type' => 'integer',
+    'description' => 'The width your comics will appear in minithumbs',
+    'default' => "100"
   ),
   array(
     'id' => 'blog_postcount',

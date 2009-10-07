@@ -425,7 +425,7 @@ function cpm_manage_posts_custom_column($column_name) {
           $thumbnails_found = cpm_find_thumbnails_by_filename($file);
 
           $icon_file_to_use = $file;
-          foreach (array('rss', 'archive') as $type) {
+          foreach (array('rss', 'archive', 'mini') as $type) {
             if (isset($thumbnails_found[$type])) { $icon_file_to_use = $thumbnails_found[$type]; }
           }
 
@@ -803,7 +803,7 @@ function cpm_find_thumbnails($date_root) {
   global $cpm_config;
 
   $thumbnails_found = array();
-  foreach (array('rss', 'archive') as $type) {
+  foreach (array('rss', 'archive', 'mini') as $type) {
     if ($cpm_config->separate_thumbs_folder_defined[$type]) {
       $path = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"];
       if (($subdir = cpm_get_subcomic_directory()) !== false) {
@@ -828,7 +828,7 @@ function cpm_find_thumbnails_by_filename($filename) {
   global $cpm_config;
 
   $thumbnails_found = array();
-  foreach (array('rss', 'archive') as $type) {
+  foreach (array('rss', 'archive', 'mini') as $type) {
     if ($cpm_config->separate_thumbs_folder_defined[$type]) {
       $thumb_filename = str_replace('/' . $cpm_config->properties["comic_folder"] . '/', '/' . $cpm_config->properties[$type . "_comic_folder"] . '/', $filename);
 
@@ -1049,17 +1049,18 @@ function cpm_write_thumbnail($input, $target_filename, $do_rebuild = false) {
   foreach ($cpm_config->separate_thumbs_folder_defined as $type => $value) {
     if ($value) {
       if ($cpm_config->thumbs_folder_writable[$type]) {
+        if (cpm_option("cpm-${type}-generate-thumbnails") == 1) {
+          $converted_target_filename = preg_replace('#\.[^\.]+$#', '', $target_filename) . '.' . $target_format;
 
-        $converted_target_filename = preg_replace('#\.[^\.]+$#', '', $target_filename) . '.' . $target_format;
+          $target = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"];
+          if (($subdir = cpm_get_subcomic_directory()) !== false) {
+            $target .= '/' . $subdir;
+          }
+          $target .= '/' . $converted_target_filename;
 
-        $target = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"];
-        if (($subdir = cpm_get_subcomic_directory()) !== false) {
-          $target .= '/' . $subdir;
-        }
-        $target .= '/' . $converted_target_filename;
-
-        if (!in_array($target, $write_targets)) {
-          $write_targets[$type] = $target;
+          if (!in_array($target, $write_targets)) {
+            $write_targets[$type] = $target;
+          }
         }
       }
     }
@@ -2091,7 +2092,8 @@ function cpm_show_comicpress_details() {
         </li>
 
         <?php foreach (array('archive' => __('Archive folder:', 'comicpress-manager'),
-                             'rss'     => __('RSS feed folder:', 'comicpress-manager'))
+                             'rss'     => __('RSS feed folder:', 'comicpress-manager'),
+                             'mini'     => __('Minithumb folder:', 'comicpress-manager'))
                        as $type => $title) {
           $realpath = realpath(CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties["${type}_comic_folder"]  . $subdir_path);
           ?>
@@ -2329,7 +2331,11 @@ function cpm_manager_edit_config() {
       if (preg_match("#(${folders_to_ignore})$#", $root_file) == 0) {
         if (count(explode("/", $root_file)) <= $max_depth) {
           $found_folders[] = $root_file;
-          $folder_stack = array_merge($folder_stack, glob($file . "/*"));
+
+          $files = glob($file . "/*");
+          if (is_array($files)) {
+            $folder_stack = array_merge($folder_stack, $files);
+          } 
         } else {
           if (!$max_depth_message) {
             $cpm_config->messages[] = sprintf(__("I went %s levels deep in my search for comic directories. Are you sure you have your site set up correctly?", 'comicpress-manager'), $max_depth);
