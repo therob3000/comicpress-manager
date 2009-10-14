@@ -5,7 +5,6 @@
 require_once('comicpress_manager_library.php');
 
 add_action("admin_menu", "cpm_add_pages");
-add_action("edit_form_advanced", "cpm_show_comic_caller");
 add_action("add_category_form_pre", "cpm_comicpress_categories_warning");
 add_action("pre_post_update", "cpm_handle_pre_post_update");
 add_action("save_post", "cpm_handle_edit_post");
@@ -71,6 +70,19 @@ function cpm_add_pages() {
 
   if (($pagenow == "post.php") && ($_REQUEST['action'] == "edit")) {
     $do_enqueue_prototype = true;
+  }
+
+  if (strpos($pagenow, "post") === 0) {
+    add_meta_box(
+      'comic-for-this-post',
+      __('Comic For This Post', 'comicpress-manager'),
+      'cpm_show_comic_caller',
+      'post',
+      'normal',
+      'low'
+    );
+
+    require_once("pages/edit_post_show_comic.php");
   }
 
   $filename = plugin_basename(__FILE__);
@@ -177,29 +189,41 @@ function cpm_handle_pre_post_update($post_id) {
 
             $new_timestamp = strtotime(implode("-", array($_POST['aa'], $_POST['mm'], $_POST['jj'])));
 
-            if (!empty($original_timestamp) && !empty($new_timestamp)) {
-              $original_date = date(CPM_DATE_FORMAT, $original_timestamp);
-              $new_date = date(CPM_DATE_FORMAT, $new_timestamp);
-
-              if ($original_date !== $new_date) {
-                if (empty($cpm_config->comic_files)) {
-                  cpm_read_information_and_check_config();
+            $todays_date = date("Y-m-d", $original_timestamp);
+            $any_posts_today = false;
+            foreach (cpm_query_posts() as $comic_post) {
+              if ($comic_post->ID != $post_id) {
+                if (strpos($comic_post->post_date, $todays_date) === 0) {
+                  $any_posts_today = true; break;
                 }
+              }
+            }
 
-                foreach ($cpm_config->comic_files as $file) {
-                  $filename = pathinfo($file, PATHINFO_BASENAME);
-                  if (($result = cpm_breakdown_comic_filename($filename)) !== false) {
-                    if ($result['date'] == $original_date) {
-                      foreach (cpm_find_thumbnails_by_filename($file) as $thumb_file) {
-                        @rename($thumb_file, str_replace("/${original_date}", "/${new_date}", $thumb_file));
+            if (!$any_posts_today) {
+              if (!empty($original_timestamp) && !empty($new_timestamp)) {
+                $original_date = date(CPM_DATE_FORMAT, $original_timestamp);
+                $new_date = date(CPM_DATE_FORMAT, $new_timestamp);
+
+                if ($original_date !== $new_date) {
+                  if (empty($cpm_config->comic_files)) {
+                    cpm_read_information_and_check_config();
+                  }
+
+                  foreach ($cpm_config->comic_files as $file) {
+                    $filename = pathinfo($file, PATHINFO_BASENAME);
+                    if (($result = cpm_breakdown_comic_filename($filename)) !== false) {
+                      if ($result['date'] == $original_date) {
+                        foreach (cpm_find_thumbnails_by_filename($file) as $thumb_file) {
+                          @rename($thumb_file, str_replace("/${original_date}", "/${new_date}", $thumb_file));
+                        }
+
+                        @rename($file, str_replace("/${original_date}", "/${new_date}", $file));
                       }
-
-                      @rename($file, str_replace("/${original_date}", "/${new_date}", $file));
                     }
                   }
-                }
 
-                $cpm_config->comic_files = null;
+                  $cpm_config->comic_files = null;
+                }
               }
             }
           }
@@ -772,7 +796,6 @@ function cpm_manager_cpm_config_caller() { cpm_manager_page_caller("cpm_config")
 function cpm_manager_storyline_caller() { cpm_manager_page_caller("storyline"); }
 
 function cpm_show_comic_caller() {
-  include("pages/edit_post_show_comic.php");
   cpm_show_comic();
 }
 
@@ -862,6 +885,7 @@ function cpm_display_storyline_checkboxes($category_tree, $post_categories, $pre
     $parts = explode("/", $node);
     $category_id = end($parts);
     $name = (empty($prefix) ? "" : "${prefix}-") . $root_name;
+
     ?>
     <div style="margin-left: <?php echo (count($parts) - 2) * 20 ?>px; white-space: nowrap">
       <label>
@@ -2278,6 +2302,7 @@ function cpm_show_debug_info($display_none = true) {
     foreach (array(
       'comic' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['comic_folder'] . $subdir,
       'rss' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['rss_comic_folder'] . $subdir,
+      'mini' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['mini_comic_folder'] . $subdir,
       'archive' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['archive_comic_folder'] . $subdir,
       'config' => $cpm_config->config_filepath
     ) as $key => $path) {
