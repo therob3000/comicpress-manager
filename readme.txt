@@ -2,13 +2,15 @@
 Contributors: johncoswell
 Tags: comicpress, webcomics, management, admin, posts, plugin
 Requires at least: 2.5.1
-Tested up to: 2.8.4
-Stable tag: 1.4.8
+Tested up to: 3.0
+Stable tag: 1.4.9.2
 Donate link: http://www.coswellproductions.com/wordpress/wordpress-plugins/
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.
 
 == Description ==
+
+__(I am looking for a new maintainer for ComicPress Manager. If you're interested, please contact John Bintz at john@coswellproductions.com)__
 
 The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://comicpress.org/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress.
 
@@ -185,6 +187,13 @@ If it's a serious problem, such as WordPress becoming non-functional or blank sc
 ComicPress Manager is released under the GNU GPL version 2.0 or later.
 
 The Dynarch DHTML Calendar Widget is released under the GNU LGPL.
+
+== Changelog ==
+
+= 1.4.9.2 =
+* WordPress 2.9 and 3.0 incompatibility fixes. Looking for a new maintainer, too.
+= 1.4.9.1 =
+* Add option to use old style of subdirectory pathfinding.
 
 == Credits ==
 

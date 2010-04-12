@@ -71,19 +71,36 @@ function cpm_calculate_document_root() {
 
   $document_root = "";
 
-  // a base document root to try and use
-  if (isset($_SERVER['SCRIPT_FILENAME'])) {
-    $document_root = dirname($_SERVER['SCRIPT_FILENAME']);
-  }
+  if (cpm_option('cpm-use-old-subdirectory-method')) {
+    $parsed_url = parse_url(get_option('home'));
 
-  $cwd = getcwd();
-  if ($cwd !== false) {
-    // Strip the wp-admin part and just get to the root.
-    $document_root = preg_replace('#[\\\/]wp-(admin|content).*#', '', $cwd);
-  }
+    $translated_script_filename = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']);
 
-  if (isset($wpmu_version)) {
-    $document_root = cpm_wpmu_modify_path($document_root);
+    foreach (array('SCRIPT_NAME', 'SCRIPT_URL') as $var_to_try) {
+      $root_to_try = substr($translated_script_filename, 0, -strlen($_SERVER[$var_to_try])) . $parsed_url['path'];
+
+      if (file_exists($root_to_try . '/index.php')) {
+        $document_root = $root_to_try;
+        break;
+      }
+    }
+
+    if (is_null($document_root)) { $document_root = $_SERVER['DOCUMENT_ROOT'] . $parsed_url['path']; }
+  } else {
+    // a base document root to try and use
+    if (isset($_SERVER['SCRIPT_FILENAME'])) {
+      $document_root = dirname($_SERVER['SCRIPT_FILENAME']);
+    }
+
+    $cwd = getcwd();
+    if ($cwd !== false) {
+      // Strip the wp-admin part and just get to the root.
+      $document_root = preg_replace('#[\\\/]wp-(admin|content).*#', '', $cwd);
+    }
+
+    if (isset($wpmu_version)) {
+      $document_root = cpm_wpmu_modify_path($document_root);
+    }
   }
 
   return untrailingslashit($document_root);
@@ -155,24 +172,32 @@ function cpm_build_comic_uri($filename, $base_dir = null) {
  */
 function cpm_breakdown_comic_filename($filename, $allow_override = false) {
   $pattern = CPM_DATE_FORMAT;
-  if ($allow_override) {
-    if (isset($_POST['upload-date-format']) && !empty($_POST['upload-date-format'])) { $pattern = $_POST['upload-date-format']; }
+  if ($allow_override !== false) {
+  	if (is_string($allow_override)) {
+  		$pattern = $allow_override;
+  	} else {
+	    if (isset($_POST['upload-date-format']) && !empty($_POST['upload-date-format'])) { $pattern = $_POST['upload-date-format']; }
+	  }
   }
 
-  $pattern = cpm_transform_date_string($pattern, array("Y" => '[0-9]{4,4}',
-                                                       "m" => '[0-9]{2,2}',
-                                                       "d" => '[0-9]{2,2}'));
+  foreach (array('[0-9]{4}', '[0-9]{2}') as $year_pattern) {
+    $new_pattern = cpm_transform_date_string($pattern, array("Y" => $year_pattern,
+                                                         "m" => '[0-9]{2}',
+                                                         "d" => '[0-9]{2}'));
 
-  if (@preg_match("#^(${pattern})(.*)\.[^\.]+$#", $filename, $matches) > 0) {
-    list($all, $date, $title) = $matches;
+    if (@preg_match("#^(${new_pattern})(.*)\.[^\.]+$#", $filename, $matches) > 0) {
+      list($all, $date, $title) = $matches;
 
-    if (strtotime($date) === false) { return false; }
-    $converted_title = ucwords(trim(preg_replace('/[\-\_]/', ' ', $title)));
+      if (strtotime($date) === false) { return false; }
+      $converted_title = ucwords(trim(preg_replace('/[\-\_]/', ' ', $title)));
+      $date = date($pattern, strtotime($date));
 
-    return compact('date', 'title', 'converted_title');
-  } else {
-    return false;
+      if (is_numeric($converted_title)) {	$converted_title = "Title: ${converted_title}"; }
+
+      return compact('date', 'title', 'converted_title');
+    }
   }
+  return false;
 }
 
 /**
@@ -219,8 +244,9 @@ function generate_post_hash($filename_date, $filename_converted_title) {
     $override_title = $_POST['override-title-to-use'];
     $tags = $_POST['tags'];
     if (get_magic_quotes_gpc()) {
-      $override_title = stripslashes($override_title);
-      $tags = stripslashes($tags);
+    	foreach (array('override_title', 'tags', 'post_content') as $field) {
+    		${$field} = stripslashes(${$field});
+    	}
     }
 
     $post_title    = !empty($override_title) ? $override_title : $filename_converted_title;
@@ -307,7 +333,7 @@ function cpm_read_comics_folder() {
 
   if ($glob_results === false) {
     //$cpm_config->messages[] = "FYI: glob({$cpm_config->path}/*) returned false. This can happen on some PHP installations if you have no files in your comic directory. This message will disappear once you upload a comic to your site.";
-    return array(); 
+    return array();
   }
 
   $filtered_glob_results = array();
