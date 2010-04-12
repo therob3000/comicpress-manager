@@ -3,7 +3,7 @@
 Plugin Name: ComicPress Manager
 Plugin URI: http://www.coswellproductions.com/wordpress/wordpress-plugins/
 Description: Manage the comics within a <a href="http://www.comicpress.org/">ComicPress</a> theme installation.
-Version: 1.4.9.1
+Version: 1.4.9.2
 Author: John Bintz
 Author URI: http://www.coswellproductions.com/wordpress/
 
@@ -33,8 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 require_once('comicpress_manager_config.php');
 
 // only load the plugin code of we're in the administration part of WordPress.
-if (WP_ADMIN === true) {  
+if (is_admin()) {
   require_once('comicpress_manager_admin.php');
 }
-
-?>
