@@ -6,7 +6,7 @@ $comicpress_configuration_options = array(
     'name' => 'Comic Category',
     'type' => 'category',
     'description' => 'The category ID of your comic category',
-    'default' => 1
+    'default' => 3
   ),
   array(
     'id' => 'blogcat',
@@ -56,21 +56,21 @@ $comicpress_configuration_options = array(
     'name' => 'Archive Comic Width',
     'type' => 'integer',
     'description' => 'The width your comics will appear on archive or search results',
-    'default' => "380"
+    'default' => "340"
   ),
   array(
     'id' => 'rss_comic_width',
     'name' => 'RSS Comic Width',
     'type' => 'integer',
     'description' => 'The width your comics will appear in the RSS feed',
-    'default' => "380"
+    'default' => "480"
   ),
   array(
     'id' => 'mini_comic_width',
     'name' => 'Mini Comic Width',
     'type' => 'integer',
     'description' => 'The width your comics will appear in minithumbs',
-    'default' => "100"
+    'default' => "198"
   ),
   array(
     'id' => 'blog_postcount',

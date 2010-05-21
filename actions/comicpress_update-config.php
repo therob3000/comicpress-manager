@@ -1,7 +1,7 @@
 <?php
 
 function cpm_action_update_config() {
-  global $cpm_config, $wpmu_version;
+  global $cpm_config;
 
   $cpm_config->is_cpm_managing_posts = true;
 
@@ -35,7 +35,7 @@ function cpm_action_update_config() {
     }
   }
 
-  if ($wpmu_version) {
+  if (cpm_this_is_multsite()) {
     cpm_wpmu_save_options();
     $cpm_config->is_wp_options = true;
   }

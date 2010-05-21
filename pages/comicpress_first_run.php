@@ -4,11 +4,9 @@
  * The main manager screen.
  */
 function cpm_manager_first_run($target_page) {
-  global $cpm_config, $wpmu_version;
+  global $cpm_config;
 
   $target_page = "?page=${target_page}";
-
-  $is_wpmu = $wpmu_version;
 
   ob_start();
 
@@ -16,7 +14,7 @@ function cpm_manager_first_run($target_page) {
   <h2>ComicPress Manager First Run</h2>
 
   <p><strong>Thank you for using ComicPress Manager.</strong> I can attempt to create your starting comic directories for you.
-    <?php if (!$is_wpmu) { ?>
+    <?php if (!cpm_this_is_multsite()) { ?>
       I'll be creating them in <?php echo CPM_DOCUMENT_ROOT ?>.
     <?php } ?>
   </p>

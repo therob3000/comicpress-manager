@@ -67,7 +67,6 @@ function cpm_option($name) { return get_option("comicpress-manager-${name}"); }
  * Calculate the document root where comics are stored.
  */
 function cpm_calculate_document_root() {
-  global $wpmu_version;
 
   $document_root = "";
 
@@ -98,7 +97,7 @@ function cpm_calculate_document_root() {
       $document_root = preg_replace('#[\\\/]wp-(admin|content).*#', '', $cwd);
     }
 
-    if (isset($wpmu_version)) {
+    if (cpm_this_is_multsite()) {
       $document_root = cpm_wpmu_modify_path($document_root);
     }
   }
@@ -145,7 +144,6 @@ function cpm_generate_example_date($example_date) {
  * Build the URI to a comic file.
  */
 function cpm_build_comic_uri($filename, $base_dir = null) {
-	global $wpmu_version;
   if (!is_null($base_dir)) {
     if (strlen($filename) < strlen($base_dir)) { return false; }
   }
@@ -160,7 +158,7 @@ function cpm_build_comic_uri($filename, $base_dir = null) {
 
   $parsed_url = parse_url(get_bloginfo('url'));
   $path = $parsed_url['path'];
-	if ($wpmu_version) { $path = cpm_wpmu_fix_folder_to_use($path); }
+	if (cpm_this_is_multsite()) { $path = cpm_wpmu_fix_folder_to_use($path); }
 
   $count = (cpm_get_subcomic_directory() !== false) ? 3 : 2;
 
@@ -360,7 +358,7 @@ function cpm_read_comics_folder() {
  * Read information about the current installation.
  */
 function cpm_read_information_and_check_config() {
-  global $cpm_config, $cpm_attempted_document_roots, $blog_id, $wpmu_version;
+  global $cpm_config, $cpm_attempted_document_roots, $blog_id;
 
   $cpm_config->config_method = read_current_theme_comicpress_config();
   $cpm_config->config_filepath = get_functions_php_filepath();
@@ -424,7 +422,7 @@ function cpm_read_information_and_check_config() {
 
     $any_cpm_document_root_failures = false;
 
-    if (!$wpmu_version) {
+    if (!cpm_this_is_multsite()) {
       // is the site root configured properly?
       if (!file_exists(CPM_DOCUMENT_ROOT)) {
         $cpm_config->warnings[] = sprintf(__('The comics site root <strong>%s</strong> does not exist. Check your <a href="options-general.php">WordPress address and address settings</a>.', 'comicpress-manager'), CPM_DOCUMENT_ROOT);
@@ -569,9 +567,9 @@ function cpm_read_information_and_check_config() {
  * Read the ComicPress config from a file.
  */
 function read_current_theme_comicpress_config() {
-  global $cpm_config, $wpmu_version;
+  global $cpm_config;
 
-  if ($wpmu_version) {
+  if (cpm_this_is_multsite()) {
     cpm_wpmu_load_options();
     return __("WordPress Options", 'comicpress-manager');
   }
@@ -794,6 +792,14 @@ function cpm_short_size_string_to_bytes($string) {
   }
 
   return $max_bytes;
+}
+
+function cpm_this_is_multsite() {
+	global $wpmu_version;
+	if (function_exists('is_multisite'))
+		if (is_multisite() || VHOST) return true;
+	if (!empty($wpmu_version)) return true;
+	return false;
 }
 
 ?>

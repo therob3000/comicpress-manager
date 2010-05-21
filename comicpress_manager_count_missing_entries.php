@@ -8,6 +8,8 @@
   if (WP_ADMIN) {
     require_once('comicpress_manager_config.php');
     require_once('comicpress_manager_library.php');
+	if (file_exists('../../mu-plugins/comicpress_manager_wpmu.php') && !function_exists('cpm_wpmu_fix_comic_path')) 
+		require_once('../../mu-plugins/comicpress_manager_wpmu.php');
 
     cpm_get_cpm_document_root();
 

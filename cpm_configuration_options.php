@@ -9,7 +9,7 @@
       'name' => "Default Post Time",
       'type' => 'text',
       'size' => 8,
-      'default' => '12:00am',
+      'default' => '12:01am',
       'message' => "Default time for comic posts to go live, cannot be blank. enter 'now' to always post at the current system time.",
       'not_blank' => true
     ),
@@ -103,7 +103,7 @@
       "id" => "cpm-edit-post-integrate",
       "name" => "Allow date change/deletions in Edit Post to affect associated comic files?",
       "type" => "checkbox",
-      'default' => "1",
+      'default' => "0",
       "message" => "if checked, working in Edit Post will affect your comic files"
     ),
     array(

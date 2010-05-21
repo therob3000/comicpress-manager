@@ -4,7 +4,7 @@
  * The config editor dialog.
  */
 function cpm_manager_cpm_config() {
-  global $cpm_config, $wpmu_version;
+  global $cpm_config;
 
   include(realpath(dirname(__FILE__)) . '/../cpm_configuration_options.php');
 
@@ -18,7 +18,7 @@ function cpm_manager_cpm_config() {
     <input type="hidden" name="action" value="update-cpm-config" />
       <?php foreach ($configuration_options as $option) {
         $ok = true;
-        if ($wpmu_version) { $ok = !isset($option['strip-wpmu']); }
+        if (cpm_this_is_multsite()) { $ok = !isset($option['strip-wpmu']); }
 
         if ($option['type'] == "categories") {
           $ok = (count($category_checkboxes = cpm_generate_additional_categories_checkboxes($option['id'], explode(",", $result))) > 0);

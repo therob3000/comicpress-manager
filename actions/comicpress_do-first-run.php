@@ -1,7 +1,7 @@
 <?php
 
 function cpm_action_do_first_run() {
-  global $cpm_config, $blog_id, $wpmu_version;
+  global $cpm_config, $blog_id;
 
   $dir_list = array(
     CPM_DOCUMENT_ROOT,
@@ -10,8 +10,8 @@ function cpm_action_do_first_run() {
     CPM_DOCUMENT_ROOT . '/comics-archive',
     CPM_DOCUMENT_ROOT . '/comics-mini'
   );
-	$is_wpmu = $wpmu_version;
-	if ($is_wpmu) { $dir_list = cpm_wpmu_first_run_dir_list(); }
+
+	if (cpm_this_is_multsite()) { $dir_list = cpm_wpmu_first_run_dir_list(); }
 
   $any_made = false;
   $all_made = true;
@@ -20,12 +20,12 @@ function cpm_action_do_first_run() {
     if (!file_exists($dir_to_make)) {
       $any_made = true;
       if (@mkdir($dir_to_make)) {
-        if (!$is_wpmu) {
+        if (!cpm_this_is_multsite()) {
           $cpm_config->messages[] = sprintf(__("<strong>Directory created:</strong> %s", 'comicpress-manager'), $dir_to_make);
         }
       } else {
         $all_made = false;
-        if (!$is_wpmu) {
+        if (!cpm_this_is_multsite()) {
           $cpm_config->warnings[] = sprintf(__("<strong>Unable to create directory:</strong> %s", 'comicpress-manager'), $dir_to_make);
         }
       }
@@ -35,7 +35,7 @@ function cpm_action_do_first_run() {
   if (!$any_made) {
     $cpm_config->messages[] = __("<strong>All the directories were already found, nothing to do!</strong>", "comicpress-manager");
   }
-  if ($is_wpmu) {
+  if (cpm_this_is_multsite()) {
     if ($all_made) {
       $cpm_config->messages[] = sprintf(__("<strong>All directories created!</strong>", 'comicpress-manager'), $dir_to_make);
       cpm_wpmu_complete_first_run();
