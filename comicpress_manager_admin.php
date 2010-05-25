@@ -123,7 +123,7 @@ function cpm_add_pages() {
 	if (function_exists('is_super_admin')) 
 		if (is_super_admin()) $is_super = true;
 		
-  if (!cpm_this_is_multsite() || $is_super) {
+  if (!cpm_this_is_multisite() || $is_super) {
     add_submenu_page($filename, $plugin_title, __("Import", 'comicpress-manager'), $access_level, $filename . '-import', 'cpm_manager_import_caller');
   }
 
@@ -1665,7 +1665,7 @@ function cpm_handle_file_uploads($files) {
         }
       }
     }
-    if (cpm_this_is_multsite()) {
+    if (cpm_this_is_multisite()) {
       if (cpm_wpmu_is_over_storage_limit()) { $ok_to_keep_uploading = false; break; }
     }
   }
@@ -1687,7 +1687,7 @@ function cpm_handle_file_uploads($files) {
         }
       }
     }
-    if (cpm_this_is_multsite()) {
+    if (cpm_this_is_multisite()) {
       if (cpm_wpmu_is_over_storage_limit()) { $ok_to_keep_uploading = false; }
     }
   }
@@ -2036,7 +2036,7 @@ function cpm_handle_warnings() {
         echo cpm_manager_edit_config();
       } ?>
 
-      <?php if (!cpm_this_is_multsite()) { ?>
+      <?php if (!cpm_this_is_multisite()) { ?>
         <hr />
 
         <strong><?php _e('Debug info', 'comicpress-manager') ?></strong> (<em><?php _e("this data is sanitized to protect your server's configuration", 'comicpress-manager') ?></em>)
@@ -2188,7 +2188,7 @@ function cpm_show_comicpress_details() {
         <li><strong><?php _e('Blog category:', 'comicpress-manager') ?></strong> <a href="<?php echo get_category_link($cpm_config->properties['blogcat']) ?>">
             <?php echo $cpm_config->blog_category_info['name'] ?></a> <?php printf(__('(ID %s)', 'comicpress-manager'), $cpm_config->properties['blogcat']) ?></li>
 
-        <?php if (!cpm_this_is_multsite()) { ?>
+        <?php if (!cpm_this_is_multisite()) { ?>
           <li><strong><?php _e("PHP Version:", 'comicpress-manager') ?></strong> <?php echo phpversion() ?>
               <?php if (substr(phpversion(), 0, 3) < 5.2) { ?>
                 (<a href="http://gophp5.org/hosts"><?php _e("upgrade strongly recommended", 'comicpress-manager') ?></a>)
@@ -2403,7 +2403,7 @@ function cpm_manager_edit_config() {
         $no_wpmu = false;
         extract($field_info);
 
- //       $ok = (cpm_this_is_multsite()) ? ($no_wpmu !== true) : true;
+ //       $ok = (cpm_this_is_multisite()) ? ($no_wpmu !== true) : true;
         $ok = true;
         if ($ok) {
           $description = " <em>(" . $description . ")</em>";
@@ -2472,7 +2472,7 @@ function cpm_manager_edit_config() {
           }
         }
       } ?>
-      <?php if (!cpm_this_is_multsite()) { ?>
+      <?php if (!cpm_this_is_multisite()) { ?>
         <?php
           $all_comic_folders_found = true;
           foreach (array(''. 'rss_', 'archive_') as $folder_name) {

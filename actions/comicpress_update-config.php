@@ -35,7 +35,7 @@ function cpm_action_update_config() {
     }
   }
 
-  if (cpm_this_is_multsite()) {
+  if (cpm_this_is_multisite()) {
     cpm_wpmu_save_options();
     $cpm_config->is_wp_options = true;
   }

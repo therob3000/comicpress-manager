@@ -14,7 +14,7 @@ function cpm_manager_first_run($target_page) {
   <h2>ComicPress Manager First Run</h2>
 
   <p><strong>Thank you for using ComicPress Manager.</strong> I can attempt to create your starting comic directories for you.
-    <?php if (!cpm_this_is_multsite()) { ?>
+    <?php if (!cpm_this_is_multisite()) { ?>
       I'll be creating them in <?php echo CPM_DOCUMENT_ROOT ?>.
     <?php } ?>
   </p>

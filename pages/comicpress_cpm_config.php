@@ -18,7 +18,7 @@ function cpm_manager_cpm_config() {
     <input type="hidden" name="action" value="update-cpm-config" />
       <?php foreach ($configuration_options as $option) {
         $ok = true;
-        if (cpm_this_is_multsite()) { $ok = !isset($option['strip-wpmu']); }
+        if (cpm_this_is_multisite()) { $ok = !isset($option['strip-wpmu']); }
 
         if ($option['type'] == "categories") {
           $ok = (count($category_checkboxes = cpm_generate_additional_categories_checkboxes($option['id'], explode(",", $result))) > 0);

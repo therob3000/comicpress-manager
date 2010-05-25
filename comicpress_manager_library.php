@@ -97,7 +97,7 @@ function cpm_calculate_document_root() {
       $document_root = preg_replace('#[\\\/]wp-(admin|content).*#', '', $cwd);
     }
 
-    if (cpm_this_is_multsite()) {
+    if (cpm_this_is_multisite()) {
       $document_root = cpm_wpmu_modify_path($document_root);
     }
   }
@@ -158,7 +158,7 @@ function cpm_build_comic_uri($filename, $base_dir = null) {
 
   $parsed_url = parse_url(get_bloginfo('url'));
   $path = $parsed_url['path'];
-	if (cpm_this_is_multsite()) { $path = cpm_wpmu_fix_folder_to_use($path); }
+	if (cpm_this_is_multisite()) { $path = cpm_wpmu_fix_folder_to_use($path); }
 
   $count = (cpm_get_subcomic_directory() !== false) ? 3 : 2;
 
@@ -422,7 +422,7 @@ function cpm_read_information_and_check_config() {
 
     $any_cpm_document_root_failures = false;
 
-    if (!cpm_this_is_multsite()) {
+    if (!cpm_this_is_multisite()) {
       // is the site root configured properly?
       if (!file_exists(CPM_DOCUMENT_ROOT)) {
         $cpm_config->warnings[] = sprintf(__('The comics site root <strong>%s</strong> does not exist. Check your <a href="options-general.php">WordPress address and address settings</a>.', 'comicpress-manager'), CPM_DOCUMENT_ROOT);
@@ -569,7 +569,7 @@ function cpm_read_information_and_check_config() {
 function read_current_theme_comicpress_config() {
   global $cpm_config;
 
-  if (cpm_this_is_multsite()) {
+  if (cpm_this_is_multisite()) {
     cpm_wpmu_load_options();
     return __("WordPress Options", 'comicpress-manager');
   }
@@ -794,12 +794,140 @@ function cpm_short_size_string_to_bytes($string) {
   return $max_bytes;
 }
 
-function cpm_this_is_multsite() {
+function cpm_this_is_multisite() {
 	global $wpmu_version;
 	if (function_exists('is_multisite'))
-		if (is_multisite() || VHOST) return true;
+		if (is_multisite()) return true;
 	if (!empty($wpmu_version)) return true;
 	return false;
 }
+
+if (cpm_this_is_multisite() && !function_exists('cpm_wpmu_fix_folder_to_use')) {
+	
+	/**
+	 * Fix the search path for comics.
+	 */
+	function cpm_wpmu_fix_folder_to_use($folder) {
+		$wpmu_path = get_option('upload_path');
+		if (!empty($wpmu_path)) {
+			$folder = get_option('siteurl') . '/files';
+		}
+		return $folder;
+	}
+	
+	/**
+	 * Fix the search path for comics.
+	 */
+	function cpm_wpmu_fix_comic_path($comic) {
+		if (($wpmu_path = get_option('upload_path')) !== false) {
+			$comic = str_replace($wpmu_path, "files", $comic); 
+		}
+		return $comic;
+	}
+	
+	/* Functions for ComicPress Manager */
+	
+	function cp_option($name) { return get_option("comicpress-${name}"); }
+	
+	/**
+	 * Add additional parameters to every ComicPress Manager object created.
+	 */
+	function cpm_wpmu_config_setup($cpm_config) {
+		$cpm_config->wpmu_disk_space_message = __("<strong>You've exceeded your disk space quota!</strong> Either delete files you don't need, or find out how to get more disk space for your account.", 'comicpress-manager');
+	}
+	
+	/**
+	 * Add WPMU path information to the document root.
+	 */
+	function cpm_wpmu_modify_path($document_root) {
+		$result = get_option('upload_path');
+		if (!empty($result)) { $document_root .= '/' . $result; }
+		return $document_root;
+	}
+	
+	/**
+	 * Load ComicPress options from the options table.
+	 */
+	function cpm_wpmu_load_options() {
+		global $cpm_config;
+		
+		include(ABSPATH . 'wp-content/plugins/comicpress-manager/cp_configuration_options.php');
+		
+		foreach ($comicpress_configuration_options as $field_info) {
+			$config_id = (isset($field_info['variable_name'])) ? $field_info['variable_name'] : $field_info['id'];
+			
+			$result = cp_option($field_info['id']);
+			
+			if ($result === false) {
+				update_option("comicpress-" . $field_info['id'], $field_info['default']);
+				$result = $field_info['default'];
+			}
+			
+			$cpm_config->properties[$config_id] = $result;
+		}
+	}
+	
+	/**
+	 * Save ComicPress options to the options table.
+	 */
+	function cpm_wpmu_save_options() {
+		global $cpm_config;
+		
+		include(ABSPATH . 'wp-content/plugins/comicpress-manager/cp_configuration_options.php');
+		
+		foreach ($comicpress_configuration_options as $field_info) {
+			$config_id = (isset($field_info['variable_name'])) ? $field_info['variable_name'] : $field_info['id'];
+			
+			update_option("comicpress-" . $field_info['id'], $cpm_config->properties[$config_id]);
+		}
+	}
+	
+	/**
+	 * Return the first run directory.
+	 */
+	function cpm_wpmu_first_run_root_dir() {
+		global $blog_id;
+		
+		return "wp-content/blogs.dir/${blog_id}";
+	}
+	
+	/**
+	 * Get the list of directories to create.
+	 */
+	function cpm_wpmu_first_run_dir_list() {
+		$root_dir = ABSPATH . cpm_wpmu_first_run_root_dir();
+		
+		return array("$root_dir",
+				"$root_dir/files",
+				"$root_dir/files/comics",
+				"$root_dir/files/comics-rss",
+				"$root_dir/files/comics-archive",
+				"$root_dir/files/comics-mini");
+	}
+	
+	/**
+	 * Action to perform on the end of the first run.
+	 */
+	function cpm_wpmu_complete_first_run() {
+		update_option("upload_path", cpm_wpmu_first_run_root_dir() . "/files");
+	}
+	
+	/**
+	 * Get the available disk space for this account.
+	 */
+	function cpm_wpmu_get_available_disk_space() {
+		$space_allowed = 1048576 * get_space_allowed();
+		$space_used = get_dirsize( constant( "ABSPATH" ) . constant( "UPLOADS" ) );
+		return $space_allowed - $space_used;
+	}
+	
+	/**
+	 * Returns true if current blog is over storage limit.
+	 */
+	function cpm_wpmu_is_over_storage_limit() {
+		return cpm_wpmu_get_available_disk_space() < 0;
+	}
+}
+
 
 ?>
