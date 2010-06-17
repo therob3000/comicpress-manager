@@ -2379,8 +2379,8 @@ function cpm_manager_edit_config() {
           }
         } else {
           if (!$max_depth_message) {
-            $cpm_config->messages[] = sprintf(__("I went %s levels deep in my search for comic directories. Are you sure you have your site set up correctly?", 'comicpress-manager'), $max_depth);
-            $max_depth_message = true;
+//            $cpm_config->messages[] = sprintf(__("I went %s levels deep in my search for comic directories. Are you sure you have your site set up correctly?", 'comicpress-manager'), $max_depth);
+//            $max_depth_message = true;
           }
         }
       }

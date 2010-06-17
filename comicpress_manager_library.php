@@ -10,8 +10,8 @@ class ComicPressConfig {
     // Leave these alone! These values should be read from your comicpress-config.php file.
     // If your values from comicpress-config.php are not being read, then something is wrong in your config.
     'comic_folder'         => 'comics',
-    'comiccat'             => '1',
-    'blogcat'              => '2',
+    'comiccat'             => '2',
+    'blogcat'              => '3',
     'rss_comic_folder'     => 'comics',
     'archive_comic_folder' => 'comics',
     'mini_comic_folder'    => 'comics',
@@ -54,7 +54,7 @@ class ComicPressConfig {
   }
 
   function ComicPressConfig() {
-    if (function_exists('cpm_wpmu_config_setup')) { cpm_wpmu_config_setup($this); }
+    if (function_exists('cpm_wpmu_config_setup') && cpm_this_is_multisite()) { cpm_wpmu_config_setup($this); }
   }
 }
 
@@ -144,25 +144,25 @@ function cpm_generate_example_date($example_date) {
  * Build the URI to a comic file.
  */
 function cpm_build_comic_uri($filename, $base_dir = null) {
-  if (!is_null($base_dir)) {
-    if (strlen($filename) < strlen($base_dir)) { return false; }
-  }
-  if (($realpath_result = realpath($filename)) !== false) {
-    $filename = $realpath_result;
-  }
-  if (!is_null($base_dir)) {
-    $filename = substr($filename, strlen($base_dir));
-  }
-  $parts = explode('/', str_replace('\\', '/', $filename));
-  if (count($parts) < 2) { return false; }
-
-  $parsed_url = parse_url(get_bloginfo('url'));
-  $path = $parsed_url['path'];
+	if (!is_null($base_dir)) {
+		if (strlen($filename) < strlen($base_dir)) { return false; }
+	}
+	if (($realpath_result = realpath($filename)) !== false) {
+		$filename = $realpath_result;
+	}
+	if (!is_null($base_dir)) {
+		$filename = substr($filename, strlen($base_dir));
+	}
+	$parts = explode('/', str_replace('\\', '/', $filename));
+	if (count($parts) < 2) { return false; }
+	
+	$parsed_url = parse_url(get_bloginfo('url'));
+	$path = $parsed_url['path'];
 	if (cpm_this_is_multisite()) { $path = cpm_wpmu_fix_folder_to_use($path); }
-
-  $count = (cpm_get_subcomic_directory() !== false) ? 3 : 2;
-
-  return $path . '/' . implode('/', array_slice($parts, -$count, $count));
+	
+	$count = (cpm_get_subcomic_directory() !== false) ? 3 : 2;
+	
+	return get_option('siteurl') . '/' . $path . '/' . cpm_clean_filename(implode('/', array_slice($parts, -$count, $count)));
 }
 
 /**
@@ -929,5 +929,8 @@ if (cpm_this_is_multisite() && !function_exists('cpm_wpmu_fix_folder_to_use')) {
 	}
 }
 
+function cpm_clean_filename($filename) {
+	return str_replace("%2F", "/", rawurlencode($filename));
+}
 
 ?>

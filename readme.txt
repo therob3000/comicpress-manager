@@ -3,7 +3,7 @@ Contributors: johncoswell, frumph
 Tags: comicpress, webcomics, management, admin, posts, plugin
 Requires at least: 2.5.1
 Tested up to: 3.0
-Stable tag: 1.4.9.5
+Stable tag: 1.4.9.6
 Donate link: http://www.coswellproductions.com/wordpress/wordpress-plugins/
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.

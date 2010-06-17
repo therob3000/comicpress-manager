@@ -280,6 +280,7 @@ function cpm_manager_status() {
                           </strong></div>
 
                           <a href="<?php echo $object['comic_uri'] ?>"><img style="float: right; display: inline; margin-right: 5px; max-height: 100px" id="comic-icon-<?php echo $image_index ?>" src="<?php echo $object['icon_uri'] ?>" /></a>
+							<br style="clear:both;" />
 
                         <?php
                           $all_found = array();
@@ -288,7 +289,7 @@ function cpm_manager_status() {
                           }
 
                           if (count($all_found) > 0) { ?>
-                            [
+                            Thumbnails Generated [
                               <?php foreach ($all_found as $type => $uri) { ?>
                                 <a href="<?php echo $uri ?>"><?php echo $type ?></a>
                               <?php } ?>

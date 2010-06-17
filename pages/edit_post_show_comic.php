@@ -50,10 +50,9 @@ function cpm_show_comic() {
         $link = "<strong><a target=\"comic_window\" href=\"${comic_uri}\">${comic_filename}</a></strong>";
 
         $date_root = substr($comic_filename, 0, strlen(date(CPM_DATE_FORMAT)));
-        $thumbnails_found = cpm_find_thumbnails_by_filename($comic);
-
+        $thumbnails_found = cpm_find_thumbnails_by_filename($comic);;
         $icon_file_to_use = $comic;
-        foreach (array('rss', 'archive') as $type) {
+        foreach (array('rss', 'archive', 'comic') as $type) {
           if (isset($thumbnails_found[$type])) {
             $icon_file_to_use = $thumbnails_found[$type];
           }
@@ -71,9 +70,9 @@ function cpm_show_comic() {
   <script type="text/javascript">
     function show_comic() {
       if ($('comic-icon').offsetWidth > $('comic-icon').offsetHeight) {
-        $('preview-comic').width = 400;
+        $('preview-comic').width = 600;
       } else {
-        $('preview-comic').height = 400;
+        $('preview-comic').height = 600;
       }
       Element.clonePosition('comic-hover', 'comic-icon', { setWidth: false, setHeight: false, offsetTop: -((Element.getDimensions('comic-hover')['height'] - Element.getDimensions('comic-icon')['height'])/2) });
       $('comic-hover').show();
@@ -96,14 +95,15 @@ function cpm_show_comic() {
     </div>
   <?php } ?>
   <?php if ($has_comic_file) { ?>
-    <div id="comic-hover" style="border: solid black 1px; position: absolute; display: none" onmouseout="hide_comic()">
-      <img id="preview-comic" src="<?php echo $comic_uri ?>" />
-    </div>
-    <a href="#" onclick="return false" onmouseover="show_comic()"><img id="comic-icon" src="<?php echo $icon_uri ?>" height="100" align="right" /></a>
     <p>
-      <?php printf(__("The comic that will be shown with this post is %s.", 'comicpress-manager'), $link) ?>
+      <?php printf(__("The comic that will be shown with this post is %s.<br />", 'comicpress-manager'), $link) ?>
       <?php _e("Mouse over the icon to the right to see a larger version of the image.", 'comicpress-manager') ?>
     </p>
+    <div id="comic-hover" style="left: 0; border: solid black 1px; position: absolute; display: none" onmouseout="hide_comic()">
+      <img id="preview-comic" src="<?php echo $comic_uri ?>" />
+    </div>
+    <a href="#" onclick="return false" onmouseover="show_comic()"><img id="comic-icon" style="float: left;" src="<?php echo $icon_uri ?>" height="100" align="right" /></a>
+
 
     <?php
       if (cpm_get_subcomic_directory() !== false) {
@@ -112,6 +112,7 @@ function cpm_show_comic() {
     ?>
 
     <?php if (count($thumbnails_found) > 0) { ?>
+		<br style="clear:both;" />
       <p><?php _e("The following thumbnails for this comic were also found:", 'comicpress-manager') ?>
         <?php foreach ($thumbnails_found as $type => $file) { ?>
           <a target="comic_window" href="<?php echo cpm_build_comic_uri(CPM_DOCUMENT_ROOT . '/' . $file) ?>"><?php echo $type ?></a>

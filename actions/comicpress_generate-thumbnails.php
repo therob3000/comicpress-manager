@@ -20,7 +20,7 @@ function cpm_action_generate_thumbnails() {
         $cpm_config->warnings[] = sprintf(__("<strong>Could not write thumbnail for %s.</strong> Check the permissions on the thumbnail directories.", 'comicpress-manager'), $comic_file);
       }
     }
-    if (function_exists('cpm_wpmu_is_over_storage_limit')) {
+    if (function_exists('cpm_wpmu_is_over_storage_limit') && cpm_this_is_multisite()) {
       if (cpm_wpmu_is_over_storage_limit()) { $ok_to_keep_uploading = false; break; }
     }
   }
