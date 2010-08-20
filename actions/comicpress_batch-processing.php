@@ -188,9 +188,6 @@ function cpm_action_batch_processing() {
 			$delete_targets = array($file);
 			foreach ($cpm_config->thumbs_folder_writable as $type => $value) {
 				$path = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"];
-				if (($subdir = cpm_get_subcomic_directory()) !== false) {
-					$path .= '/' . $subdir;
-				}
 				$path .= '/' . $comic_file;
 				$delete_targets[] = $path;;
 			}

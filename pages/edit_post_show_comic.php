@@ -38,9 +38,6 @@ function cpm_show_comic() {
     }
 
     $ok = true;
-    if (cpm_get_subcomic_directory() !== false) {
-      $ok = in_array(get_option('comicpress-manager-manage-subcomic'), wp_get_post_categories($post->ID));
-    }
 
     if ($ok) {
       if (($comic = find_comic_by_date($post_time)) !== false) {
@@ -103,13 +100,6 @@ function cpm_show_comic() {
       <img id="preview-comic" src="<?php echo $comic_uri ?>" />
     </div>
     <a href="#" onclick="return false" onmouseover="show_comic()"><img id="comic-icon" style="float: left;" src="<?php echo $icon_uri ?>" height="100" align="right" /></a>
-
-
-    <?php
-      if (cpm_get_subcomic_directory() !== false) {
-        printf(__("Comic files will be uploaded to the <strong>%s</strong> comic subdirectory.", 'comicpress-manager'), get_cat_name(get_option('comicpress-manager-manage-subcomic')));
-      }
-    ?>
 
     <?php if (count($thumbnails_found) > 0) { ?>
 		<br style="clear:both;" />
@@ -206,11 +196,6 @@ function cpm_show_comic() {
       <th scope="row"><?php _e("Transcript", 'comicpress-manager') ?></th>
       <td>
         <textarea name="comicpress-transcript" rows="8" style="width:99%"><?php echo get_post_meta($post->ID, 'transcript', true) ?></textarea>
-        <?php if (!is_plugin_active('what-did-they-say/what-did-they-say.php')) { ?>
-          <p>
-            <?php _e('Want even better control over your transcripts? Try <a href="http://wordpress.org/extend/plugins/what-did-they-say/" target="wdts">What Did They Say?!?</a>', 'comicpress-manager') ?>
-          </p>
-        <?php } ?>
       </td>
     </tr>
   </table>

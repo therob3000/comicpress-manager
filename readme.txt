@@ -1,10 +1,10 @@
 === ComicPress Manager ===
-Contributors: johncoswell, frumph
+Contributors: frumph, johncoswell
 Tags: comicpress, webcomics, management, admin, posts, plugin
-Requires at least: 2.5.1
-Tested up to: 3.0
-Stable tag: 1.4.9.6
-Donate link: http://www.coswellproductions.com/wordpress/wordpress-plugins/
+Requires at least: 2.9.1
+Tested up to: 3.0.1
+Stable tag: 1.4.9.7
+Donate link: http://www.frumph.net/
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.
 
@@ -188,6 +188,10 @@ The Dynarch DHTML Calendar Widget is released under the GNU LGPL.
 
 == Changelog ==
 
+= 1.4.9.7 =
+* Some much needed fixes to the directory pathing and removal of the subcomic ability (which only broke the site)
+= 1.4.9.6 =
+* Meh, not much
 = 1.4.9.5 =
 * More changes for WP 3.0 to be compatible
 = 1.4.9.4 =

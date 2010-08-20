@@ -4,11 +4,11 @@
 
 require_once('comicpress_manager_library.php');
 
-add_action("admin_menu", "cpm_add_pages");
-add_action("add_category_form_pre", "cpm_comicpress_categories_warning");
-add_action("pre_post_update", "cpm_handle_pre_post_update");
-add_action("save_post", "cpm_handle_edit_post");
-add_action("delete_post", "cpm_handle_delete_post");
+add_action('admin_menu', 'cpm_add_pages');
+add_action('add_category_form_pre', 'cpm_comicpress_categories_warning');
+add_action('pre_post_update', 'cpm_handle_pre_post_update');
+add_action('save_post', 'cpm_handle_edit_post');
+add_action('delete_post', 'cpm_handle_delete_post');
 add_filter("manage_posts_columns", "cpm_manage_posts_columns");
 add_action("manage_posts_custom_column", "cpm_manage_posts_custom_column");
 add_action("create_category", "cpm_rebuild_storyline_structure");
@@ -21,9 +21,9 @@ include('cp_configuration_options.php');
 
 $default_comicpress_config_file_lines = array('<?' . 'php');
 foreach ($comicpress_configuration_options as $option_info) {
-  $default_comicpress_config_file_lines[] = "//{$option_info['name']} - {$option_info['description']} (default \"{$option_info['default']}\")";
-  $default_comicpress_config_file_lines[] = "\${$option_info['id']} = \"{$option_info['default']}\";";
-  $default_comicpress_config_file_lines[] = "";
+	$default_comicpress_config_file_lines[] = "//{$option_info['name']} - {$option_info['description']} (default \"{$option_info['default']}\")";
+	$default_comicpress_config_file_lines[] = "\${$option_info['id']} = \"{$option_info['default']}\";";
+	$default_comicpress_config_file_lines[] = "";
 }
 $default_comicpress_config_file_lines[] = "?>";
 
@@ -37,18 +37,18 @@ cpm_initialize_options();
  * are defined.
  */
 function cpm_comicpress_categories_warning() {
-  if (count(get_all_category_ids()) < 2) {
-    echo '<div style="margin: 10px; padding: 5px; background-color: #440008; color: white; border: solid #a00 1px">';
-    echo __("Remember, you need at least two categories defined in order to use ComicPress.", 'comicpress-manager');
-    echo '</div>';
-  }
+	if (count(get_all_category_ids()) < 2) {
+		echo '<div style="margin: 10px; padding: 5px; background-color: #440008; color: white; border: solid #a00 1px">';
+		echo __("Remember, you need at least two categories defined in order to use ComicPress.", 'comicpress-manager');
+		echo '</div>';
+	}
 }
 
 /**
  * Get the path to the plugin folder.
  */
 function cpm_get_plugin_path() {
-  return PLUGINDIR . '/' . preg_replace('#^.*/([^\/]*)#', '\\1', dirname(plugin_basename(__FILE__)));
+	return PLUGINDIR . '/' . preg_replace('#^.*/([^\/]*)#', '\\1', dirname(plugin_basename(__FILE__)));
 }
 
 /**
@@ -58,7 +58,7 @@ function cpm_get_plugin_path() {
 function cpm_add_pages() {
   global $plugin_page, $access_level, $pagenow, $cpm_config, $wp_version;
 
-  load_plugin_textdomain('comicpress-manager', cpm_get_plugin_path());
+  load_plugin_textdomain('comicpress-manager', false, cpm_get_plugin_path());
 
   $widget_options = get_option('dashboard_widget_options');
   if ( !$widget_options || !is_array($widget_options) )
@@ -112,11 +112,11 @@ function cpm_add_pages() {
     wp_enqueue_script('scriptaculous-builder');
   }
 
-  if (!isset($access_level)) { $access_level = 10; }
+  if (!isset($access_level)) { $access_level = 'edit_post'; }
 
   $plugin_title = __("ComicPress Manager", 'comicpress-manager');
 
-  add_menu_page($plugin_title, __("ComicPress", 'comicpress-manager'), $access_level, $filename, "cpm_manager_index_caller", get_option('siteurl') . '/' . cpm_get_plugin_path() . '/comicpress-icon.png');
+  add_menu_page($plugin_title, __("ComicPress", 'comicpress-manager'), $access_level, $filename, "cpm_manager_index_caller", get_option('siteurl') . '/' . cpm_get_plugin_path() . '/comicpress-icon.png', 9);
   add_submenu_page($filename, $plugin_title, __("Upload", 'comicpress-manager'), $access_level, $filename, 'cpm_manager_index_caller');
 
 
@@ -131,14 +131,14 @@ function cpm_add_pages() {
 
   add_submenu_page($filename, $plugin_title, __("Storyline Structure", 'comicpress-manager'), $access_level, $filename . '-storyline', 'cpm_manager_storyline_caller');
 
-  add_submenu_page($filename, $plugin_title, __("Change Dates", 'comicpress-manager'), $access_level, $filename . '-dates', 'cpm_manager_dates_caller');
+//  add_submenu_page($filename, $plugin_title, __("Change Dates", 'comicpress-manager'), $access_level, $filename . '-dates', 'cpm_manager_dates_caller');
   add_submenu_page($filename, $plugin_title, __("ComicPress Config", 'comicpress-manager'), $access_level, $filename . '-config', 'cpm_manager_config_caller');
   add_submenu_page($filename, $plugin_title, __("Manager Config", 'comicpress-manager'), $access_level, $filename . '-cpm-config', 'cpm_manager_cpm_config_caller');
 
   if ($pagenow == "index.php") {
     if (cpm_option('cpm-enable-dashboard-rss-feed') == 1) {
-      wp_register_sidebar_widget( 'dashboard_cpm', __("ComicPress News", "comicpress-manager"), 'cpm_dashboard_widget',
-        array( 'all_link' => "http://mindfaucet.com/comicpress/", 'feed_link' => "http://feeds.feedburner.com/comicpress?format=xml", 'width' => 'half', 'class' => 'widget_rss' )
+      wp_register_sidebar_widget( 'dashboard_cpm', __('ComicPress News', 'comicpress-manager'), 'cpm_dashboard_widget',
+        array( 'all_link' => "http://frumph.net/", 'feed_link' => "http://frumph.net/feed/", 'width' => 'half', 'class' => 'widget_rss' )
       );
 
       add_filter('wp_dashboard_widgets', 'cpm_add_dashboard_widget');
@@ -241,42 +241,40 @@ function cpm_handle_pre_post_update($post_id) {
  * Handle editing a post.
  */
 function cpm_handle_edit_post($post_id) {
-  global $cpm_config;
+	global $cpm_config;
 
-  if (!$cpm_config->is_cpm_managing_posts) {
-    $ok = false;
-    extract(cpm_get_all_comic_categories());
-    $post_categories = wp_get_post_categories($post_id);
-    foreach ($category_tree as $node) {
-      $parts = explode("/", $node);
-      if (in_array(end($parts), $post_categories)) {
-        $ok = true; break;
-      }
-    }
+	if (!$cpm_config->is_cpm_managing_posts) {
+		$ok = false;
 
-    if (is_uploaded_file($_FILES['comicpress-replace-image']['tmp_name']) && !$ok) {
-      $post_categories = wp_get_post_categories($post_id);
-      $post_categories[] = end(explode("/", reset($category_tree)));
-      wp_set_post_categories($post_id, $post_categories);
-      $ok = true;
-    }
+		extract(cpm_get_all_comic_categories());
+		$post_categories = wp_get_post_categories($post_id);
+		foreach ($category_tree as $node) {
+			$parts = explode("/", $node);
+			if (in_array(end($parts), $post_categories)) {
+				$ok = true; break;
+			}
+		}
 
-    if ($ok) {
-      $new_date = date(CPM_DATE_FORMAT, strtotime(implode("-", array($_POST['aa'], $_POST['mm'], $_POST['jj']))));
+		if (is_uploaded_file($_FILES['comicpress-replace-image']['tmp_name']) && !$ok) {
+			$post_categories = wp_get_post_categories($post_id);
+			$post_categories[] = end(explode("/", reset($category_tree)));
+			wp_set_post_categories($post_id, $post_categories);
+			$ok = true;
+		}
 
-      foreach (array('hovertext' => 'comicpress-img-title',
-                     'transcript' => 'comicpress-transcript') as $meta_name => $post_name) {
-        if (isset($_POST[$post_name])) {
-          update_post_meta($post_id, $meta_name, $_POST[$post_name]);
-        }
-      }
-
-      if (is_uploaded_file($_FILES['comicpress-replace-image']['tmp_name'])) {
-        $_POST['override-date'] = $new_date;
-        cpm_handle_file_uploads(array('comicpress-replace-image'));
-      }
-    }
-  }
+		if ($ok) {
+			$new_date = date(CPM_DATE_FORMAT, strtotime(implode("-", array($_POST['aa'], $_POST['mm'], $_POST['jj']))));
+			foreach (array('hovertext' => 'comicpress-img-title', 'transcript' => 'comicpress-transcript') as $meta_name => $post_name) {
+				if (isset($_POST[$post_name])) {
+					update_post_meta($post_id, $meta_name, $_POST[$post_name]);
+				}
+			}
+			if (is_uploaded_file($_FILES['comicpress-replace-image']['tmp_name'])) {
+				$_POST['override-date'] = $new_date;
+				cpm_handle_file_uploads(array('comicpress-replace-image'));
+			}
+		}
+	}
 }
 
 /**
@@ -347,7 +345,7 @@ function cpm_dashboard_widget($sidebar_args) {
     extract($sidebar_args, EXTR_SKIP);
   }
   echo $before_widget . $before_title . $widget_name . $after_title;
-  wp_widget_rss_output('http://feeds.feedburner.com/comicpress?format=xml', array('items' => 2, 'show_summary' => true));
+  wp_widget_rss_output('http://frumph.net/feed/', array('items' => 2, 'show_summary' => true));
 	echo $after_widget;
 }
 
@@ -429,12 +427,7 @@ function cpm_manage_posts_custom_column($column_name) {
     }
 
     $ok = false;
-
-    if (cpm_get_subcomic_directory() !== false) {
-      if (in_category(get_option('comicpress-manager-manage-subcomic'))) {
-        $ok = true;
-      }
-    } else {
+	
       extract(cpm_get_all_comic_categories());
       foreach ($category_tree as $node) {
         $parts = explode("/", $node);
@@ -442,7 +435,6 @@ function cpm_manage_posts_custom_column($column_name) {
           $ok = true; break;
         }
       }
-    }
 
     if ($ok) {
       if (isset($broken_down_comic_files[$post_date])) {
@@ -491,12 +483,12 @@ function cpm_manage_posts_custom_column($column_name) {
  * so that it includes/removes the affected categories.
  */
 function cpm_rebuild_storyline_structure($term_id) {
-  global $cpm_config;
+	global $cpm_config;
 
-  if (empty($cpm_config->is_cpm_modifying_categories)) {
-    cpm_read_information_and_check_config();
-    cpm_normalize_storyline_structure();
-  }
+	if (empty($cpm_config->is_cpm_modifying_categories)) {
+		cpm_read_information_and_check_config();
+		cpm_normalize_storyline_structure();
+	}
 }
 
 /**
@@ -577,15 +569,11 @@ function cpm_post_editor($width = 435, $is_import = false) {
 
   extract(cpm_normalize_storyline_structure());
 
-  if (cpm_get_subcomic_directory() !== false) {
-    $post_categories = array(get_option('comicpress-manager-manage-subcomic'));
-  } else {
     if (cpm_option('cpm-default-comic-category-is-last-storyline') == 1) {
       $post_categories = array(end(explode("/", end($category_tree))));
     } else {
       $post_categories = array($cpm_config->properties['comiccat']);
     }
-  }
 
   ob_start();
   cpm_display_storyline_checkboxes($category_tree, $post_categories);
@@ -598,12 +586,12 @@ function cpm_post_editor($width = 435, $is_import = false) {
 
   // see if there are additional categories that can be set besides the comic and blog categories
 
-  if (count($category_checkboxes = cpm_generate_additional_categories_checkboxes()) > 0) {
+/*  if (count($category_checkboxes = cpm_generate_additional_categories_checkboxes()) > 0) {
     $form_titles_and_fields[] = array(
       __("Additional Categories:", 'comicpress-manager'),
       implode("\n", $category_checkboxes)
     );
-  }
+  } */
 
   $form_titles_and_fields[] = array(
     __("Time to post:", 'comicpress-manager'),
@@ -664,10 +652,6 @@ function cpm_post_editor($width = 435, $is_import = false) {
     __(" <em>(the transcript to use for all posts)</em>", 'comicpress-manager')
   );
 
-  if (!is_plugin_active('what-did-they-say/what-did-they-say.php')) {
-    $form_titles_and_fields[] = '<em>' . __('Want even better control over your transcripts? Try <a href="http://wordpress.org/extend/plugins/what-did-they-say/" target="wdts">What Did They Say?!?</a>', 'comicpress-manager') . '</em>';
-  }
-
   $form_titles_and_fields[] = array(
     __("Upload Date Format:", 'comicpress-manager'),
     '<input type="text" id="upload-date-format" name="upload-date-format" />' .
@@ -692,7 +676,7 @@ function cpm_post_editor($width = 435, $is_import = false) {
       __("Quick Tags (click to add):", 'comicpress-manager'),
       implode("\n", $all_tags_links)
     );
-  }
+	}
 
   ?><table class="form-table"><?php
 
@@ -837,9 +821,6 @@ function cpm_find_thumbnails($date_root) {
   foreach (array('rss', 'archive', 'mini') as $type) {
     if ($cpm_config->separate_thumbs_folder_defined[$type]) {
       $path = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"];
-      if (($subdir = cpm_get_subcomic_directory()) !== false) {
-        $path .= '/' . $subdir;
-      }
       $files = glob($path . '/' . $date_root . "*");
       if ($files === false) { $files = array(); }
 
@@ -917,15 +898,11 @@ function generate_comic_categories_options($form_name, $label = true) {
   $first_category = null;
 
   extract(cpm_normalize_storyline_structure());
-  if (cpm_get_subcomic_directory() !== false) {
-    $default_category = get_option('comicpress-manager-manage-subcomic');
-  } else {
     if (cpm_option('cpm-default-comic-category-is-last-storyline') == 1) {
       $default_category = end(explode("/", end($category_tree)));
     } else {
       $default_category = $cpm_config->properties['comiccat'];
     }
-  }
 
   ob_start();
   foreach (get_all_category_ids() as $cat_id) {
@@ -1083,9 +1060,6 @@ function cpm_write_thumbnail($input, $target_filename, $do_rebuild = false) {
           $converted_target_filename = preg_replace('#\.[^\.]+$#', '', $target_filename) . '.' . $target_format;
 
           $target = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"];
-          if (($subdir = cpm_get_subcomic_directory()) !== false) {
-            $target .= '/' . $subdir;
-          }
           $target .= '/' . $converted_target_filename;
 
           if (!in_array($target, $write_targets)) {
@@ -1427,9 +1401,6 @@ function cpm_handle_file_uploads($files) {
   $did_convert_cmyk_jpeg = array();
 
   $target_root = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$_POST['upload-destination'] . "_folder"];
-  if (($subdir = cpm_get_subcomic_directory()) !== false) {
-    $target_root .= '/' . $subdir;
-  }
 
   $write_thumbnails = isset($_POST['thumbnails']) && ($_POST['upload-destination'] == "comic");
   $new_post = isset($_POST['new_post']) && ($_POST['upload-destination'] == "comic");
@@ -1553,9 +1524,6 @@ function cpm_handle_file_uploads($files) {
               if (@unlink($target_root . '/' . $target_filename)) {
                 foreach (cpm_get_thumbnails_to_generate() as $type) {
                   $path = CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties[$type . "_comic_folder"];
-                  if (($subdir = cpm_get_thumbnails_to_generate()) !== false) {
-                    $path .= '/' . $subdir;
-                  }
                   @unlink($path . '/' . $target_filename);
                 }
               }
@@ -2066,7 +2034,7 @@ function cpm_handle_actions() {
   $valid_actions = array('multiple-upload-file', 'create-missing-posts',
                          'update-config', 'restore-backup', 'change-dates',
                          'write-comic-post', 'update-cpm-config', 'do-first-run', 'skip-first-run',
-                         'build-storyline-schema', 'batch-processing', 'manage-subcomic');
+                         'build-storyline-schema', 'batch-processing');
 
   //
   // take actions based upon $_POST['action']
@@ -2094,11 +2062,6 @@ function cpm_show_comicpress_details() {
     }
   }
 
-  $subdir_path = '';
-  if (($subdir = cpm_get_subcomic_directory()) !== false) {
-    $subdir_path .= '/' . $subdir;
-  }
-
   ?>
     <!-- ComicPress details -->
     <div id="comicpress-details">
@@ -2118,7 +2081,7 @@ function cpm_show_comicpress_details() {
         </li>
         <li><strong><?php _e('Comics folder:', 'comicpress-manager') ?></strong>
                     <?php
-                      echo $cpm_config->properties['comic_folder'] . $subdir_path;
+                      echo $cpm_config->properties['comic_folder'];
                     ?><br />
             <?php
               $too_many_comics_message = "";
@@ -2135,9 +2098,9 @@ function cpm_show_comicpress_details() {
                              'rss'     => __('RSS feed folder:', 'comicpress-manager'),
                              'mini'     => __('Minithumb folder:', 'comicpress-manager'))
                        as $type => $title) {
-          $realpath = realpath(CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties["${type}_comic_folder"]  . $subdir_path);
+          $realpath = realpath(CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties["${type}_comic_folder"]);
           ?>
-          <li><strong><?php echo $title ?></strong> <?php echo $cpm_config->properties["${type}_comic_folder"]  . $subdir_path; ?>
+          <li><strong><?php echo $title ?></strong> <?php echo $cpm_config->properties["${type}_comic_folder"]; ?>
             <?php if (
               ($cpm_config->get_scale_method() != CPM_SCALE_NONE) &&
               (cpm_option("cpm-${type}-generate-thumbnails") == 1) &&
@@ -2310,18 +2273,13 @@ function cpm_show_debug_info($display_none = true) {
     clearstatcache();
     $output_config['folder_perms'] = array();
 
-    $subdir = "";
-    if (($subdir = cpm_get_subcomic_directory()) !== false) {
-      $subdir = '/' . $subdir;
-    }
-
     $output_config['directory_realpaths'] = array();
 
     foreach (array(
-      'comic' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['comic_folder'] . $subdir,
-      'rss' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['rss_comic_folder'] . $subdir,
-      'mini' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['mini_comic_folder'] . $subdir,
-      'archive' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['archive_comic_folder'] . $subdir,
+      'comic' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['comic_folder'],
+      'rss' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['rss_comic_folder'],
+      'mini' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['mini_comic_folder'],
+      'archive' => CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties['archive_comic_folder'],
       'config' => $cpm_config->config_filepath
     ) as $key => $path) {
       if (($s = @stat($path)) !== false) {
@@ -2406,7 +2364,7 @@ function cpm_manager_edit_config() {
  //       $ok = (cpm_this_is_multisite()) ? ($no_wpmu !== true) : true;
         $ok = true;
         if ($ok) {
-          $description = " <em>(" . $description . ")</em>";
+          $description = "<br /><em>(" . $description . ")</em>";
 
           $config_id = (isset($field_info['variable_name'])) ? $field_info['variable_name'] : $field_info['id'];
 
@@ -2429,7 +2387,9 @@ function cpm_manager_edit_config() {
               <tr>
                 <th scope="row"><?php echo $name ?>:</th>
                 <td class="config-field">
-                  <input type="radio" name="folder-<?php echo $config_id ?>" id="folder-s-<?php echo $config_id ?>" value="select" <?php echo $directory_found_in_list ? "checked" : "" ?>/> <label for="folder-s-<?php echo $config_id ?>">Select directory from a list</label><br />
+
+                  <input type="radio" name="folder-<?php echo $config_id ?>" id="folder-s-<?php echo $config_id ?>" value="select" "checked" /> <label for="folder-s-<?php echo $config_id ?>">Select directory from a list</label><br />
+
                   <div id="folder-select-<?php echo $config_id ?>">
                     <select title="<?php _e("List of possible folders at the root of your site", 'comicpress-manager') ?>" name="select-<?php echo $config_id ?>" id="<?php echo $config_id ?>">
                     <?php
@@ -2438,7 +2398,7 @@ function cpm_manager_edit_config() {
                       <?php } ?>
                     </select><?php echo $description ?>
                   </div>
-
+<?php /*
                   <input type="radio" name="folder-<?php echo $config_id ?>" id="folder-e-<?php echo $config_id ?>" value="enter" <?php echo !$directory_found_in_list ? "checked" : "" ?>/> <label for="folder-e-<?php echo $config_id ?>">Enter in my directory name</label><br />
                   <div id="folder-enter-<?php echo $config_id ?>">
                     <input type="text" name="enter-<?php echo $config_id ?>" value="<?php echo $cpm_config->properties[$config_id] ?>" />
@@ -2460,6 +2420,7 @@ function cpm_manager_edit_config() {
 
                     folder_handler_<?php echo $config_id ?>();
                   </script>
+*/ ?>
                 </td>
               </tr>
               <?php break;
@@ -2524,22 +2485,21 @@ function cpm_show_footer() {
   }
 
   ?>
-  <div id="cpm-footer">
-    <div id="cpm-footer-paypal">
-      <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-      <input type="hidden" name="cmd" value="_s-xclick">
-      <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
-      ">
-      <input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="">
-      <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
-      </form>
+  <div id="cpm-footer" style="float: left; width="100%">
+    <div id="cpm-footer-paypal" style="float: left; width:140px;">
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+			<input type="hidden" name="cmd" value="_s-xclick" />
+			<input type="hidden" name="hosted_button_id" value="46RNWXBE7467Q" />
+			<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!" />
+			<img alt="" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+		</form>
     </div>
-    <div id="cpm-footer-text">
-      <?php _e('<a href="http://wordpress.org/extend/plugins/comicpress-manager/" target="_new">ComicPress Manager</a> is built for the <a href="http://www.mindfaucet.com/comicpress/" target="_new">ComicPress</a> theme', 'comicpress-manager') ?> |
-      <?php _e('Copyright 2008-2009 <a href="mailto:john@coswellproductions.com?Subject=ComicPress Manager Comments">John Bintz</a>', 'comicpress-manager') ?> |
-      <?php _e('Released under the GNU GPL', 'comicpress-manager') ?> |
+    <div id="cpm-footer-text" style="width: 700px;">
+      <?php _e('<a href="http://wordpress.org/extend/plugins/comicpress-manager/" target="_new">ComicPress Manager</a> is built for the <a href="http://comicpress.org/" target="_new">ComicPress</a> Theme', 'comicpress-manager') ?><br />
+      <?php _e('Copyright 2008-2009 John Bintz, Copyright 2010 <a href="mailto:philip@frumph.net">Philip M. Hofer (Frumph)</a>', 'comicpress-manager') ?><br />
+      <?php _e('Released under the GNU GPL v3', 'comicpress-manager') ?> |
       <?php echo $version_string ?>
-      <?php _e('<a href="http://bugs.comicpress.org/index.php?project=2">Report a Bug</a>', 'comicpress-manager') ?> |
+      <?php _e('<a href="http://bugs.comicpress.org/index.php?project=2">Report a Bug</a>', 'comicpress-manager') ?><br />
       <?php _e('Uses the <a target="_new" href="http://www.dynarch.com/projects/calendar/">Dynarch DHTML Calendar Widget</a>', 'comicpress-manager') ?>
     </div>
   </div>

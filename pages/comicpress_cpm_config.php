@@ -79,7 +79,7 @@ function cpm_manager_cpm_config() {
                       break;
                   }
                 ?>
-                <em><label for="<?php echo $option['id'] ?>">(<?php echo $option['message'] ?>)<label></em>
+                <br /><em><label for="<?php echo $option['id'] ?>">(<?php echo $option['message'] ?>)<label></em>
               </td>
             </tr>
           <?php } ?>
@@ -94,7 +94,7 @@ function cpm_manager_cpm_config() {
   </form>
 
   <div id="first-run-holder">
-    <p><strong>Re-run the &quot;First Run&quot; action? This will attempt to create the default comic folders on your site.</strong></p>
+    <p style="text-align:center;"><strong>Re-run the &quot;First Run&quot; action?<br />This will attempt to create the default comic folders on your site.</strong></p>
 
     <form action="<?php echo $target_page ?>" method="post">
       <input type="hidden" name="action" value="do-first-run" />

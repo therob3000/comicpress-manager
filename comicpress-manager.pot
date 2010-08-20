@@ -338,11 +338,6 @@ msgstr ""
 msgid "<strong>Configuration updated in database.</strong>"
 msgstr ""
 
-#: actions/comicpress_manage-subcomic.php:26
-#, php-format
-msgid "Now managing <strong>%s</strong>."
-msgstr ""
-
 #: comicpress_manager_library.php:409
 msgid ""
 "The current theme isn't the ComicPress theme.  If you've renamed the theme, "
@@ -557,13 +552,6 @@ msgstr ""
 
 #: pages/edit_post_show_comic.php:205
 msgid "Transcript"
-msgstr ""
-
-#: pages/edit_post_show_comic.php:210
-msgid ""
-"Want even better control over your transcripts? Try <a href=\"http://"
-"wordpress.org/extend/plugins/what-did-they-say/\" target=\"wdts\">What Did "
-"They Say?!?</a>"
 msgstr ""
 
 #: pages/comicpress_thumbnails.php:9

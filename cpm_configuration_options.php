@@ -40,12 +40,12 @@
       'default' => "1",
       'message' => "If checked, the default comic cateogry for upload/import is the last category in the storyline"
     ),
-    array(
+/*    array(
       'id' => 'cpm-default-additional-categories',
       'name' => "Default Additional Categories",
       'type' => 'categories',
       'message' => "Additional default categories for comic posts"
-    ),
+    ), */
     array(
       'id' => 'cpm-archive-generate-thumbnails',
       'name' => "Generate Archive Thumbnails?",
@@ -75,14 +75,14 @@
       'default' => "80",
       'message' => "Quality of JPEG Thumbnails"
     ),
-    array(
+/*    array(
       'id' => 'cpm-strip-icc-profiles',
       'name' => "Strip ICC Profiles",
       'type' => 'checkbox',
       'default' => "1",
       'message' => "Strip ICC profiles from uploaded images. ImageMagick only.",
       'imagemagick-only' => true
-    ),
+    ), */
     array(
       'id' => 'cpm-obfuscate-filenames-on-upload',
       'name' => "Obfuscate Filenames on Upload?",
@@ -143,13 +143,13 @@
       'default' => "1",
       "message" => "enable this to use the QuomicPress (Quick ComicPress) posting box on your Dashboard"
     ),
-    array(
+ /*   array(
       "id" => "cpm-use-old-subdirectory-method",
       "name" => __("Use the old method of finding subdirectories", 'comicpress-manager'),
       "type" => "checkbox",
       'default' => "0",
       "message" => __("if your comic directories are at the root of your site, and your WordPress installation is in a subdirectory, enable this option.", 'comicpress-manager')
-    ),
+    ), */
     array(
       "id" => "cpm-upload-permissions",
       "name" => "Unix chmod permissions to assign to uploaded files?",

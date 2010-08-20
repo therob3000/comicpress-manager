@@ -4,19 +4,51 @@
  * The import dialog.
  */
 function cpm_manager_import() {
-  global $cpm_config;
+	global $cpm_config;
 
-  if (cpm_get_subcomic_directory() !== false) {
-    $cpm_config->messages[] = sprintf(__("<strong>Reminder:</strong> You are managing the <strong>%s</strong> comic subdirectory.", 'comicpress-manager'), get_cat_name(get_option('comicpress-manager-manage-subcomic')));
-  }
+	$all_post_dates = array();
+	
+	$format = CPM_DATE_FORMAT;
+	if (isset($_POST['format'])) { $format = $_POST['format']; }
 
-  if (cpm_option('cpm-skip-checks') != 1) {
-    if (!function_exists('get_comic_path')) {
-      $cpm_config->warnings[] =  __('<strong>It looks like you\'re running an older version of ComicPress.</strong> Storyline, hovertext, and transcript are fully supported in <a href="http://comicpress.org/">ComicPress 2.7</a>. You can use hovertext and transcripts in earlier themes by using <tt>get_post_meta($post->ID, "hovertext", true)</tt> and <tt>get_post_meta($post->ID, "transcript", true)</tt>.', 'comicpress-manager');
-    }
-  }
-
-  ob_start(); ?>
+	if (cpm_option('cpm-skip-checks') != 1) {
+		if (!function_exists('get_comic_path')) {
+			$cpm_config->warnings[] =  __('<strong>It looks like you\'re running an older version of ComicPress.</strong> Storyline, hovertext, and transcript are fully supported in <a href="http://comicpress.org/">ComicPress 2.7</a>. You can use hovertext and transcripts in earlier themes by using <tt>get_post_meta($post->ID, "hovertext", true)</tt> and <tt>get_post_meta($post->ID, "transcript", true)</tt>.', 'comicpress-manager');
+		}
+	}
+	foreach (cpm_read_comics_folder() as $comic_file) {
+		$comic_file = basename($comic_file);
+		if (($result = cpm_breakdown_comic_filename($comic_file, $format)) !== false) {
+			if (!in_array($result['date'], $all_post_dates)) {
+				if (($post_hash = generate_post_hash($result['date'], $result['converted_title'])) !== false) {
+					$missing_comic_count++;
+				}
+			}
+		}
+	}
+	
+	foreach (cpm_query_posts() as $comic_post) {
+		$all_post_dates[] = date($format, strtotime($comic_post->post_date));
+	}
+	$total_comics = count(cpm_read_comics_folder());
+	$all_post_dates = array_unique($all_post_dates);
+	$total_unique = count($all_post_dates);
+	
+	//    ob_start();
+	$missing_comic_count = 0;
+	foreach (cpm_read_comics_folder() as $comic_file) {
+		$comic_file = pathinfo($comic_file, PATHINFO_BASENAME);
+		if (($result = cpm_breakdown_comic_filename($comic_file, $format)) !== false) {
+			if (!in_array($result['date'], $all_post_dates)) {
+				if (($post_hash = generate_post_hash($result['date'], $result['converted_title'])) !== false) {
+					$missing_comic_count++;
+				}
+	
+			}
+		}
+	}
+	ob_start(); 
+?>
     <p>
       <?php _e("<strong>Create missing posts for uploaded comics</strong> is for when you upload a lot of comics to your comic folder and want to generate generic posts for all of the new comics, or for when you're migrating from another system to ComicPress.", 'comicpress-manager') ?>
     </p>
@@ -35,13 +67,13 @@ function cpm_manager_import() {
   
   <h2 style="padding-right:0;"><?php _e("Create Missing Posts For Uploaded Comics", 'comicpress-manager') ?></h2>
   <h3>&mdash; <?php _e("acts as a batch import process", 'comicpress-manager') ?></h3>
-
   <div id="import-count-information">
     <?php
       if ($cpm_config->import_safe_exit === true) {
         _e("<strong>You are in the middle of an import operation.</strong> To continue, click the button below:", 'comicpress-manager');
 
         ?>
+		
           <form action="" method="post">
             <?php foreach ($_POST as $key => $value) {
               if (is_array($value)) {
@@ -56,30 +88,35 @@ function cpm_manager_import() {
           </form>
         <?php
 
-      } else {
-        $execution_time = ini_get("max_execution_time");
-        $max_posts_imported = (int)($execution_time / 2);
-
-        if ($execution_time == 0) {
-          _e("<strong>Congratulations, your <tt>max_execution_time</tt> is 0</strong>. You'll be able to import all of your comics in one import operation.", 'comicpress-manager');
-        } else {
-          if ($max_posts_imported == 0) {
-            _e("<strong>Something is very wrong with your configuration!.</strong>", 'comicpress-manager');
-          } else {
-            printf(__("<strong>Your <tt>max_execution_time</tt> is %s</strong>. You'll be able to safely import %s comics in one import operation.", 'comicpress-manager'), $execution_time, $max_posts_imported);
-          }
-        }
-      }
+	} else {
+		?>
+		<div style="font-size: 10px;">
+		<?php
+		$execution_time = ini_get("max_execution_time");
+		$max_posts_imported = (int)($execution_time / 3);
+		
+		if ($execution_time == 0) {
+			_e("<strong>Congratulations, your <tt>max_execution_time</tt> is 0</strong>. You'll be able to import all of your comics in one import operation.", 'comicpress-manager');
+		} else {
+			if ($max_posts_imported == 0) {
+				_e("<strong>Something is very wrong with your configuration!.</strong>", 'comicpress-manager');
+			} else {
+				printf(__("<strong>Your <tt>max_execution_time</tt> is %s</strong>. You'll be able to safely import %s comics in one import operation.   <br />WARNING: Do not add more then %s comics to your comics directory for importing at a time.", 'comicpress-manager'), $execution_time, $max_posts_imported, $max_posts_imported);
+			}
+		} ?>
+		</div>
+<?php }
     ?>
   </div>
 
   <table class="form-table">
     <tr>
       <th scope="row">
-        <?php _e("Count the number of missing posts", 'comicpress-manager') ?>
+        <?php _e("Missing Post Count", 'comicpress-manager') ?>
       </th>
       <td>
-        <a href="#" onclick="return false" id="count-missing-posts-clicker"><?php _e("Click here to count", 'comicpress-manager') ?></a> (<?php _e("may take a while", 'comicpress-manager') ?>): <span id="missing-posts-display"></span>
+	<?php _e("There are", 'comicpress-manager') ?> <?php echo $missing_comic_count; ?> <?php _e(" comics missing posts.", 'comicpress-manager') ?><br />
+	<em><?php _e("With a large archive this import page will take a long time to generate.", 'comicpress-manager'); ?></em>
       </td>
     </tr>
   </table>

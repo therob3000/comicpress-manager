@@ -10,10 +10,6 @@ function cpm_manager_dates() {
 
   $cpm_config->need_calendars = true;
 
-  if (cpm_get_subcomic_directory() !== false) {
-    $cpm_config->messages[] = __("<strong>Subdirectory support enabled.</strong> Change Dates may not work as expected.", 'comicpress-manager');
-  }
-
   $comic_format_date_string = date(CPM_DATE_FORMAT);
 
   $dates_output_format = "Y-m-d";
