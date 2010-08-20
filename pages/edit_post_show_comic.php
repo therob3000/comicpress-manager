@@ -135,32 +135,6 @@ function cpm_show_comic() {
         <input type="hidden" name="upload-destination" value="comic" />
         <input type="hidden" name="thumbnails" value="yes" />
       </td>
-      <script type="text/javascript">
-        var handle_click = function() {
-          var any_checked = false
-          $$('input[name="post_category[]"]').each(function(i) {
-            if (i.type == "radio") {
-              if (i.checked) {
-                any_checked = true;
-              }
-            }
-          });
-
-          if (!any_checked) {
-            var has_checked = false;
-            $$('input[name="post_category[]"]').each(function(i) {
-              if (!has_checked) {
-                if (i.type == "radio") {
-                  i.checked = true;
-                  has_checked = true;
-                }
-              }
-            });
-          }
-        };
-
-        [ 'click', 'blur' ].each(function(w) { $('comicpress-replace-image').observe(w, handle_click); });
-      </script>
     </tr>
     <?php
       if (cpm_option('cpm-skip-checks') != 1) {
@@ -172,22 +146,6 @@ function cpm_show_comic() {
           </tr>
         <?php }
       } ?>
-    <?php if (get_option('comicpress-enable-storyline-support') == 1) { ?>
-      <tr>
-        <th scope="row">
-          <?php
-            if (count($category_tree) > 1) {
-              _e("Storyline", 'comicpress-manager');
-            } else {
-              _e("Category", 'comicpress-manager');
-            }
-          ?>
-        </th>
-        <td>
-          <?php cpm_display_storyline_checkboxes($category_tree, $post_categories, null, "post_category") ?>
-        </td>
-      </tr>
-    <?php } ?>
     <tr>
       <th scope="row"><?php _e('&lt;img title&gt;/hover text', 'comicpress-manager') ?></th>
       <td><input type="text" name="comicpress-img-title" style="width:99%" value="<?php echo get_post_meta($post->ID, 'hovertext', true) ?>" /></td>

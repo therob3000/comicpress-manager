@@ -42,7 +42,7 @@ function cpm_manager_thumbnails() {
             <?php foreach ($cpm_config->comic_files as $file) {
               $filename = pathinfo($file, PATHINFO_BASENAME);
               $any_thumbs = false;
-              foreach (array('rss', 'archive') as $type) {
+              foreach (array('rss', 'archive', 'mini') as $type) {
                 $thumb_file = str_replace($cpm_config->properties['comic_folder'],
                                           $cpm_config->properties["${type}_comic_folder"],
                                           $file);

@@ -9,11 +9,11 @@ add_action('add_category_form_pre', 'cpm_comicpress_categories_warning');
 add_action('pre_post_update', 'cpm_handle_pre_post_update');
 add_action('save_post', 'cpm_handle_edit_post');
 add_action('delete_post', 'cpm_handle_delete_post');
-add_filter("manage_posts_columns", "cpm_manage_posts_columns");
-add_action("manage_posts_custom_column", "cpm_manage_posts_custom_column");
-add_action("create_category", "cpm_rebuild_storyline_structure");
-add_action("delete_category", "cpm_rebuild_storyline_structure");
-add_action("edit_category", "cpm_rebuild_storyline_structure");
+add_filter('manage_posts_columns', 'cpm_manage_posts_columns');
+add_action('manage_posts_custom_column', 'cpm_manage_posts_custom_column');
+add_action('create_category', 'cpm_rebuild_storyline_structure');
+add_action('delete_category', 'cpm_rebuild_storyline_structure');
+add_action('edit_category', 'cpm_rebuild_storyline_structure'); 
 
 $cpm_config = new ComicPressConfig();
 
@@ -172,16 +172,7 @@ function cpm_handle_pre_post_update($post_id) {
       if ($post_id > 0) {
         $post = get_post($post_id);
         if (!in_array($post->post_type, array("attachment", "revision", "page"))) {
-          $ok = false;
-          extract(cpm_get_all_comic_categories());
-          $post_categories = wp_get_post_categories($post_id);
-          foreach ($category_tree as $node) {
-            $parts = explode("/", $node);
-            if (in_array(end($parts), $post_categories)) {
-              $ok = true; break;
-            }
-          }
-
+			$ok = true;
           if ($ok) {
             $original_timestamp = false;
             foreach (array("post_date", "post_date_gmt") as $param) {
@@ -244,35 +235,15 @@ function cpm_handle_edit_post($post_id) {
 	global $cpm_config;
 
 	if (!$cpm_config->is_cpm_managing_posts) {
-		$ok = false;
-
-		extract(cpm_get_all_comic_categories());
-		$post_categories = wp_get_post_categories($post_id);
-		foreach ($category_tree as $node) {
-			$parts = explode("/", $node);
-			if (in_array(end($parts), $post_categories)) {
-				$ok = true; break;
+		$new_date = date(CPM_DATE_FORMAT, strtotime(implode("-", array($_POST['aa'], $_POST['mm'], $_POST['jj']))));
+		foreach (array('hovertext' => 'comicpress-img-title', 'transcript' => 'comicpress-transcript') as $meta_name => $post_name) {
+			if (isset($_POST[$post_name])) {
+				update_post_meta($post_id, $meta_name, $_POST[$post_name]);
 			}
 		}
-
-		if (is_uploaded_file($_FILES['comicpress-replace-image']['tmp_name']) && !$ok) {
-			$post_categories = wp_get_post_categories($post_id);
-			$post_categories[] = end(explode("/", reset($category_tree)));
-			wp_set_post_categories($post_id, $post_categories);
-			$ok = true;
-		}
-
-		if ($ok) {
-			$new_date = date(CPM_DATE_FORMAT, strtotime(implode("-", array($_POST['aa'], $_POST['mm'], $_POST['jj']))));
-			foreach (array('hovertext' => 'comicpress-img-title', 'transcript' => 'comicpress-transcript') as $meta_name => $post_name) {
-				if (isset($_POST[$post_name])) {
-					update_post_meta($post_id, $meta_name, $_POST[$post_name]);
-				}
-			}
-			if (is_uploaded_file($_FILES['comicpress-replace-image']['tmp_name'])) {
-				$_POST['override-date'] = $new_date;
-				cpm_handle_file_uploads(array('comicpress-replace-image'));
-			}
+		if (is_uploaded_file($_FILES['comicpress-replace-image']['tmp_name'])) {
+			$_POST['override-date'] = $new_date;
+			cpm_handle_file_uploads(array('comicpress-replace-image'));
 		}
 	}
 }
@@ -755,7 +726,7 @@ function cpm_manager_page_caller($page) {
   $do_first_run = false;
   if (!cpm_option('cpm-did-first-run')) {
     $all_comic_folders_found = true;
-    foreach (array(''. 'rss_', 'archive_') as $folder_name) {
+    foreach (array(''. 'rss_', 'archive_', 'mini_') as $folder_name) {
       if (!file_exists(CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties["${folder_name}comic_folder"])) { $all_comic_folders_found = false; break; }
     }
 
@@ -2436,7 +2407,7 @@ function cpm_manager_edit_config() {
       <?php if (!cpm_this_is_multisite()) { ?>
         <?php
           $all_comic_folders_found = true;
-          foreach (array(''. 'rss_', 'archive_') as $folder_name) {
+          foreach (array(''. 'rss_', 'archive_', 'mini_') as $folder_name) {
             if (!file_exists(CPM_DOCUMENT_ROOT . '/' . $cpm_config->properties["${folder_name}comic_folder"])) { $all_comic_folders_found = false; break; }
           }
 

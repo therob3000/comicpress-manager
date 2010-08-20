@@ -111,7 +111,7 @@ function cpm_action_change_dates() {
         foreach (array(
           array(__('comic folder', 'comicpress-manager'), 'comic_folder', ""),
           array(__('RSS feed folder', 'comicpress-manager'), 'rss_comic_folder', "rss"),
-          array(__('Mini thumb folder', 'comicpress-manager'), 'mini_comic_folder', "rss"),
+          array(__('Mini thumb folder', 'comicpress-manager'), 'mini_comic_folder', "mini"),
           array(__('archive folder', 'comicpress-manager'), 'archive_comic_folder', "archive")) as $folder_info) {
             list ($name, $property, $type) = $folder_info;
 
@@ -148,9 +148,9 @@ function cpm_action_change_dates() {
         if ($roll_back_change) {
           foreach (array(
             array(__('comic folder', 'comicpress-manager'), 'comic_folder',""),
-            array(__('RSS feed folder', 'comicpress-manager'), 'rss_comic_folder',"rss"),
-            array(__('Mini thumb folder', 'comicpress-manager'), 'mini_comic_folder',"rss"),
-            array(__('archive folder', 'comicpress-manager'), 'archive_comic_folder',"archive")) as $folder_info) {
+            array(__('RSS feed folder', 'comicpress-manager'), 'rss_comic_folder', "rss"),
+            array(__('Mini thumb folder', 'comicpress-manager'), 'mini_comic_folder', "mini"),
+            array(__('archive folder', 'comicpress-manager'), 'archive_comic_folder', "archive")) as $folder_info) {
               list ($name, $property) = $folder_info;
 
               $do_move = isset($calculate_do_move[$type]) ? $calculate_do_move[$type] : true;

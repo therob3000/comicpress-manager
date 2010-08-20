@@ -168,8 +168,8 @@ function cpm_action_build_storyline_schema() {
 				} else {
 					$categories[] = $cpm_config->properties['comiccat'];
 				}
-				
-				wp_set_post_categories($post->ID, $categories);
+				// This is bugged, DO NOT USE.
+				// wp_set_post_categories($post->ID, $categories);
 				$comic_categories_preserved[] = $post->ID;
 			}
 		}

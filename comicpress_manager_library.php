@@ -16,8 +16,8 @@ class ComicPressConfig {
     'archive_comic_folder' => 'comics',
     'mini_comic_folder'    => 'comics',
     'archive_comic_width'  => '380',
-    'rss_comic_width'      => '380',
-    'mini_comic_width'     => '100',
+    'rss_comic_width'      => '480',
+    'mini_comic_width'     => '198',
     'blog_postcount'       => '10'
   );
 
