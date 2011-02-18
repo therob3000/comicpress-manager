@@ -9,7 +9,7 @@ Author URI: http://frumph.net/
 Contributors: frumph
 
 Copyright 2008-2009 John Bintz  (email : john@coswellproductions.com)
-Copyright 2010 Philip M. Hofer (Frumph) (email: philip@frumph.net)
+Copyright 2010-2011 Philip M. Hofer (Frumph) (email: philip@frumph.net)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
