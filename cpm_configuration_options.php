@@ -75,14 +75,14 @@
       'default' => "80",
       'message' => "Quality of JPEG Thumbnails"
     ),
-/*    array(
+    array(
       'id' => 'cpm-strip-icc-profiles',
       'name' => "Strip ICC Profiles",
       'type' => 'checkbox',
       'default' => "1",
       'message' => "Strip ICC profiles from uploaded images. ImageMagick only.",
       'imagemagick-only' => true
-    ), */
+    ),
     array(
       'id' => 'cpm-obfuscate-filenames-on-upload',
       'name' => "Obfuscate Filenames on Upload?",

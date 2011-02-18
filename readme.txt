@@ -2,8 +2,8 @@
 Contributors: frumph, johncoswell
 Tags: comicpress, webcomics, management, admin, posts, plugin
 Requires at least: 2.9.1
-Tested up to: 3.0.1
-Stable tag: 1.4.9.7
+Tested up to: 3.1
+Stable tag: 1.4.9.8
 Donate link: http://www.frumph.net/
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.
@@ -187,6 +187,9 @@ ComicPress Manager is released under the GNU GPL version 2.0 or later.
 The Dynarch DHTML Calendar Widget is released under the GNU LGPL.
 
 == Changelog ==
+= 1.4.9.8 =
+* moved the loading of files to admin_only, the theme handles the rest anyways, no sense in re-executing code
+* moved the wpmu functions to their own file and loaded with is_multisite()
 
 = 1.4.9.7 =
 * Some much needed fixes to the directory pathing and removal of the subcomic ability (which only broke the site)
