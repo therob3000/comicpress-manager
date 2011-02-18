@@ -6,6 +6,7 @@ Description: Manage the comics within a <a href="http://www.comicpress.org/">Com
 Version: 1.4.9.8
 Author: John Bintz, Philip M. Hofer (Frumph)
 Author URI: http://frumph.net/
+Contributors: frumph
 
 Copyright 2008-2009 John Bintz  (email : john@coswellproductions.com)
 Copyright 2010 Philip M. Hofer (Frumph) (email: philip@frumph.net)
