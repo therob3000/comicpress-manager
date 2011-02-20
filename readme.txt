@@ -10,7 +10,7 @@ ComicPress Manager ties in with the ComicPress theme to make managing your WordP
 
 == Description ==
 
-The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://comicpress.org/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress.
+The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://comicpress.net/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress.
 
 ComicPress Manager allows you to:
 
