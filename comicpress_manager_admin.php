@@ -132,8 +132,8 @@ function cpm_add_pages() {
   add_submenu_page($filename, $plugin_title, __("Storyline Structure", 'comicpress-manager'), $access_level, $filename . '-storyline', 'cpm_manager_storyline_caller');
 
 //  add_submenu_page($filename, $plugin_title, __("Change Dates", 'comicpress-manager'), $access_level, $filename . '-dates', 'cpm_manager_dates_caller');
-  add_submenu_page($filename, $plugin_title, __("ComicPress Config", 'comicpress-manager'), $access_level, $filename . '-config', 'cpm_manager_config_caller');
-  add_submenu_page($filename, $plugin_title, __("Manager Config", 'comicpress-manager'), $access_level, $filename . '-cpm-config', 'cpm_manager_cpm_config_caller');
+  add_submenu_page($filename, $plugin_title, __("Config", 'comicpress-manager'), $access_level, $filename . '-config', 'cpm_manager_config_caller');
+  add_submenu_page($filename, $plugin_title, __("Options", 'comicpress-manager'), $access_level, $filename . '-options', 'cpm_manager_cpm_config_caller');
 
   if ($pagenow == "index.php") {
     if (cpm_option('cpm-enable-dashboard-rss-feed') == 1) {
@@ -2280,45 +2280,44 @@ function cpm_show_debug_info($display_none = true) {
  * Show the config editor.
  */
 function cpm_manager_edit_config() {
-  global $cpm_config;
+	global $cpm_config;
 
-  include('cp_configuration_options.php');
+	include('cp_configuration_options.php');
 
-  $max_depth = 3;
-  $max_depth_message = false;
-  $max_directories = 256;
+	$max_depth = 3;
+	$max_depth_message = false;
+	$max_directories = 256;
 
-  $folders_to_ignore = implode("|", array('wp-content', 'wp-includes', 'wp-admin'));
+	$folders_to_ignore = implode("|", array('wp-content', 'wp-includes', 'wp-admin'));
 
-  $folder_stack = glob(CPM_DOCUMENT_ROOT . '/*');
-  if ($folder_stack === false) { $folder_stack = array(); }
-  $found_folders = array();
+	$folder_stack = glob(CPM_DOCUMENT_ROOT . '/*');
+	if ($folder_stack === false) { $folder_stack = array(); }
+	$found_folders = array();
 
-  while (count($folder_stack) > 0) {
-    $file = array_shift($folder_stack);
-    if (is_dir($file)) {
-      $root_file = substr($file, strlen(CPM_DOCUMENT_ROOT) + 1);
-      if (preg_match("#(${folders_to_ignore})$#", $root_file) == 0) {
-        if (count(explode("/", $root_file)) <= $max_depth) {
-          $found_folders[] = $root_file;
-
-          $files = glob($file . "/*");
-          if (is_array($files)) {
-            $folder_stack = array_merge($folder_stack, $files);
-          }
-        } else {
-          if (!$max_depth_message) {
-//            $cpm_config->messages[] = sprintf(__("I went %s levels deep in my search for comic directories. Are you sure you have your site set up correctly?", 'comicpress-manager'), $max_depth);
-//            $max_depth_message = true;
-          }
-        }
-      }
-    }
-    if (count($found_folders) == $max_directories) {
-      $cpm_config->messages[] = sprintf(__("I found over %s directories from your site root. Are you sure you have your site set up correctly?", 'comicpress-manager'), $max_directories);
-      break;
-    }
-  }
+	while (count($folder_stack) > 0) {
+		$file = array_shift($folder_stack);
+		if (is_dir($file)) {
+			$root_file = substr($file, strlen(CPM_DOCUMENT_ROOT) + 1);
+			if (preg_match("#(${folders_to_ignore})$#", $root_file) == 0) {
+				if (count(explode("/", $root_file)) <= $max_depth) {
+					$found_folders[] = $root_file;
+					$files = glob($file . "/*");
+					if (is_array($files)) {
+						$folder_stack = array_merge($folder_stack, $files);
+					}
+				} /* else {
+					if (!$max_depth_message) {
+						$cpm_config->messages[] = sprintf(__("I went %s levels deep in my search for comic directories. Are you sure you have your site set up correctly?", 'comicpress-manager'), $max_depth);
+						$max_depth_message = true;
+					}
+				} */
+			}
+		}
+		if (count($found_folders) == $max_directories) {
+			$cpm_config->messages[] = sprintf(__("I found over %s directories from your site root. Are you sure you have your site set up correctly?", 'comicpress-manager'), $max_directories);
+			break;
+		}
+	}
 
   sort($found_folders);
 
@@ -2328,14 +2327,12 @@ function cpm_manager_edit_config() {
     <input type="hidden" name="action" value="update-config" />
 
     <table class="form-table">
-      <?php foreach ($comicpress_configuration_options as $field_info) {
+      <?php 
+	foreach ($comicpress_configuration_options as $field_info) {
         $no_wpmu = false;
         extract($field_info);
 
- //       $ok = (cpm_this_is_multisite()) ? ($no_wpmu !== true) : true;
-        $ok = true;
-        if ($ok) {
-          $description = "<br /><em>(" . $description . ")</em>";
+          $description = " <em>(" . $description . ")</em>";
 
           $config_id = (isset($field_info['variable_name'])) ? $field_info['variable_name'] : $field_info['id'];
 
@@ -2349,7 +2346,7 @@ function cpm_manager_edit_config() {
                                  <option value="<?php echo $category->cat_ID ?>"
                                          <?php echo ($cpm_config->properties[$config_id] == $cat_id) ? " selected" : "" ?>><?php echo $category->cat_name; ?></option>
                                <?php } ?>
-                             </select><?php echo $description ?></td>
+                             </select><br /><?php echo $description ?></td>
               </tr>
               <?php break;
             case "folder":
@@ -2358,18 +2355,17 @@ function cpm_manager_edit_config() {
               <tr>
                 <th scope="row"><?php echo $name ?>:</th>
                 <td class="config-field">
-
-                  <input type="radio" name="folder-<?php echo $config_id ?>" id="folder-s-<?php echo $config_id ?>" value="select" "checked" /> <label for="folder-s-<?php echo $config_id ?>">Select directory from a list</label><br />
-
+                  <input type="radio" name="folder-<?php echo $config_id ?>" id="folder-s-<?php echo $config_id ?>" value="select" <?php echo $directory_found_in_list ? "checked" : "" ?>/> <label for="folder-s-<?php echo $config_id ?>">Select directory from a list</label><br />
                   <div id="folder-select-<?php echo $config_id ?>">
                     <select title="<?php _e("List of possible folders at the root of your site", 'comicpress-manager') ?>" name="select-<?php echo $config_id ?>" id="<?php echo $config_id ?>">
                     <?php
                       foreach ($found_folders as $file) { ?>
                         <option <?php echo ($file == $cpm_config->properties[$config_id]) ? " selected" : "" ?> value="<?php echo $file ?>"><?php echo $file ?></option>
                       <?php } ?>
-                    </select><?php echo $description ?>
+                    </select><br />
+					<?php echo $description ?>
                   </div>
-<?php /*
+
                   <input type="radio" name="folder-<?php echo $config_id ?>" id="folder-e-<?php echo $config_id ?>" value="enter" <?php echo !$directory_found_in_list ? "checked" : "" ?>/> <label for="folder-e-<?php echo $config_id ?>">Enter in my directory name</label><br />
                   <div id="folder-enter-<?php echo $config_id ?>">
                     <input type="text" name="enter-<?php echo $config_id ?>" value="<?php echo $cpm_config->properties[$config_id] ?>" />
@@ -2391,20 +2387,20 @@ function cpm_manager_edit_config() {
 
                     folder_handler_<?php echo $config_id ?>();
                   </script>
-*/ ?>
                 </td>
               </tr>
               <?php break;
             case "integer": ?>
               <tr>
                 <th scope="row"><?php echo $name ?>:</th>
-                <td><input type="text" name="<?php echo $config_id ?>" size="20" value="<?php echo $cpm_config->properties[$config_id] ?>" /><?php echo $description ?></td>
+                <td><input type="text" name="<?php echo $config_id ?>" size="20" value="<?php echo $cpm_config->properties[$config_id] ?>" /><br />
+				<?php echo $description ?></td>
               </tr>
               <?php break;
           }
         }
-      } ?>
-      <?php if (!cpm_this_is_multisite()) { ?>
+		?>
+      <?php if (!is_multisite()) { ?>
         <?php
           $all_comic_folders_found = true;
           foreach (array(''. 'rss_', 'archive_', 'mini_') as $folder_name) {
@@ -2439,6 +2435,7 @@ function cpm_manager_edit_config() {
 
   <?php return ob_get_clean();
 }
+
 
 /**
  * Show the footer.
