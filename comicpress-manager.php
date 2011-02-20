@@ -3,7 +3,7 @@
 Plugin Name: ComicPress Manager
 Plugin URI: http://comicpress.org/forum/
 Description: Manage the comics within a <a href="http://www.comicpress.org/">ComicPress</a> theme installation.
-Version: 1.4.9.8
+Version: 1.4.9.9
 Author: John Bintz, Philip M. Hofer (Frumph)
 Author URI: http://frumph.net/
 
@@ -30,9 +30,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * The loader for the rest of the plugin components.
  */
 
+require_once('comicpress_manager_config.php');
+
 // only load the plugin code of we're in the administration part of WordPress.
 if (is_admin()) {
 	if (is_multisite()) require_once('comicpress_manager_wpmu.php');
-	require_once('comicpress_manager_config.php');
 	require_once('comicpress_manager_admin.php');
 }
