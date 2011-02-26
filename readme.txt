@@ -3,14 +3,14 @@ Contributors: frumph, johncoswell
 Tags: comicpress, webcomics, management, admin, posts, plugin
 Requires at least: 2.9.1
 Tested up to: 3.1
-Stable tag: 1.4.9.9
+Stable tag: 1.4.9.10
 Donate link: http://www.frumph.net/
 
 ComicPress Manager ties in with the ComicPress theme to make managing your WordPress-hosted Webcomic easy and fast.
 
 == Description ==
 
-The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://comicpress.net/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress.
+The ComicPress Manager plugin works in conjunction with an installation of [ComicPress](http://comicpress.org/), the Webcomic theme for WordPress. ComicPress Manager is intended to reduce the amount of work required to administer a site running ComicPress.
 
 ComicPress Manager allows you to:
 
@@ -187,6 +187,9 @@ ComicPress Manager is released under the GNU GPL version 2.0 or later.
 The Dynarch DHTML Calendar Widget is released under the GNU LGPL.
 
 == Changelog ==
+= 1.4.9.10 =
+Removed test.php from the jscalendar-1.0 directory.
+
 = 1.4.9.9 = 
 fixed bug introduced in 1.4.9.9 which caused the 'MASK' to not work for the date field
 
